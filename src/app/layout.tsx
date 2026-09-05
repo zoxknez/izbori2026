@@ -14,8 +14,8 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("https://izborna-kontrola.vercel.app"),
   title: {
-    default: "Izborna kontrola — vodič kroz izborne nepravilnosti u Srbiji",
-    template: "%s — Izborna kontrola",
+    default: "Izborna kontrola: vodič kroz izborne nepravilnosti u Srbiji",
+    template: "%s · Izborna kontrola",
   },
   description:
     "Interaktivni građanski vodič za prepoznavanje, dokumentovanje i prijavljivanje izbornih nepravilnosti u Srbiji, sa pozivom na tačan član zakona.",

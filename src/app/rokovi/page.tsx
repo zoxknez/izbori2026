@@ -12,7 +12,7 @@ export default function RokoviPage() {
     <Container className="py-8 sm:py-12">
       <h1 className="text-2xl font-bold sm:text-3xl">Rokovi i pravni lekovi</h1>
       <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-ink-dim">
-        Ovo nije pravni savet — za konkretan slučaj obrati se lokalnoj izbornoj komisiji ili
+        Ovo nije pravni savet. Za konkretan slučaj obrati se lokalnoj izbornoj komisiji ili
         advokatu. Ovde je pregled osnovnog mehanizma i rokova.
       </p>
 
@@ -30,7 +30,7 @@ export default function RokoviPage() {
               slobodno i tajno glasanje.
             </p>
             <p className="text-sm leading-relaxed text-ink-dim">
-              Podnosilac proglašene liste ima šire pravo — može zahtevati poništavanje zbog
+              Podnosilac proglašene liste ima šire pravo: može zahtevati poništavanje zbog
               nepravilnosti tokom glasanja uopšte.
             </p>
             <p className="text-sm leading-relaxed text-ink-dim">
@@ -46,7 +46,7 @@ export default function RokoviPage() {
               <h2 className="text-lg font-bold text-ink">Lokalni izbori</h2>
             </div>
             <p className="text-sm leading-relaxed text-ink-dim">
-              Postoji sličan mehanizam — podnosilac proglašene liste, odnosno birač u propisanim
+              Postoji sličan mehanizam: podnosilac proglašene liste, odnosno birač u propisanim
               slučajevima, ima rok od <strong className="text-ink">72 časa</strong> od zatvaranja
               biračkog mesta za prigovor.
             </p>
@@ -80,7 +80,7 @@ export default function RokoviPage() {
           </ul>
           <p className="mt-4 text-sm text-ink-dim">
             RIK objavljuje obrasce za prigovore i zahteve za poništavanje, uključujući obrazac{" "}
-            <strong className="text-ink">ZP-4 — Zahtev birača za poništavanje glasanja na
+            <strong className="text-ink">ZP-4: Zahtev birača za poništavanje glasanja na
             biračkom mestu</strong>. Proveri{" "}
             <a
               href="https://www.rik.parlament.gov.rs/"
@@ -96,7 +96,7 @@ export default function RokoviPage() {
       </Card>
 
       <p className="mt-6 text-xs text-ink-faint">
-        Priprema dokaza za ovakav zahtev — koristi{" "}
+        Za pripremu dokaza za ovakav zahtev koristi{" "}
         <a href="/prijavi" className="text-brand hover:underline">generator hronologije incidenta</a>.
       </p>
     </Container>

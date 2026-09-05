@@ -1,14 +1,15 @@
+export const NAV_CTA = { href: "/vidim-problem", label: "Vidim problem sada" } as const;
+
 export const NAV_LINKS = [
-  { href: "/vidim-problem", label: "Vidim problem", emphasis: true },
-  { href: "/pravila", label: "Baza nepravilnosti", emphasis: false },
-  { href: "/kontrolor", label: "Kontrolor", emphasis: false },
-  { href: "/validator", label: "Validator zapisnika", emphasis: false },
-  { href: "/van-birackog-mesta", label: "Glasanje van BM", emphasis: false },
-  { href: "/krivicna-dela", label: "Krivična dela", emphasis: false },
-  { href: "/mit-ili-cinjenica", label: "Mit ili činjenica", emphasis: false },
-  { href: "/prijavi", label: "Prijavi incident", emphasis: false },
-  { href: "/rokovi", label: "Rokovi", emphasis: false },
-  { href: "/izvori", label: "Izvori", emphasis: false },
+  { href: "/pravila", label: "Baza nepravilnosti" },
+  { href: "/kontrolor", label: "Kontrolor" },
+  { href: "/validator", label: "Validator zapisnika" },
+  { href: "/van-birackog-mesta", label: "Glasanje van BM" },
+  { href: "/krivicna-dela", label: "Krivična dela" },
+  { href: "/mit-ili-cinjenica", label: "Mit ili činjenica" },
+  { href: "/prijavi", label: "Prijavi incident" },
+  { href: "/rokovi", label: "Rokovi" },
+  { href: "/izvori", label: "Izvori" },
 ] as const;
 
 export const MOBILE_TAB_LINKS = [

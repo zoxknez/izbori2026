@@ -21,7 +21,7 @@ export default async function PravilaPage({
     <Container className="py-8 sm:py-12">
       <h1 className="text-2xl font-bold sm:text-3xl">Baza nepravilnosti</h1>
       <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-ink-dim">
-        {rules.length} situacija iz prakse izbornog dana — od dozvoljenih i informativnih, preko
+        {rules.length} situacija iz prakse izbornog dana, od dozvoljenih i informativnih, preko
         proceduralnih nepravilnosti, do mogućih krivičnih dela. Svaka kartica ima tačan pravni
         osnov i uputstvo šta da radiš.
       </p>

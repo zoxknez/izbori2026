@@ -44,7 +44,7 @@ export default async function HomePage() {
             Vidiš nešto čudno na biračkom mestu?
           </h1>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-dim sm:text-lg">
-            Za manje od minuta saznaj da li je situacija dozvoljena, sumnjiva ili nepravilnost —
+            Za manje od minuta saznaj da li je situacija dozvoljena, sumnjiva ili nepravilnost,
             uz tačan član zakona i uputstvo šta konkretno da uradiš.
           </p>
 
@@ -120,7 +120,7 @@ export default async function HomePage() {
               </h2>
               <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-ink-dim">
                 Za ove situacije zakon izričito propisuje poništavanje glasanja na biračkom mestu
-                po službenoj dužnosti — nezavisno od bilo čije namere.
+                po službenoj dužnosti, nezavisno od bilo čije namere.
               </p>
               <Link
                 href="/pravila?ponistavanje=1"

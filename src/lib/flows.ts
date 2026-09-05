@@ -27,7 +27,7 @@ export const TOK_GLASANJA = [
   {
     step: 6,
     title: "Jedan glasački listić",
-    body: "Birač dobija tačno jedan glasački listić — nikad više.",
+    body: "Birač dobija tačno jedan glasački listić, nikad više.",
   },
   {
     step: 7,
@@ -50,7 +50,7 @@ export const REDOSLED_BROJANJA = [
   {
     step: 1,
     title: "Prebroj birače koji su glasali",
-    body: "Broj se utvrđuje preko potpisa u izvodu i evidencije glasanja van biračkog mesta — pre otvaranja kutije.",
+    body: "Broj se utvrđuje preko potpisa u izvodu i evidencije glasanja van biračkog mesta, pre otvaranja kutije.",
   },
   {
     step: 2,

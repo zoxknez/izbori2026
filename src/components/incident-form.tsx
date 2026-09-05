@@ -57,7 +57,7 @@ export function IncidentForm() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch {
-      /* skladište nedostupno — hronologija je i dalje vidljiva na ekranu */
+      /* skladište nedostupno, hronologija je i dalje vidljiva na ekranu */
     }
   }
 
@@ -77,7 +77,7 @@ export function IncidentForm() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      /* clipboard nedostupan — tekst je i dalje selektovan u polju ispod */
+      /* clipboard nedostupan, tekst je i dalje selektovan u polju ispod */
     }
   }
 
@@ -144,7 +144,7 @@ export function IncidentForm() {
               className={textareaClass}
               value={data.staSamVideo}
               onChange={(e) => update("staSamVideo", e.target.value)}
-              placeholder="Opiši samo ono što si lično video/la — ne pretpostavke."
+              placeholder="Opiši samo ono što si lično video/la, ne pretpostavke."
             />
           </Field>
 
@@ -241,7 +241,7 @@ export function IncidentForm() {
               </Button>
             </div>
             <p className="mt-3 text-xs leading-relaxed text-ink-faint">
-              Ništa od ovoga se ne šalje na server — hronologija se generiše i čuva isključivo u
+              Ništa od ovoga se ne šalje na server. Hronologija se generiše i čuva isključivo u
               tvom pregledaču. Ne savetujemo fotografisanje unutrašnjosti biračkog mesta radi
               dokazivanja.
             </p>
@@ -263,7 +263,7 @@ export function IncidentForm() {
                     )}
                   >
                     <span className="truncate text-ink-dim">
-                      {new Date(s.createdAt).toLocaleString("sr-RS")} — {s.data.opstina || "bez opštine"} BM{" "}
+                      {new Date(s.createdAt).toLocaleString("sr-RS")} · {s.data.opstina || "bez opštine"} BM{" "}
                       {s.data.brojMesta || "?"}
                     </span>
                     <button

@@ -38,7 +38,7 @@ export const criminalArticles: CriminalArticle[] = [
     opis: "Nuđenje, davanje ili obećavanje koristi radi glasanja, neglasanja ili glasanja na određeni način, kao i traženje ili primanje takve koristi.",
     primer: "Novac, hrana, gorivo, posao ili druga korist nuđeni u zamenu za glas.",
     nijeDokaz: "Organizovan besplatan prevoz do biračkog mesta, sam po sebi, bez dokazane veze sa traženim glasom.",
-    kazna: "Novčana kazna ili zatvor do tri godine; za člana biračkog odbora ili drugo službeno lice u vršenju dužnosti — zatvor od tri meseca do pet godina.",
+    kazna: "Novčana kazna ili zatvor do tri godine. Za člana biračkog odbora ili drugo službeno lice u vršenju dužnosti: zatvor od tri meseca do pet godina.",
     order: 3,
   },
   {
@@ -47,7 +47,7 @@ export const criminalArticles: CriminalArticle[] = [
     naziv: "Zloupotreba prava glasanja",
     opis: "Glasanje umesto drugog lica, ponovljeno glasanje iste osobe, ili korišćenje više od jednog glasačkog listića.",
     primer: "Osoba glasa pod tuđim imenom ili pokušava da glasa drugi put istog dana.",
-    kazna: "Novčana kazna ili zatvor do jedne godine; za člana biračkog odbora koji to omogući — novčana kazna ili zatvor do dve godine.",
+    kazna: "Novčana kazna ili zatvor do jedne godine. Za člana biračkog odbora koji to omogući: novčana kazna ili zatvor do dve godine.",
     order: 4,
   },
   {

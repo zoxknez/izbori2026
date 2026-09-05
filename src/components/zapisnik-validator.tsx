@@ -86,7 +86,7 @@ function ResultRow({
         <p className="font-semibold text-ink">{title}</p>
         <p className="mt-0.5 font-mono text-xs text-ink-faint">{formula}</p>
         <p className="mt-1.5 text-sm leading-relaxed text-ink-dim">
-          {ok === false ? explanation : ok === true ? "Provera prolazi — nema neslaganja po ovom pravilu." : "Unesi brojeve da vidiš rezultat."}
+          {ok === false ? explanation : ok === true ? "Provera prolazi, nema neslaganja po ovom pravilu." : "Unesi brojeve da vidiš rezultat."}
         </p>
         {ok === false && <p className="mt-1.5 text-xs font-medium text-sev-ponistavanje">{legal}</p>}
       </div>
@@ -230,38 +230,38 @@ export function ZapisnikValidator() {
           <div className="rounded-xl border border-sev-ponistavanje/40 bg-sev-ponistavanje/10 p-4">
             <p className="font-bold text-sev-ponistavanje">🚨 Uočeno je automatsko zakonsko neslaganje</p>
             <p className="mt-1 text-sm leading-relaxed text-ink-dim">
-              Bar jedno pravilo nije prošlo proveru. Proveri unete brojeve, a ako su tačni — ovo je
+              Bar jedno pravilo nije prošlo proveru. Proveri unete brojeve: ako su tačni, ovo je
               zakonski osnov za poništavanje glasanja na biračkom mestu po službenoj dužnosti.
             </p>
           </div>
         )}
         <ResultRow
           ok={ruleA}
-          title="Pravilo A — Listića u kutiji ne sme biti više nego birača"
+          title="Pravilo A · Listića u kutiji ne sme biti više nego birača"
           formula="B ≤ G"
           explanation="Broj listića u kutiji veći je od broja birača koji su glasali."
           legal="Zakonski osnov za poništavanje glasanja po službenoj dužnosti (ZINP, čl. 116)."
         />
         <ResultRow
           ok={ruleB}
-          title="Pravilo B — Neupotrebljeni + kutija ne sme biti više od primljenih"
+          title="Pravilo B · Neupotrebljeni + kutija ne sme biti više od primljenih"
           formula="U + B ≤ R"
           explanation="Zbir neupotrebljenih listića i listića iz kutije veći je od broja primljenih listića."
           legal="Zakonski osnov za poništavanje glasanja po službenoj dužnosti (ZINP, čl. 116)."
         />
         <ResultRow
           ok={ruleC}
-          title="Pravilo C — Važeći + nevažeći moraju biti jednaki broju listića u kutiji"
+          title="Pravilo C · Važeći + nevažeći moraju biti jednaki broju listića u kutiji"
           formula="N + V = B"
           explanation="Zbir važećih i nevažećih listića ne odgovara broju listića pronađenih u kutiji."
-          legal="Logičko-računska greška — proveriti razvrstavanje listića pre zaključivanja zapisnika."
+          legal="Logičko-računska greška: proveriti razvrstavanje listića pre zaključivanja zapisnika."
         />
         <ResultRow
           ok={ruleD}
-          title="Pravilo D — Zbir glasova po listama mora biti jednak broju važećih"
+          title="Pravilo D · Zbir glasova po listama mora biti jednak broju važećih"
           formula="Σ (L1..Ln) = V"
           explanation="Zbir glasova svih lista ne odgovara ukupnom broju važećih listića."
-          legal="Logičko-računska greška — prebrojati glasove po listama ponovo pre potpisivanja zapisnika."
+          legal="Logičko-računska greška: prebrojati glasove po listama ponovo pre potpisivanja zapisnika."
         />
       </div>
     </div>

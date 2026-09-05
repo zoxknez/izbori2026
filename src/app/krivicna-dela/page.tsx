@@ -7,7 +7,7 @@ export const revalidate = 3600;
 
 export const metadata = {
   title: "Krivična dela protiv izbornih prava",
-  description: "Glava XV Krivičnog zakonika Republike Srbije — članovi 154 do 161, objašnjeni jednostavnim jezikom.",
+  description: "Glava XV Krivičnog zakonika Republike Srbije (čl. 154–161), objašnjeni jednostavnim jezikom.",
 };
 
 export default async function KrivicnaDelaPage() {
@@ -18,7 +18,7 @@ export default async function KrivicnaDelaPage() {
       <h1 className="text-2xl font-bold sm:text-3xl">Krivična dela protiv izbornih prava</h1>
       <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-ink-dim">
         Glava XV Krivičnog zakonika Republike Srbije (čl. 154–161). Ovo je pregled radi
-        prepoznavanja situacija — za konkretan slučaj obrati se advokatu ili nadležnom
+        prepoznavanja situacija. Za konkretan slučaj obrati se advokatu ili nadležnom
         tužilaštvu.
       </p>
 

@@ -17,7 +17,7 @@ export default async function VidimProblemPage() {
       <h1 className="text-2xl font-bold sm:text-3xl">Vidim problem sada</h1>
       <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-ink-dim">
         Odgovori na dva kratka pitanja i dobij tačnu pravnu klasifikaciju situacije, šta odmah
-        proveriti i šta konkretno da uradiš — u zavisnosti od toga da li si birač, član biračkog
+        proveriti i šta konkretno da uradiš, u zavisnosti od toga da li si birač, član biračkog
         odbora ili posmatrač.
       </p>
       <div className="mt-8">

@@ -8,7 +8,7 @@ export const revalidate = 3600;
 
 export const metadata = {
   title: "Glasanje van biračkog mesta",
-  description: "Poseban vodič za glasanje kod kuće zbog bolesti, starosti ili invaliditeta — ko ima pravo, ko sprovodi postupak, i najčešće nepravilnosti.",
+  description: "Poseban vodič za glasanje kod kuće zbog bolesti, starosti ili invaliditeta: ko ima pravo, ko sprovodi postupak i najčešće nepravilnosti.",
 };
 
 export default async function VanBirackogMestaPage() {
@@ -62,7 +62,7 @@ export default async function VanBirackogMestaPage() {
       </div>
 
       <p className="mt-8 text-sm text-ink-dim">
-        Za opšte pravilo — ako nema potpisane potvrde o pravu glasanja van biračkog mesta, listić
+        Opšte pravilo: ako nema potpisane potvrde o pravu glasanja van biračkog mesta, listić
         se ne ubacuje u kutiju. Vidi{" "}
         <Link href="/pravila/nema-potpisane-potvrde-kod-kuce" className="text-brand hover:underline">
           detaljno objašnjenje

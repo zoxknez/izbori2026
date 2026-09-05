@@ -11,9 +11,9 @@ export const metadata = {
 };
 
 const TIER_LABEL: Record<number, string> = {
-  1: "Tier 1 — normativni i zvanični izvori",
-  2: "Tier 2 — pravna i institucionalna analiza",
-  3: "Tier 3 — monitoring i posmatračke misije",
+  1: "Tier 1: normativni i zvanični izvori",
+  2: "Tier 2: pravna i institucionalna analiza",
+  3: "Tier 3: monitoring i posmatračke misije",
 };
 
 export default async function IzvoriPage() {
@@ -28,7 +28,7 @@ export default async function IzvoriPage() {
       <h1 className="text-2xl font-bold sm:text-3xl">Izvori</h1>
       <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-ink-dim">
         Ovaj vodič se oslanja isključivo na zvanične propise, institucionalne izvore i
-        akreditovane posmatračke misije — nikada na pojedinačnu političku stranku kao jedini
+        akreditovane posmatračke misije, nikada na pojedinačnu političku stranku kao jedini
         izvor za pravnu klasifikaciju.
       </p>
 
