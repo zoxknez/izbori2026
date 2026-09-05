@@ -78,7 +78,7 @@ test.describe("public application smoke", () => {
     expect(publish.status()).toBe(401);
   });
 
-  test("content editor sa validnom sesijom ne može da zaobiđe publish RBAC", async ({ page }) => {
+  test("sesija bez aktivnog naloga ne može da zaobiđe server-side admin proveru", async ({ page }) => {
     const token = await encode({
       token: { sub: "e2e-content-editor", email: "e2e-content@example.test", role: "CONTENT_EDITOR" },
       secret: "local-e2e-only-secret",
@@ -86,10 +86,10 @@ test.describe("public application smoke", () => {
     });
     await page.context().addCookies([{ name: "authjs.session-token", value: token, domain: "127.0.0.1", path: "/", httpOnly: true, secure: false }]);
     const publish = await page.request.post("/api/admin/publish", { data: {} });
-    expect(publish.status()).toBe(403);
+    expect(publish.status()).toBe(401);
   });
 
-  test("potpisana super-admin sesija otvara sve admin prikaze", async ({ page }) => {
+  test("potpisan JWT bez aktivnog DB naloga ne otvara admin prikaze", async ({ page }) => {
     const token = await encode({
       token: { sub: "e2e-super-admin", email: "e2e-admin@example.test", role: "SUPER_ADMIN" },
       secret: "local-e2e-only-secret",
@@ -98,10 +98,10 @@ test.describe("public application smoke", () => {
     await page.context().addCookies([{ name: "authjs.session-token", value: token, domain: "127.0.0.1", path: "/", httpOnly: true, secure: false }]);
     for (const route of ["/admin", "/admin/rules", "/admin/sources", "/admin/decision-trees", "/admin/audit"]) {
       const response = await page.goto(route);
-      expect(response?.ok(), `${route} should render for a signed admin session`).toBeTruthy();
-      await expect(page.locator("h1").first()).toBeVisible();
+      expect(response?.url(), `${route} should redirect stale sessions`).toContain("/admin/login");
+      await expect(page.locator("h1")).toHaveText("Admin prijava");
     }
     const invalidPublish = await page.request.post("/api/admin/publish", { data: { snapshot: { schemaVersion: 1 } } });
-    expect(invalidPublish.status()).toBe(400);
+    expect(invalidPublish.status()).toBe(401);
   });
 });

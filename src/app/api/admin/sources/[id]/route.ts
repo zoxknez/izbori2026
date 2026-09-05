@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import type { BatchItem } from "drizzle-orm/batch";
 import { z } from "zod";
-import { auth } from "../../../../../../auth";
 import { db } from "@/lib/db";
 import { auditLog, decisionTrees, rules, sources } from "@/lib/db/schema";
 import { assertPermission } from "@/lib/domain/admin/rbac";
+import { getCurrentAdmin } from "@/lib/domain/admin/server-auth";
 import { buildTrainingQuestions } from "@/lib/domain/training/generate-questions";
 import { simulationEvents } from "@/lib/domain/simulator/seed-events";
 import { calculateStalePropagation, sourceIdsForRule } from "@/lib/domain/legal/dependency-graph";
@@ -23,9 +23,9 @@ const patchSchema = z.object({
 }).strict().refine((value) => Object.keys(value).length > 0, "Nema izmena.");
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Prijava je obavezna." }, { status: 401 });
-  try { assertPermission(session.user.role, "sources:write"); } catch { return NextResponse.json({ error: "Uloga nema dozvolu za izmene izvora." }, { status: 403 }); }
+  const admin = await getCurrentAdmin();
+  if (!admin) return NextResponse.json({ error: "Prijava je obavezna." }, { status: 401 });
+  try { assertPermission(admin.role, "sources:write"); } catch { return NextResponse.json({ error: "Uloga nema dozvolu za izmene izvora." }, { status: 403 }); }
   const { id } = await context.params;
   let patch: z.infer<typeof patchSchema>;
   try { patch = patchSchema.parse(await request.json()); } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Neispravan zahtev." }, { status: 400 }); }
@@ -61,7 +61,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     const operations: BatchItem<"pg">[] = [sourceUpdate];
     staleRuleIds.forEach((ruleId) => operations.push(db.update(rules).set({ reviewStatus: "stale", updatedAt: new Date() }).where(eq(rules.id, ruleId))));
     staleTreeIds.forEach((treeId) => operations.push(db.update(decisionTrees).set({ reviewStatus: "stale", updatedAt: new Date() }).where(eq(decisionTrees.id, treeId))));
-    operations.push(db.insert(auditLog).values({ id: crypto.randomUUID(), actorUserId: session.user.id, action: "source.update", entityType: "source", entityId: id, before: { label: before.label, status: before.status, version: before.version, supersedesId: before.supersedesId }, after: { label: patch.label ?? before.label, status: nextStatus, version: patch.version ?? before.version, supersedesId: patch.supersedesId === undefined ? before.supersedesId : patch.supersedesId, staleRuleIds, staleTreeIds } }));
+    operations.push(db.insert(auditLog).values({ id: crypto.randomUUID(), actorUserId: admin.id, action: "source.update", entityType: "source", entityId: id, before: { label: before.label, status: before.status, version: before.version, supersedesId: before.supersedesId }, after: { label: patch.label ?? before.label, status: nextStatus, version: patch.version ?? before.version, supersedesId: patch.supersedesId === undefined ? before.supersedesId : patch.supersedesId, staleRuleIds, staleTreeIds } }));
     await db.batch(operations as [BatchItem<"pg">, ...BatchItem<"pg">[]]);
     return NextResponse.json({ ok: true, stale: { rules: staleRuleIds.length, decisionTrees: staleTreeIds.length } });
   } catch (error) {

@@ -43,6 +43,11 @@ po težini za svih 66 pravila, a isti check se automatski izvršava u `npm run b
 Ako menjaš šemu (`src/lib/db/schema.ts`), generiši migraciju sa
 `npx drizzle-kit generate --name opis-izmene`, proveri SQL, pa pokreni `npx drizzle-kit migrate`.
 
+Za authenticated publish E2E koristi isključivo izolovanu test bazu: postavi `ADMIN_EMAIL` i
+`ADMIN_PASSWORD`, pokreni `npm run admin:seed`, zatim pokreni `E2E_ADMIN_EMAIL` i
+`E2E_ADMIN_PASSWORD` kroz `npx playwright test tests/e2e/admin-publish.spec.ts`. Nikada ne koristi
+produkcione kredencijale u lokalnom E2E fixture-u.
+
 ### Offline / PWA odluka
 
 Na Next.js 16/Turbopack spike-u od 5. septembra 2026. zadržan je mali ručno registrovan
