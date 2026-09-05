@@ -84,6 +84,27 @@ export const decisionNodes = pgTable("decision_nodes", {
   order: integer("order").default(0),
 });
 
+export const datasetVersions = pgTable("dataset_versions", {
+  id: varchar("id", { length: 32 }).primaryKey(),
+  version: varchar("version", { length: 64 }).notNull().unique(),
+  status: varchar("status", { length: 16 }).notNull().default("draft"),
+  updatePriority: varchar("update_priority", { length: 16 }).notNull().default("normal"),
+  legalReviewDate: date("legal_review_date"),
+  manifestHash: varchar("manifest_hash", { length: 128 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  publishedAt: timestamp("published_at"),
+  publishedBy: varchar("published_by", { length: 64 }),
+});
+
+export const datasetFiles = pgTable("dataset_files", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  datasetVersionId: varchar("dataset_version_id", { length: 32 }).notNull(),
+  filename: varchar("filename", { length: 160 }).notNull(),
+  payload: jsonb("payload").notNull(),
+  sha256: varchar("sha256", { length: 128 }).notNull(),
+  size: integer("size").notNull(),
+});
+
 export const sources = pgTable("sources", {
   id: varchar("id", { length: 64 }).primaryKey(),
   tier: integer("tier").notNull(),
@@ -106,3 +127,5 @@ export type CriminalArticleRow = typeof criminalArticles.$inferSelect;
 export type SourceRow = typeof sources.$inferSelect;
 export type DecisionTreeRow = typeof decisionTrees.$inferSelect;
 export type DecisionNodeRow = typeof decisionNodes.$inferSelect;
+export type DatasetVersionRow = typeof datasetVersions.$inferSelect;
+export type DatasetFileRow = typeof datasetFiles.$inferSelect;

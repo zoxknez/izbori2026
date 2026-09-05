@@ -36,3 +36,20 @@ Urađeno:
 - UI filteri i prikaz koriste pluralne faze, dok je singularno `phase` zadržano samo kao privremena kompatibilnost za stare potrošače.
 
 Provere posle ove iteracije: typecheck, ESLint i Vitest prolaze (4 test fajla, 14 testova). Faza 1 još nije zatvorena dok se ne završe potpuni source provenance model, admin publish gate i preostale faze iz plana.
+
+## Faza 2 — dataset versioning i offline temelj
+
+Status: **u toku**.
+
+Urađeno:
+
+- uvedene `dataset_versions` i `dataset_files` tabele sa immutable payload/hash/size manifestom;
+- `dataset-validator` koristi Zod, SHA-256 i cross-reference provere za pravila, izvore i grananje odluka;
+- `scripts/snapshot-dataset.ts` pravi aktivni server snapshot direktno iz Neon tabela;
+- API rute `/api/offline-dataset/current` i `/api/offline-dataset/[version]` vraćaju snapshot uz odgovarajuće cache politike;
+- `scripts/freeze-bootstrap.ts` pravi build-time fallback u `public/offline-data/bootstrap/`, bez proglašavanja fallbacka aktivnim datasetom;
+- uveden IndexedDB sloj sa `datasetMeta` pointerom i odvojenim store-ovima za buduće incidente, trening, znanje, simulacije i preference;
+- `dataset-manager` preuzima, validira i tek potom atomarno aktivira novu verziju;
+- Neon migriran i snapshotovan: aktivna verzija sadrži 66 pravila, 8 izvora i 3 decision tree-a.
+
+Provere: typecheck, ESLint, Vitest (5 fajlova / 18 testova) i production build prolaze. E2E smoke sada proverava i aktivni dataset API; kompletan network-failure E2E ostaje vezan za browser IndexedDB test harness u završnoj integracionoj fazi.

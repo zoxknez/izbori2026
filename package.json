@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "tsx scripts/freeze-bootstrap.ts && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "dataset:snapshot": "tsx scripts/snapshot-dataset.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
@@ -21,6 +22,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
+    "idb": "^8.0.3",
     "lucide-react": "^1.41.0",
     "next": "16.3.4",
     "react": "19.2.8",
@@ -39,6 +41,7 @@
     "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
+    "fake-indexeddb": "^6.2.5",
     "tailwindcss": "^4",
     "tsx": "^4.23.13",
     "typescript": "^5",

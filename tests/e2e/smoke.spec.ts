@@ -28,4 +28,14 @@ test.describe("public application smoke", () => {
     await expect(page.getByRole("heading", { name: /Generator hronologije incidenta/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Sačuvaj na uređaj/i })).toBeVisible();
   });
+
+  test("offline dataset endpoint vraća aktivni snapshot", async ({ page }) => {
+    const response = await page.request.get("/api/offline-dataset/current");
+    expect(response.ok()).toBeTruthy();
+    const body = await response.json();
+    expect(body.version).toBeTruthy();
+    expect(body.files).toEqual(expect.arrayContaining([
+      expect.objectContaining({ filename: "snapshot.json", sha256: expect.any(String) }),
+    ]));
+  });
 });
