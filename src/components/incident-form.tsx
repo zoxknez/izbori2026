@@ -24,9 +24,9 @@ import { rules } from "@/content/rules";
 import { criminalArticles } from "@/content/criminal-articles";
 import { cn } from "@/lib/utils";
 import {
-  readSavedIncidents,
-  removeStoredValue,
-  writeSavedIncidents,
+  readSavedIncidentsOffline,
+  removeSavedIncidentsOffline,
+  writeSavedIncidentsOffline,
   type SavedIncident,
 } from "@/lib/storage";
 
@@ -67,7 +67,9 @@ export function IncidentForm() {
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
-    startTransition(() => setSaved(readSavedIncidents(STORAGE_KEY)));
+    void readSavedIncidentsOffline(STORAGE_KEY).then((incidents) => {
+      startTransition(() => setSaved(incidents));
+    });
   }, [startTransition]);
 
   // Parse search params if user navigated from rules or criminal codes
@@ -133,25 +135,25 @@ export function IncidentForm() {
 
   const chronology = generateChronology(data);
 
-  function saveLocally() {
+  async function saveLocally() {
     const entry = { id: crypto.randomUUID(), createdAt: new Date().toISOString(), data };
     const next = [entry, ...saved].slice(0, 30);
     setSaved(next);
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 2500);
-    if (!writeSavedIncidents(STORAGE_KEY, next)) setSaveSuccess(false);
+    if (!(await writeSavedIncidentsOffline(STORAGE_KEY, next))) setSaveSuccess(false);
   }
 
-  function removeSaved(id: string) {
+  async function removeSaved(id: string) {
     const next = saved.filter((s) => s.id !== id);
     setSaved(next);
-    writeSavedIncidents(STORAGE_KEY, next);
+    await writeSavedIncidentsOffline(STORAGE_KEY, next);
   }
 
   function clearAllSaved() {
     if (window.confirm("Da li sigurno želiš da obrišeš sve sačuvane incidente sa ovog uređaja?")) {
       setSaved([]);
-      removeStoredValue(STORAGE_KEY);
+      void removeSavedIncidentsOffline(STORAGE_KEY);
     }
   }
 

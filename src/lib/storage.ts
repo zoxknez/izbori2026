@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { IncidentData } from "@/lib/incident";
+import { readOfflineValue, writeOfflineValue } from "@/lib/offline/indexed-db";
 
 const incidentDataSchema = z.object({
   vrstaIzbora: z.string().max(64),
@@ -60,6 +61,41 @@ export function readSavedIncidents(key: string): SavedIncident[] {
 
 export function writeSavedIncidents(key: string, value: SavedIncident[]): boolean {
   return writeJson(key, value, savedIncidentsSchema);
+}
+
+/** IndexedDB is the canonical store for incident records; localStorage is read only for legacy migration. */
+export async function readSavedIncidentsOffline(key: string): Promise<SavedIncident[]> {
+  try {
+    const stored = await readOfflineValue<unknown>("incidentNotes", key);
+    const parsed = savedIncidentsSchema.safeParse(stored);
+    if (parsed.success) return parsed.data;
+
+    const legacy = readSavedIncidents(key);
+    if (legacy.length > 0) await writeOfflineValue("incidentNotes", key, legacy);
+    return legacy;
+  } catch {
+    return readSavedIncidents(key);
+  }
+}
+
+export async function writeSavedIncidentsOffline(key: string, value: SavedIncident[]): Promise<boolean> {
+  const parsed = savedIncidentsSchema.safeParse(value);
+  if (!parsed.success) return false;
+  try {
+    await writeOfflineValue("incidentNotes", key, parsed.data);
+    return true;
+  } catch {
+    return writeSavedIncidents(key, parsed.data);
+  }
+}
+
+export async function removeSavedIncidentsOffline(key: string): Promise<boolean> {
+  try {
+    await writeOfflineValue("incidentNotes", key, []);
+    return true;
+  } catch {
+    return removeStoredValue(key);
+  }
 }
 
 export function readChecklist(key: string): Record<string, boolean> {
