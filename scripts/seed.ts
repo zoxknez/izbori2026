@@ -9,7 +9,9 @@ async function main() {
     sources: sourcesTable,
     decisionTrees: decisionTreesTable,
     decisionNodes: decisionNodesTable,
+    datasetVersions: datasetVersionsTable,
   } = await import("../src/lib/db/schema");
+  const { eq } = await import("drizzle-orm");
   const { rules } = await import("../src/content/rules");
   const { criminalArticles } = await import("../src/content/criminal-articles");
   const { sources } = await import("../src/content/sources");
@@ -18,6 +20,18 @@ async function main() {
   const { decisionTreeSchema } = await import("../src/lib/domain/decision-trees/types");
   const reviewStatus = process.env.LEGAL_REVIEW_STATUS ?? "legal_review";
   const lastLegalReview = process.env.LEGAL_REVIEW_DATE;
+
+  if (process.env.NODE_ENV === "production") {
+    const [activeDataset] = await db
+      .select({ publishedBy: datasetVersionsTable.publishedBy })
+      .from(datasetVersionsTable)
+      .where(eq(datasetVersionsTable.status, "active"))
+      .limit(1);
+
+    if (activeDataset?.publishedBy && activeDataset.publishedBy !== "bootstrap-script") {
+      throw new Error("Production seed je blokiran nakon Admin publish-a. Koristi Admin publish workflow.");
+    }
+  }
 
   assertRulesInvariants(rules);
   decisionTrees.forEach((tree) => decisionTreeSchema.parse(tree));
