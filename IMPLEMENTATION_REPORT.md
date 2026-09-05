@@ -103,6 +103,7 @@ Urađeno:
 - `src/proxy.ts` radi samo optimistički redirect, dok publish route ponovo proverava sesiju i RBAC;
 - svaki admin prikaz i API mutacija dodatno razrešava `session.user.id` u aktivan red `admin_users`, pa deaktivacija naloga ili promena uloge odmah poništava staru JWT sesiju;
 - `/api/admin/publish` validira isti `dataset-validator`, upisuje novu dataset verziju/fajl i append-only audit zapis u jednoj Neon batch transakciji; DB-level partial unique index sprečava konkurentne publish pozive da ostave više aktivnih verzija;
+- ID kolone za admin korisnike, audit actor reference i dataset version reference podržavaju UUID identifikatore bez truncation rizika (`varchar(64)`), potvrđeno stvarnim authenticated fixture testom;
 - `/admin/rules` i `PATCH /api/admin/rules/[id]` omogućavaju RBAC-controlled content/status izmene uz pre/post audit zapis; `/admin` prikazuje source dependency graph i publish kontrolu;
 - `/admin/login` i osnovna `/admin` kontrolna tabla; nema self-registration, a `scripts/seed-admin.ts` zahteva eksplicitne env vrednosti;
 - `AUTH_SECRET` je dodat kao sensitive production env varijabla na Vercelu.
@@ -129,19 +130,20 @@ Implementirani su update prompt sa korisničkim aktiviranjem, zaštita od reload
 
 ## Faza 7 — integracija i E2E hardening
 
-Status: **u toku**.
+Status: **završeno**.
 
 Urađeno:
 
 - dodat cross-module Playwright tok: validator demo → trening učitavanje → simulator odluka;
 - dodate accessibility smoke provere za jedan `h1`, `main` landmark i missing image alt na javnim rutama;
-- E2E sada pokriva javne rute, offline API, SW/offline fallback, training practice/exam sa breakdown-om i IndexedDB stanjem, randomizovani i kompletan 30-event simulator, indeksiranu globalnu pretragu, admin RBAC guard za pravila/izvore/publish i incident draft kroz online/offline prelaz; dodat je i browser performance budget (23 testa prolaze, a authenticated publish test je spreman za izolovani fixture);
+- E2E sada pokriva javne rute, offline API, SW/offline fallback, training practice/exam sa breakdown-om i IndexedDB stanjem, randomizovani i kompletan 30-event simulator, indeksiranu globalnu pretragu, admin RBAC guard za pravila/izvore/publish i incident draft kroz online/offline prelaz; dodat je i browser performance budget (23 javna/guard testa prolaze);
+- authenticated Admin publish → dataset → client update tok je izvršen sa stvarnim admin nalogom na kratkotrajnom Neon branch-u: login, publish nove verzije, `/api/offline-dataset/current`, download, hash/schema/cross-reference validacija i IndexedDB activation su prošli; branch i test nalog su obrisani posle testa, production branch nije menjan;
 - production build i deployment se proveravaju posle svake veće faze.
 
-Preostaje samo izvršavanje authenticated Admin publish → dataset → client update testa sa stvarnim
-fixture nalogom u izolovanoj test bazi; test je dodat u `tests/e2e/admin-publish.spec.ts`, ali se
-namerno preskače bez `E2E_ADMIN_EMAIL`/`E2E_ADMIN_PASSWORD`. Produkcioni admin nalog nije kreiran
-bez korisničkih kredencijala. Ne postoji self-registration; javni deo aplikacije, revokacija starih
-JWT sesija i server-side RBAC guard su provereni bez izlaganja privilegovanih podataka.
+Implementacioni exit kriterijum je ispunjen. `tests/e2e/admin-publish.spec.ts` se u standardnom
+lokalnom run-u preskače kada nema izolovanih fixture kredencijala, ali je isti tok izvršen i potvrđen
+na privremenom Neon branch-u. Produkcioni admin nalog nije kreiran bez korisničkih kredencijala.
+Ne postoji self-registration. Ručna pravna redakcija generisanih trening objašnjenja ostaje domen-
+proces za pravnog reviewera, a ne automatizovana zamena za pravnu proveru.
 
 

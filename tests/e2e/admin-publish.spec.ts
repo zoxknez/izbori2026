@@ -19,7 +19,7 @@ test.describe("authenticated admin publish workflow", () => {
 
     page.once("dialog", (dialog) => void dialog.accept());
     await page.getByRole("button", { name: "Objavi trenutni dataset" }).click();
-    await expect(page.getByRole("status")).toContainText("Objavljeno:");
+    await expect(page.locator('p[role="status"]')).toContainText("Objavljeno:");
 
     const after = await page.request.get("/api/offline-dataset/current");
     expect(after.ok()).toBeTruthy();
@@ -28,7 +28,7 @@ test.describe("authenticated admin publish workflow", () => {
 
     await page.goto("/offline");
     await page.getByRole("button", { name: "Preuzmi aktuelni dataset" }).click();
-    await expect(page.getByRole("status")).toContainText(`Dataset ${afterBody.version} je validiran i aktiviran offline.`);
-    await expect(page.getByText(afterBody.version)).toBeVisible();
+    await expect(page.locator('p[role="status"]')).toContainText(`Dataset ${afterBody.version} je validiran i aktiviran offline.`);
+    await expect(page.getByText(afterBody.version, { exact: true })).toBeVisible();
   });
 });

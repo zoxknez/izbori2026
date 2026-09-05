@@ -88,7 +88,7 @@ export const decisionNodes = pgTable("decision_nodes", {
 });
 
 export const datasetVersions = pgTable("dataset_versions", {
-  id: varchar("id", { length: 32 }).primaryKey(),
+  id: varchar("id", { length: 64 }).primaryKey(),
   version: varchar("version", { length: 64 }).notNull().unique(),
   status: varchar("status", { length: 16 }).notNull().default("draft"),
   updatePriority: varchar("update_priority", { length: 16 }).notNull().default("normal"),
@@ -105,7 +105,7 @@ export const datasetVersions = pgTable("dataset_versions", {
 
 export const datasetFiles = pgTable("dataset_files", {
   id: varchar("id", { length: 64 }).primaryKey(),
-  datasetVersionId: varchar("dataset_version_id", { length: 32 }).notNull(),
+  datasetVersionId: varchar("dataset_version_id", { length: 64 }).notNull(),
   filename: varchar("filename", { length: 160 }).notNull(),
   payload: jsonb("payload").notNull(),
   sha256: varchar("sha256", { length: 128 }).notNull(),
@@ -113,7 +113,7 @@ export const datasetFiles = pgTable("dataset_files", {
 });
 
 export const adminUsers = pgTable("admin_users", {
-  id: varchar("id", { length: 32 }).primaryKey(),
+  id: varchar("id", { length: 64 }).primaryKey(),
   email: varchar("email", { length: 254 }).notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   role: varchar("role", { length: 32 }).notNull(),
@@ -124,7 +124,7 @@ export const adminUsers = pgTable("admin_users", {
 
 export const auditLog = pgTable("audit_log", {
   id: varchar("id", { length: 64 }).primaryKey(),
-  actorUserId: varchar("actor_user_id", { length: 32 }),
+  actorUserId: varchar("actor_user_id", { length: 64 }),
   action: varchar("action", { length: 64 }).notNull(),
   entityType: varchar("entity_type", { length: 64 }).notNull(),
   entityId: varchar("entity_id", { length: 64 }).notNull(),
