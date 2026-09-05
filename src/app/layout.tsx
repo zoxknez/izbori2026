@@ -5,6 +5,7 @@ import { SiteSidebar } from "@/components/site-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { MobileTabBar } from "@/components/mobile-tab-bar";
+import { OfflineStatus } from "@/components/offline-status";
 import "./globals.css";
 
 const inter = Inter({
@@ -60,6 +61,7 @@ export default function RootLayout({
             <SiteFooter />
           </div>
           <MobileTabBar />
+          <OfflineStatus />
         </SidebarProvider>
       </body>
     </html>

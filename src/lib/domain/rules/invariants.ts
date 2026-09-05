@@ -29,6 +29,8 @@ export const ruleSchema = z.object({
   lawReferences: z.array(z.object({ law: z.string(), article: z.string(), url: z.string().url().optional() })),
   sourceUrls: z.array(z.object({ label: z.string(), url: z.string().url() })),
   relatedSlugs: z.array(z.string()),
+  aliases: z.array(z.string()).default([]),
+  informalQueries: z.array(z.string()).default([]),
   mythCheck: z.object({
     claim: z.string(),
     verdict: z.enum(["mit", "cinjenica", "zavisi"]),

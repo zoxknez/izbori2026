@@ -47,6 +47,8 @@ async function main() {
         lawReferences: r.lawReferences,
         sourceUrls: r.sourceUrls,
         relatedSlugs: r.relatedSlugs,
+        aliases: r.aliases ?? [],
+        informalQueries: r.informalQueries ?? [],
         mythCheck: r.mythCheck ?? null,
         isAutomaticAnnulment: r.isAutomaticAnnulment ?? false,
         order: r.order ?? 0,
@@ -76,6 +78,8 @@ async function main() {
           lawReferences: r.lawReferences,
           sourceUrls: r.sourceUrls,
           relatedSlugs: r.relatedSlugs,
+          aliases: r.aliases ?? [],
+          informalQueries: r.informalQueries ?? [],
           mythCheck: r.mythCheck ?? null,
           isAutomaticAnnulment: r.isAutomaticAnnulment ?? false,
           order: r.order ?? 0,
@@ -122,6 +126,7 @@ async function main() {
       .values({
         id: s.id,
         tier: s.tier,
+        type: s.type ?? "reference",
         label: s.label,
         url: s.url,
         description: s.description,
@@ -137,6 +142,7 @@ async function main() {
         target: sourcesTable.id,
         set: {
           tier: s.tier,
+          type: s.type ?? "reference",
           label: s.label,
           url: s.url,
           description: s.description,

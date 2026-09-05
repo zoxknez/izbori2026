@@ -40,4 +40,14 @@ test.describe("public application smoke", () => {
       expect.objectContaining({ filename: "snapshot.json", sha256: expect.any(String) }),
     ]));
   });
+
+  test("offline shell i service worker su dostupni", async ({ page }) => {
+    const [worker, offline] = await Promise.all([
+      page.request.get("/sw.js"),
+      page.request.get("/offline"),
+    ]);
+    expect(worker.ok()).toBeTruthy();
+    expect(await worker.text()).toContain("LEGAL_DATA_CACHE");
+    expect(offline.ok()).toBeTruthy();
+  });
 });

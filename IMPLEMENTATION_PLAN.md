@@ -1,6 +1,6 @@
 # Implementation Plan — Trening / Simulator / Admin / PWA Offline
 
-**Verzija: v2 (Revision 1).** Status: **Faza 5 u toku; Faze 0–4 završene.**
+**Verzija: v2 (Revision 1).** Status: **Faza 7 u toku; Faze 0–6 završene.**
 
 ## Revision 1 — šta se promenilo u odnosu na v1 i zašto
 

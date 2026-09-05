@@ -68,7 +68,9 @@ export function ProblemWizard({ rules }: { rules: Rule[] }) {
         r.naziv.toLowerCase().includes(q) ||
         r.summary.toLowerCase().includes(q) ||
         r.legalRule.toLowerCase().includes(q) ||
-        r.slug.toLowerCase().includes(q)
+        r.slug.toLowerCase().includes(q) ||
+        r.aliases?.some((alias) => alias.toLowerCase().includes(q)) ||
+        r.informalQueries?.some((query) => query.toLowerCase().includes(q))
     );
   }, [rules, globalSearch]);
 

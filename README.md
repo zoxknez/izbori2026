@@ -39,6 +39,15 @@ Za produkcioni Auth.js potreban je i `AUTH_SECRET`.
 Ako menjaš šemu (`src/lib/db/schema.ts`), generiši migraciju sa
 `npx drizzle-kit generate --name opis-izmene`, proveri SQL, pa pokreni `npx drizzle-kit migrate`.
 
+### Offline / PWA odluka
+
+Na Next.js 16/Turbopack spike-u od 5. septembra 2026. zadržan je mali ručno registrovan
+`public/sw.js` umesto Serwist webpack plugina: nema bundler workaround-a, a keš politike su
+transparentne i proverljive. Lifecycle konfiguracija eksplicitno drži `register: false` i
+`reloadOnOnline: false`; registracija se obavlja kroz sopstveni update UX, bez automatskog reload-a
+dok korisnik piše incident ili rešava simulator. Ako se Serwist uvede kasnije, njegov Turbopack setup
+mora prvo proći isti spike; u suprotnom koristiti zaseban `next build --webpack` korak.
+
 ## Deploy na Vercel
 
 1. Push-uj repo na GitHub

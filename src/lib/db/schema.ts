@@ -34,6 +34,8 @@ export const rules = pgTable("rules", {
     .$type<{ label: string; url: string }[]>()
     .default([]),
   relatedSlugs: jsonb("related_slugs").$type<string[]>().default([]),
+  aliases: jsonb("aliases").$type<string[]>().default([]),
+  informalQueries: jsonb("informal_queries").$type<string[]>().default([]),
   mythCheck: jsonb("myth_check")
     .$type<{ claim: string; verdict: "mit" | "cinjenica" | "zavisi"; explanation: string } | null>()
     .default(null),
@@ -129,6 +131,7 @@ export const auditLog = pgTable("audit_log", {
 export const sources = pgTable("sources", {
   id: varchar("id", { length: 64 }).primaryKey(),
   tier: integer("tier").notNull(),
+  type: varchar("type", { length: 32 }).notNull().default("reference"),
   label: text("label").notNull(),
   url: text("url").notNull(),
   description: text("description"),

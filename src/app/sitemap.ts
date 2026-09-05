@@ -16,6 +16,7 @@ const staticRoutes = [
   "/izvori",
   "/trening/kviz",
   "/simulator/biracki-dan",
+  "/offline",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

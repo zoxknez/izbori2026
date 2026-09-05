@@ -132,6 +132,8 @@ export interface Rule {
   lawReferences: LawReference[];
   sourceUrls: SourceLink[];
   relatedSlugs: string[];
+  aliases?: string[];
+  informalQueries?: string[];
   mythCheck?: MythCheck | null;
   isAutomaticAnnulment?: boolean;
   order?: number;

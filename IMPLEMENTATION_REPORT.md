@@ -83,3 +83,45 @@ Urađeno:
 - unit testovi pokrivaju broj događaja/odluka, efekte, scoring, prerequisites i integraciju sa counting validatorom.
 
 Preostaju randomized mode sa formalnim condition ograničenjima u UI-ju, kompletan 30-event E2E tok i detaljniji breakdown rezultata.
+
+## Faza 5 — admin dependency/versioning/auth layer
+
+Status: **osnovna bezbednosna granica u toku**.
+
+Urađeno:
+
+- Auth.js Credentials provider sa JWT sesijom i bcrypt proverom lozinke;
+- `admin_users` sa ulogama `SUPER_ADMIN`, `LEGAL_EDITOR`, `CONTENT_EDITOR`, `REVIEWER`;
+- `src/proxy.ts` radi samo optimistički redirect, dok publish route ponovo proverava sesiju i RBAC;
+- `/api/admin/publish` validira isti `dataset-validator`, upisuje novu dataset verziju/fajl i append-only audit zapis;
+- `/admin/login` i osnovna `/admin` kontrolna tabla; nema self-registration, a `scripts/seed-admin.ts` zahteva eksplicitne env vrednosti;
+- `AUTH_SECRET` je dodat kao sensitive production env varijabla na Vercelu.
+
+Preostaju kompletan content editor, impact/diff modal, dependency graph dashboard i transakciona publish orkestracija sa punim DB-backed edit modelom.
+
+## Faza 6 — service worker i PWA install sloj
+
+Status: **osnovni sloj u toku**.
+
+Urađeno:
+
+- sproveden bundler spike; zbog Next.js 16/Turbopack kombinacije izabran je mali transparentni statički `public/sw.js`, bez webpack workaround-a;
+- precache app shell, offline fallback ruta i odvojeni `legal-data-v1` cache za immutable dataset odgovore;
+- API dataset se proverava kroz hash/schema/cross-reference pre IndexedDB activation-a;
+- lifecycle politika eksplicitno testira `register: false` i `reloadOnOnline: false`, a UI ima offline indikator;
+- shell i SW imaju Playwright smoke proveru.
+
+Preostaju update prompt/critical update traka, storage management, MiniSearch indeks i pun scenario 9 sa draftom kroz online/offline prelaz.
+
+## Faza 7 — integracija i E2E hardening
+
+Status: **u toku**.
+
+Urađeno:
+
+- dodat cross-module Playwright tok: validator demo → trening učitavanje → simulator odluka;
+- dodate accessibility smoke provere za jedan `h1`, `main` landmark i missing image alt na javnim rutama;
+- E2E sada pokriva javne rute, offline API, SW/offline fallback, training i simulator stranice;
+- production build i deployment se proveravaju posle svake veće faze.
+
+Preostaje finalni performance budget sa realnim browser merenjem, scenario 9 online/offline sa incident draftom i kompletan admin publish → dataset → client update E2E.

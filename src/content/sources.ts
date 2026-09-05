@@ -1,6 +1,7 @@
 export interface SourceEntry {
   id: string;
   tier: 1 | 2 | 3;
+  type?: "law" | "regulation" | "report" | "form" | "reference";
   label: string;
   url: string;
   description?: string;

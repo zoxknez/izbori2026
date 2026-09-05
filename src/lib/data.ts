@@ -49,6 +49,8 @@ function toRule(row: RuleRow): Rule {
     lawReferences: row.lawReferences ?? [],
     sourceUrls: row.sourceUrls ?? [],
     relatedSlugs: row.relatedSlugs ?? [],
+    aliases: row.aliases ?? [],
+    informalQueries: row.informalQueries ?? [],
     mythCheck: row.mythCheck ?? null,
     isAutomaticAnnulment: row.isAutomaticAnnulment ?? false,
     order: row.order ?? 0,
@@ -84,6 +86,7 @@ export async function getSources() {
   return rows.map((row) => ({
     ...row,
     tier: row.tier as 1 | 2 | 3,
+    type: (row.type as "law" | "regulation" | "report" | "form" | "reference") ?? "reference",
     description: row.description ?? undefined,
     order: row.order ?? 0,
     publisher: row.publisher ?? undefined,
