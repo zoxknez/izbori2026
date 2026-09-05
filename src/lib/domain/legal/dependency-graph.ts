@@ -50,7 +50,8 @@ function add<T>(record: Record<string, T[]>, key: string, value: T): void {
   if (!record[key].includes(value)) record[key].push(value);
 }
 
-function sourceIdsForRule(rule: DependencyRule, sourceByUrl: Map<string, string>): string[] {
+export function sourceIdsForRule(rule: DependencyRule, sources: DependencySource[]): string[] {
+  const sourceByUrl = new Map(sources.map((source) => [source.url, source.id]));
   const urls = [
     ...(rule.lawReferences ?? []).map((reference) => reference.url).filter((url): url is string => Boolean(url)),
     ...(rule.sourceUrls ?? []).map((source) => source.url),
@@ -64,10 +65,8 @@ export function buildDependencyGraph(snapshot: DependencySnapshot): DependencyGr
   const sourceToSimulation: Record<string, number[]> = {};
   const sourceToDecisionBranches: Record<string, string[]> = {};
   const ruleToDecisionBranches: Record<string, string[]> = {};
-  const sourceByUrl = new Map(snapshot.sources.map((source) => [source.url, source.id]));
-
   snapshot.rules.forEach((rule) => {
-    sourceIdsForRule(rule, sourceByUrl).forEach((sourceId) => add(sourceToRules, sourceId, rule.id));
+    sourceIdsForRule(rule, snapshot.sources).forEach((sourceId) => add(sourceToRules, sourceId, rule.id));
   });
   snapshot.training.forEach((item, index) => item.sourceIds.forEach((sourceId) => add(sourceToTraining, sourceId, index)));
   snapshot.simulation.forEach((item, index) => item.sourceIds.forEach((sourceId) => add(sourceToSimulation, sourceId, index)));
@@ -84,7 +83,7 @@ export function buildDependencyGraph(snapshot: DependencySnapshot): DependencyGr
 
   const sourceRulesById = new Map(snapshot.sources.map((source) => [source.id, source]));
   snapshot.rules.forEach((rule) => {
-    sourceIdsForRule(rule, sourceByUrl).forEach((sourceId) => {
+    sourceIdsForRule(rule, snapshot.sources).forEach((sourceId) => {
       const source = sourceRulesById.get(sourceId);
       if (source?.status === "superseded") {
         // The key is retained in the graph even when its only current consumers are stale.
@@ -95,7 +94,7 @@ export function buildDependencyGraph(snapshot: DependencySnapshot): DependencyGr
 
   Object.entries(ruleToDecisionBranches).forEach(([ruleId, branches]) => {
     const rule = snapshot.rules.find((candidate) => candidate.id === ruleId);
-    const sourceIds = rule ? sourceIdsForRule(rule, sourceByUrl) : [];
+    const sourceIds = rule ? sourceIdsForRule(rule, snapshot.sources) : [];
     sourceIds.forEach((sourceId) => branches.forEach((branch) => add(sourceToDecisionBranches, sourceId, branch)));
   });
 

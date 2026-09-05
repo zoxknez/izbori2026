@@ -100,7 +100,10 @@ Urađeno:
 - `/admin/login` i osnovna `/admin` kontrolna tabla; nema self-registration, a `scripts/seed-admin.ts` zahteva eksplicitne env vrednosti;
 - `AUTH_SECRET` je dodat kao sensitive production env varijabla na Vercelu.
 
-Preostaje bogatiji diff/impact modal i napredniji multi-entity editor; osnovni DB-backed rule editor, dependency graph i transakcioni snapshot publish su završeni.
+Urađen je i diff/impact modal za pravila, kao i DB-backed editor izvora sa verzijom, periodom važenja,
+supersession statusom i stvarnom stale-propagacijom kroz zavisna pravila i decision-tree grane. Napredniji
+editor decision-tree čvorova ostaje opciono proširenje; osnovni DB-backed rule/source editor, dependency
+graph i transakcioni snapshot publish su završeni.
 
 ## Faza 6 — service worker i PWA install sloj
 
@@ -124,7 +127,9 @@ Urađeno:
 
 - dodat cross-module Playwright tok: validator demo → trening učitavanje → simulator odluka;
 - dodate accessibility smoke provere za jedan `h1`, `main` landmark i missing image alt na javnim rutama;
-- E2E sada pokriva javne rute, offline API, SW/offline fallback, training, randomizovani i kompletan 30-event simulator, indeksiranu globalnu pretragu, admin RBAC guard i incident draft kroz online/offline prelaz (17 testova);
+- E2E sada pokriva javne rute, offline API, SW/offline fallback, training, randomizovani i kompletan 30-event simulator, indeksiranu globalnu pretragu, admin RBAC guard za pravila/izvore/publish i incident draft kroz online/offline prelaz; dodat je i browser performance budget (20 testova prolazi);
 - production build i deployment se proveravaju posle svake veće faze.
 
-Preostaje performance budget sa realnim browser merenjem i authenticated Admin publish → dataset → client update E2E (zahteva test admin nalog/fixture, koji namerno nije kreiran bez korisničkih kredencijala).
+Preostaje authenticated Admin publish → dataset → client update E2E, jer test admin nalog/fixture nije
+kreiran bez korisničkih kredencijala. Ne postoji self-registration; javni deo aplikacije i server-side
+RBAC guard su provereni bez izlaganja privilegovanih podataka.

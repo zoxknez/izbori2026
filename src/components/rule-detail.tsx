@@ -62,6 +62,12 @@ export function RuleDetail({ rule, related }: { rule: Rule; related: Rule[] }) {
 
   return (
     <div className="space-y-8">
+      {rule.publicationStatus === "published" && rule.reviewStatus === "stale" && (
+        <div role="alert" className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
+          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />
+          <p><strong>Potrebna je pravna provera.</strong> Ovo pravilo je i dalje dostupno, ali je izvor izmenjen ili zamenjen. Pre postupanja proverite najnovije uputstvo i pravni osnov.</p>
+        </div>
+      )}
       {/* Dossier Header Card */}
       <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-b from-surface/90 to-surface/60 p-6 sm:p-8 shadow-2xl backdrop-blur-md">
         {/* Glow accent */}

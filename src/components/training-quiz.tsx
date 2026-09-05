@@ -50,17 +50,19 @@ export function TrainingQuiz({ questions }: { questions: TrainingQuestion[] }) {
     if (!current || selectedChoice) return;
     const choice = current.choices.find((item) => item.id === choiceId);
     if (!choice) return;
+    setSelectedChoice(choiceId);
+    setAnswers((previous) => [...previous, { question: current, choiceId }]);
+  }
+
+  async function advance() {
+    if (!current || !selectedChoice) return;
+    const choice = current.choices.find((item) => item.id === selectedChoice);
+    if (!choice) return;
     const answeredAt = new Date().toISOString();
     const nextState = updateKnowledgeState(states[current.ruleId], { questionId: current.id, ruleId: current.ruleId, correct: choice.isCorrect, confidence, answeredAt });
     const nextStates = { ...states, [current.ruleId]: nextState };
     setStates(nextStates);
-    setSelectedChoice(choiceId);
-    setAnswers((previous) => [...previous, { question: current, choiceId }]);
     await writeOfflineValue("trainingProgress", "knowledge", nextStates);
-  }
-
-  function advance() {
-    if (!current || !selectedChoice) return;
     setAskedIds((previous) => [...previous, current.id]);
     setSelectedChoice(null);
   }

@@ -26,7 +26,7 @@ export default async function AdminPage() {
       <div className="rounded-2xl border border-border bg-surface p-5"><p className="text-xs text-ink-faint">Audit</p><p className="mt-2 text-lg font-bold text-ink">Append-only log</p></div>
     </div>
     <div className="mt-8 grid gap-4 sm:grid-cols-[1fr_auto]">
-      <div className="flex flex-wrap gap-3"><Link href="/admin/rules" className="rounded-xl bg-brand px-4 py-2.5 text-sm font-bold text-brand-ink">Otvori editor pravila</Link><span className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-ink-dim">{rules.length} pravila · {sources.length} izvora · {decisionTrees.length} stabla</span></div>
+      <div className="flex flex-wrap gap-3"><Link href="/admin/rules" className="rounded-xl bg-brand px-4 py-2.5 text-sm font-bold text-brand-ink">Otvori editor pravila</Link><Link href="/admin/sources" className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-bold text-ink">Otvori editor izvora</Link><span className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-ink-dim">{rules.length} pravila · {sources.length} izvora · {decisionTrees.length} stabla</span></div>
       {hasPermission(session.user.role as AdminRole, "publish") && <AdminPublishButton />}
     </div>
     <section className="mt-8 rounded-2xl border border-border bg-surface p-5">

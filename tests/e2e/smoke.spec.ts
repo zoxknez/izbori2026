@@ -58,8 +58,13 @@ test.describe("public application smoke", () => {
     const editor = await page.request.get("/admin/rules", { maxRedirects: 0 });
     expect(editor.status()).toBe(302);
     expect(editor.headers().location).toContain("/admin/login");
+    const sourceEditor = await page.request.get("/admin/sources", { maxRedirects: 0 });
+    expect(sourceEditor.status()).toBe(302);
+    expect(sourceEditor.headers().location).toContain("/admin/login");
     const rules = await page.request.patch("/api/admin/rules/P01", { data: { summary: "neovlašćena izmena" } });
     expect(rules.status()).toBe(401);
+    const sources = await page.request.patch("/api/admin/sources/rik-zakoni", { data: { status: "superseded" } });
+    expect(sources.status()).toBe(401);
     const publish = await page.request.post("/api/admin/publish", { data: {} });
     expect(publish.status()).toBe(401);
   });

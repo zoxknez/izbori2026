@@ -53,6 +53,15 @@ test("guided simulator completes the full 30-event path", async ({ page }) => {
   await expect(page.getByText(/Birački dan završen/i)).toBeVisible();
 });
 
+test("randomized simulator completes without repeating an event", async ({ page }) => {
+  await page.goto("/simulator/biracki-dan");
+  await page.getByRole("button", { name: "Randomizovani", exact: true }).click();
+  for (let index = 0; index < 30; index += 1) {
+    await page.getByRole("button", { name: /Zaustavi radnju/i }).click();
+  }
+  await expect(page.getByText(/Birački dan završen/i)).toBeVisible();
+});
+
 test("public shell stays within the browser navigation budget", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   const domContentLoaded = await page.evaluate(() => {
