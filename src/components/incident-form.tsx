@@ -106,7 +106,7 @@ export function IncidentForm() {
           ...prev,
           spornaRadnja: found.naziv,
           propis: legalBasisText,
-          faza: found.phase,
+          faza: found.phases[0] ?? "svaka",
         }));
         setLoadedRuleTitle(found.naziv);
       }

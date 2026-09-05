@@ -11,6 +11,7 @@ async function main() {
   ]);
   const { asc, eq } = await import("drizzle-orm");
   const { buildTrainingQuestions } = await import("../src/lib/domain/training/generate-questions");
+  const { sourceIdsForRule } = await import("../src/lib/domain/legal/dependency-graph");
   const version = process.env.DATASET_VERSION ?? `2026.09.05-${Date.now()}`;
   const snapshot: DatasetSnapshot = {
     schemaVersion: 1 as const,
@@ -19,7 +20,7 @@ async function main() {
     rules: (await db.select().from(schema.rules).orderBy(asc(schema.rules.order))).map((row) => ({
       id: row.id, slug: row.slug, naziv: row.naziv, kategorija: row.kategorija,
       severity: row.severity as DatasetSnapshot["rules"][number]["severity"],
-      electionTypes: row.electionTypes ?? [], phase: row.phase, phases: (row.phases?.length ? row.phases : [row.phase]) as DatasetSnapshot["rules"][number]["phases"],
+      electionTypes: row.electionTypes ?? [], phases: row.phases as DatasetSnapshot["rules"][number]["phases"],
       summary: row.summary, legalRule: row.legalRule, legalEffect: row.legalEffect ?? undefined,
       whatToCheck: row.whatToCheck ?? [], controllerActions: row.controllerActions ?? [], voterActions: row.voterActions ?? [], observerActions: row.observerActions ?? [], evidenceChecklist: row.evidenceChecklist ?? [], doNotDo: row.doNotDo ?? [], lawReferences: row.lawReferences ?? [], sourceUrls: row.sourceUrls ?? [], relatedSlugs: row.relatedSlugs ?? [], aliases: row.aliases ?? [], informalQueries: row.informalQueries ?? [], mythCheck: row.mythCheck ?? null,
       isAutomaticAnnulment: row.severity === "ponistavanje", order: row.order ?? 0,
@@ -31,6 +32,7 @@ async function main() {
       id: row.id, tier: row.tier as 1 | 2 | 3, type: (row.type as "law" | "bylaw" | "rik" | "court" | "odihr" | "observer_report" | "other") ?? "other", label: row.label, url: row.url, description: row.description ?? undefined,
       publisher: row.publisher ?? undefined, version: row.version ?? undefined, validFromDate: row.validFromDate ?? undefined,
       validUntilDate: row.validUntilDate ?? undefined, status: (row.status as "active" | "superseded" | "archived") ?? "active", supersedesId: row.supersedesId ?? undefined,
+      lastCheckedAt: row.lastCheckedAt?.toISOString(),
     })),
     decisionTrees: (await db.select().from(schema.decisionTrees).orderBy(asc(schema.decisionTrees.order))).map((tree) => ({
       id: tree.id, slug: tree.slug, title: tree.title, description: tree.description, startNodeId: tree.startNodeId,
@@ -46,7 +48,14 @@ async function main() {
     tree.nodes = treeNodes.filter((node) => node.treeId === tree.id).map((node) => ({ id: node.id, type: node.type as "question" | "result", prompt: node.prompt, options: node.options ?? [], ruleIds: node.ruleIds ?? [], order: node.order ?? 0 }));
   });
   snapshot.training = buildTrainingQuestions(snapshot.rules).map((question) => ({ ruleIds: [question.ruleId], sourceIds: question.sourceIds }));
-  snapshot.simulation = simulationEvents.flatMap((event) => event.choices.map((choice) => ({ ruleIds: choice.ruleIds, sourceIds: [] })));
+  const ruleById = new Map(snapshot.rules.map((rule) => [rule.id, rule]));
+  snapshot.simulation = simulationEvents.flatMap((event) => event.choices.map((choice) => ({
+    ruleIds: choice.ruleIds,
+    sourceIds: [...new Set(choice.ruleIds.flatMap((ruleId) => {
+      const rule = ruleById.get(ruleId);
+      return rule ? sourceIdsForRule(rule, snapshot.sources) : [];
+    }))],
+  })));
   const parsed = validator.datasetSnapshotSchema.parse(snapshot);
   const serialized = validator.stableStringify(parsed);
   const sha256 = await validator.sha256Hex(serialized);

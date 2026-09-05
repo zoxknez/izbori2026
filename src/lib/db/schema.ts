@@ -17,7 +17,6 @@ export const rules = pgTable("rules", {
   kategorija: varchar("kategorija", { length: 64 }).notNull(),
   severity: varchar("severity", { length: 32 }).notNull(),
   electionTypes: jsonb("election_types").$type<string[]>().notNull(),
-  phase: varchar("phase", { length: 64 }).notNull(),
   phases: jsonb("phases").$type<string[]>().notNull().default([]),
   summary: text("summary").notNull(),
   legalRule: text("legal_rule").notNull(),

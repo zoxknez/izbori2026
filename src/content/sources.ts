@@ -11,6 +11,7 @@ export interface SourceEntry {
   validUntilDate?: string;
   status?: "active" | "superseded" | "archived";
   supersedesId?: string;
+  lastCheckedAt?: string;
 }
 
 export const sources: SourceEntry[] = [

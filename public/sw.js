@@ -25,11 +25,18 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   if (request.mode === "navigate") {
-    event.respondWith(fetch(request).then((response) => {
-      const copy = response.clone();
-      caches.open(SHELL_CACHE).then((cache) => cache.put(request, copy));
-      return response;
-    }).catch(async () => (await caches.match(request)) || (await caches.match("/offline"))));
+    event.respondWith(caches.open(SHELL_CACHE).then(async (cache) => {
+      const cached = await cache.match(request);
+      const refresh = fetch(request).then((response) => {
+        if (response.ok) return cache.put(request, response.clone()).then(() => response);
+        return response;
+      });
+      if (cached) {
+        event.waitUntil(refresh.catch(() => undefined));
+        return cached;
+      }
+      return refresh.catch(async () => (await cache.match("/offline")) || Response.error());
+    }));
   }
 });
 

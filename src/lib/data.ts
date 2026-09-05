@@ -34,8 +34,7 @@ function toRule(row: RuleRow): Rule {
           throw new Error(`Nepoznata težina pravila: ${row.id}`);
         })(),
     electionTypes: row.electionTypes ?? [],
-    phase: row.phase,
-    phases: (row.phases?.length ? row.phases : [row.phase]) as Rule["phases"],
+    phases: row.phases as Rule["phases"],
     summary: row.summary,
     legalRule: row.legalRule,
     pravniOsnov: row.lawReferences?.[0]?.law,
@@ -95,6 +94,7 @@ export async function getSources() {
     validUntilDate: row.validUntilDate ?? undefined,
     status: (row.status as "active" | "superseded" | "archived") ?? "active",
     supersedesId: row.supersedesId ?? undefined,
+    lastCheckedAt: row.lastCheckedAt?.toISOString(),
   }));
 }
 

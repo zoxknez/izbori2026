@@ -43,6 +43,13 @@
       "when": 1788612477074,
       "tag": "0005_generated-annulment",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1788614047869,
+      "tag": "0006_remove-legacy-phase",
+      "breakpoints": true
     }
   ]
 }

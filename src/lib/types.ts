@@ -116,9 +116,7 @@ export interface Rule {
   kategorija: string;
   severity: Severity;
   electionTypes: string[];
-  /** @deprecated Use phases. Kept until all consumers are migrated. */
-  phase: string;
-  phases?: ElectionPhase[];
+  phases: ElectionPhase[];
   summary: string;
   legalRule: string;
   pravniOsnov?: string;
@@ -143,5 +141,5 @@ export interface Rule {
 }
 
 export function ruleHasPhase(rule: Rule, phase: string): boolean {
-  return (rule.phases?.length ? rule.phases : [rule.phase]).includes(phase as ElectionPhase);
+  return rule.phases.includes(phase as ElectionPhase);
 }

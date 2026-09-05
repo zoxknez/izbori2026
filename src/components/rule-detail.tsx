@@ -81,9 +81,9 @@ export function RuleDetail({ rule, related }: { rule: Rule; related: Rule[] }) {
             {CATEGORY_META[rule.kategorija]?.label ?? rule.kategorija}
           </span>
 
-          {(rule.phases ?? [rule.phase]).length > 0 && (
+          {rule.phases.length > 0 && (
             <span className="rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-medium text-brand">
-              {(rule.phases ?? [rule.phase]).map((phase) => PHASE_META[phase]?.label ?? phase).join(" · ")}
+              {rule.phases.map((phase) => PHASE_META[phase]?.label ?? phase).join(" · ")}
             </span>
           )}
 

@@ -1,12 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { validateCounting } from "@/lib/domain/results-validator";
 import { applyChoice, availableChoices, createSimulationState, runCountingMode } from "./engine";
-import { simulationEvents, SIMULATOR_CHOICE_COUNT, SIMULATOR_EVENT_COUNT } from "./seed-events";
+import { simulationEvents, SIMULATOR_CHOICE_COUNT, SIMULATOR_EVENT_COUNT, SIMULATOR_RISK_DISTRIBUTION } from "./seed-events";
 
 describe("simulator engine", () => {
   it("ima 30 događaja i 80 odluka", () => {
     expect(SIMULATOR_EVENT_COUNT).toBe(30);
     expect(SIMULATOR_CHOICE_COUNT).toBe(80);
+  });
+
+  it("ima planiranu 50/25/15/7/3 raspodelu rizika", () => {
+    const actual = Object.fromEntries(Object.keys(SIMULATOR_RISK_DISTRIBUTION).map((band) => [band, simulationEvents.filter((event) => event.riskBand === band).length]));
+    expect(actual).toEqual(SIMULATOR_RISK_DISTRIBUTION);
   });
 
   it("primenjuje efekte, score i prelaz faze kroz odluku", () => {

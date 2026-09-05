@@ -1,40 +1,7 @@
-import { z } from "zod";
-import { ruleSchema } from "@/lib/domain/rules/invariants";
-import { decisionTreeSchema } from "@/lib/domain/decision-trees/types";
+import { datasetSnapshotSchema, type DatasetSnapshot } from "@/schemas/dataset";
 import type { SourceEntry } from "@/content/sources";
-
-const sourceSchema = z.object({
-  id: z.string().min(1),
-  tier: z.union([z.literal(1), z.literal(2), z.literal(3)]),
-  type: z.enum(["law", "bylaw", "rik", "court", "odihr", "observer_report", "other"]).optional(),
-  label: z.string().min(1),
-  url: z.string().url(),
-  description: z.string().optional(),
-  publisher: z.string().optional(),
-  version: z.string().optional(),
-  validFromDate: z.string().optional(),
-  validUntilDate: z.string().optional(),
-  status: z.enum(["active", "superseded", "archived"]).optional(),
-  supersedesId: z.string().optional(),
-});
-
-const referenceSetSchema = z.object({
-  ruleIds: z.array(z.string()).default([]),
-  sourceIds: z.array(z.string()).default([]),
-});
-
-export const datasetSnapshotSchema = z.object({
-  schemaVersion: z.literal(1),
-  version: z.string().min(1),
-  generatedAt: z.string().datetime(),
-  rules: z.array(ruleSchema),
-  sources: z.array(sourceSchema),
-  decisionTrees: z.array(decisionTreeSchema),
-  training: z.array(referenceSetSchema).default([]),
-  simulation: z.array(referenceSetSchema).default([]),
-});
-
-export type DatasetSnapshot = z.infer<typeof datasetSnapshotSchema>;
+export { datasetSnapshotSchema } from "@/schemas/dataset";
+export type { DatasetSnapshot } from "@/schemas/dataset";
 
 export interface DatasetFile {
   filename: string;

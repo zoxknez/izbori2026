@@ -353,7 +353,7 @@ export default async function KontrolorPage() {
 
         <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
           {PHASE_OVERVIEW.map(({ phase, label }) => {
-            const count = rules.filter((r) => r.phase === phase).length;
+            const count = rules.filter((r) => r.phases.includes(phase as typeof r.phases[number])).length;
             return (
               <Link key={phase} href={`/pravila?faza=${phase}`} className="group block h-full">
                 <div className="flex h-full flex-col justify-between rounded-2xl border border-border/80 bg-surface/80 p-5 shadow-card transition-all duration-200 hover:-translate-y-1 hover:border-brand/40 hover:bg-surface-2 hover:shadow-lg">

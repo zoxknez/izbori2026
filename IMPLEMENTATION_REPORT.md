@@ -34,8 +34,9 @@ Urađeno:
 - `Vidim problem` sada učitava stabla iz baze i prikazuje formalni interaktivni vodič, uz postojeći eksplorator kao detaljni fallback;
 - prošireni `rules` i postojeći `sources` model bez pravljenja duplikata `legal_sources` tabele; source `type` je usklađen sa planiranim `law/bylaw/rik/court/odihr/observer_report/other` modelom;
 - dodat je formalni dependency graph sa source→rule, source→training/simulation i source→decision-tree granama, kao i stale propagation obračun;
+- uvedene su centralizovane Zod šeme u `src/schemas/*`, sa re-exportom za postojeće domain/offline potrošače;
 - uvedena prva Drizzle migracija i primenjena na Neon bazu, pa je dataset ponovo seedovan: 66 pravila, 8 krivičnih članova, 8 izvora i 3 stabla odluka;
-- UI filteri i prikaz koriste pluralne faze, dok je singularno `phase` zadržano samo kao privremena kompatibilnost za stare potrošače.
+- UI, seed, snapshot i baza sada koriste samo pluralne `phases`; legacy kolona `rules.phase` uklonjena je migracijom `0006_remove-legacy-phase.sql`.
 
 Provere: domain invariant testovi, `validateCounting`, decision-tree evaluator, dependency graph i production build prolaze. Dodat je `domain:guards` build gate koji odbija sirovi severity render u JSX-u.
 
@@ -84,7 +85,9 @@ Urađeno:
 - dodat `/simulator/biracki-dan` i čuvanje istorije u IndexedDB `simulationHistory` store-u;
 - unit testovi pokrivaju broj događaja/odluka, efekte, scoring, prerequisites i integraciju sa counting validatorom.
 
-Provere uključuju randomizovani izbor samo među neposećenim događajima koji zadovoljavaju condition-e i kompletan 30-event E2E tok. Detaljniji analitički breakdown rezultata ostaje opciono unapređenje.
+Provere uključuju randomizovani izbor samo među neposećenim događajima koji zadovoljavaju condition-e,
+eksplicitnu 50/25/15/7/3 raspodelu rizika i kompletan 30-event E2E tok. Detaljniji analitički breakdown
+rezultata ostaje opciono unapređenje.
 
 ## Faza 5 — admin dependency/versioning/auth layer
 
@@ -112,7 +115,7 @@ Status: **završeno za osnovni PWA/update/storage scope**.
 Urađeno:
 
 - sproveden bundler spike; zbog Next.js 16/Turbopack kombinacije izabran je mali transparentni statički `public/sw.js`, bez webpack workaround-a;
-- precache app shell, offline fallback ruta i odvojeni `legal-data-v1` cache za immutable dataset odgovore;
+- precache app shell, stale-while-revalidate navigacioni shell, offline fallback ruta i odvojeni `legal-data-v1` cache za immutable dataset odgovore;
 - API dataset se proverava kroz hash/schema/cross-reference pre IndexedDB activation-a;
 - lifecycle politika eksplicitno testira `register: false` i `reloadOnOnline: false`, a UI ima offline indikator;
 - shell i SW imaju Playwright smoke proveru.
@@ -127,9 +130,10 @@ Urađeno:
 
 - dodat cross-module Playwright tok: validator demo → trening učitavanje → simulator odluka;
 - dodate accessibility smoke provere za jedan `h1`, `main` landmark i missing image alt na javnim rutama;
-- E2E sada pokriva javne rute, offline API, SW/offline fallback, training, randomizovani i kompletan 30-event simulator, indeksiranu globalnu pretragu, admin RBAC guard za pravila/izvore/publish i incident draft kroz online/offline prelaz; dodat je i browser performance budget (20 testova prolazi);
+- E2E sada pokriva javne rute, offline API, SW/offline fallback, training practice/exam sa breakdown-om i IndexedDB stanjem, randomizovani i kompletan 30-event simulator, indeksiranu globalnu pretragu, admin RBAC guard za pravila/izvore/publish i incident draft kroz online/offline prelaz; dodat je i browser performance budget (21 test prolazi);
 - production build i deployment se proveravaju posle svake veće faze.
 
 Preostaje authenticated Admin publish → dataset → client update E2E, jer test admin nalog/fixture nije
 kreiran bez korisničkih kredencijala. Ne postoji self-registration; javni deo aplikacije i server-side
 RBAC guard su provereni bez izlaganja privilegovanih podataka.
+

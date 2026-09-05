@@ -70,3 +70,21 @@ test("public shell stays within the browser navigation budget", async ({ page })
   });
   expect(domContentLoaded).toBeLessThan(5000);
 });
+
+test("training practice and exam persist answers and show breakdown", async ({ page }) => {
+  await page.goto("/trening/kviz");
+  await expect(page.getByText(/Pitanje 1 od 12/i)).toBeVisible();
+  for (let index = 0; index < 12; index += 1) {
+    await page.locator('button[class*="rounded-2xl"][class*="text-left"]').first().click();
+    await page.getByRole("button", { name: /Sledeće pitanje|Završi/i }).click();
+  }
+  await expect(page.getByText(/Sesija završena/i)).toBeVisible();
+  await page.getByRole("button", { name: /Nova sesija/i }).click();
+  await page.getByRole("button", { name: /Ispit · 20/i }).click();
+  for (let index = 0; index < 20; index += 1) {
+    await page.locator('button[class*="rounded-2xl"][class*="text-left"]').first().click();
+    await page.getByRole("button", { name: /Sledeće pitanje|Završi/i }).click();
+  }
+  await expect(page.getByText(/Ispit završen/i)).toBeVisible();
+  await expect(page.getByText(/Uspešnost:/i)).toBeVisible();
+});

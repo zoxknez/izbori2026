@@ -3,6 +3,7 @@ import type { CountingInput, CountingResult } from "@/lib/domain/results-validat
 
 export type SimulationOutcome = "routine" | "prevented" | "serious" | "criminal" | "annulment";
 export type SimulationMode = "guided" | "randomized";
+export type SimulationRiskBand = "routine" | "irregularity" | "serious" | "criminal" | "annulment";
 
 export interface SimulationCondition {
   requiresFlags?: string[];
@@ -34,6 +35,7 @@ export interface SimulationEvent {
   title: string;
   description: string;
   severity: Severity;
+  riskBand: SimulationRiskBand;
   choices: SimulationChoice[];
   conditions?: SimulationCondition;
 }
