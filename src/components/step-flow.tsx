@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ArrowDown, AlertTriangle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 
 export function StepFlow({
   steps,

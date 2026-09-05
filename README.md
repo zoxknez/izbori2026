@@ -47,5 +47,6 @@ projekat već koristi — nema potrebe za connection pooling podešavanjima na s
 ## Napomena
 
 Ovo nije pravni savet. Sadržaj je zasnovan na javno dostupnim izbornim zakonima Republike Srbije
-i izveštajima akreditovanih posmatračkih misija (pravni presek: septembar 2026). Za konkretan
-slučaj obratiti se lokalnoj izbornoj komisiji, advokatu ili nadležnom tužilaštvu.
+i izveštajima akreditovanih posmatračkih misija (pravni presek: 5. septembar 2026). Pre korišćenja
+proveriti najnovije izmene propisa i uputstva RIK-a. Za konkretan slučaj obratiti se lokalnoj izbornoj
+komisiji, advokatu ili nadležnom tužilaštvu.

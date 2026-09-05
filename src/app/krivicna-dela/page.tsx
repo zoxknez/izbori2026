@@ -1,5 +1,4 @@
-import { Gavel, Scale, ShieldAlert, PhoneCall, FileText, AlertTriangle, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { Gavel, Scale, ShieldAlert, AlertTriangle } from "lucide-react";
 import { getCriminalArticles } from "@/lib/data";
 import { Container } from "@/components/ui/container";
 import { CriminalExplorer } from "@/components/criminal-explorer";
@@ -10,6 +9,7 @@ export const metadata = {
   title: "Krivična dela protiv izbornih prava (Glava XV KZ RS)",
   description:
     "Glava XV Krivičnog zakonika Republike Srbije (čl. 154–161): kupovina glasova, pretnje, falsifikovanje i zloupotrebe na biračkom mestu sa zaprećenim zatvorskim kaznama.",
+  alternates: { canonical: "/krivicna-dela" },
 };
 
 export default async function KrivicnaDelaPage() {

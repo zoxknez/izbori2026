@@ -1,6 +1,5 @@
 import { getSources } from "@/lib/data";
 import { Container } from "@/components/ui/container";
-import { Card, CardBody } from "@/components/ui/card";
 import { SourcesExplorer } from "@/components/sources-explorer";
 import { BookOpen, ShieldCheck, Scale, FileText, CheckCircle2 } from "lucide-react";
 
@@ -10,6 +9,7 @@ export const metadata = {
   title: "Pravni izvori i propisi — Zvanična dokumentacija",
   description:
     "Zvanični pravni i institucionalni izvori: Zakon o izboru narodnih poslanika, Krivični zakonik, uputstva RIK-a i izveštaji posmatračkih misija OEBS/ODIHR i CRTA.",
+  alternates: { canonical: "/izvori" },
 };
 
 export default async function IzvoriPage() {
@@ -27,10 +27,9 @@ export default async function IzvoriPage() {
           Zvanični pravni izvori i propisi
         </h1>
         <p className="mt-2 text-base leading-relaxed text-ink-dim sm:text-lg">
-          Ovaj vodič se oslanja isključivo na važeći pravni poredak Republike Srbije, zvanične
-          obrasce Republičke izborne komisije i međunarodno verifikovane posmatračke izveštaje.
-          Nijedna politička stranka ili neprovereni medijski navod ne koristi se kao izvor za
-          pravnu klasifikaciju.
+          Ovaj vodič kao primarne izvore koristi važeće propise Republike Srbije i zvanične
+          obrasce Republičke izborne komisije, a nalaze posmatračkih misija koristi kao kontekst.
+          Svaku konkretnu situaciju treba proveriti prema propisu i uputstvu koji važe za dati izborni ciklus.
         </p>
       </div>
 
@@ -93,11 +92,9 @@ export default async function IzvoriPage() {
           </h2>
         </div>
         <p className="mt-2 text-xs leading-relaxed text-ink-dim">
-          Svaka situacija, nepravilnost i preporuka u ovoj bazi prolazi rigoroznu unakrsnu proveru:
-          upoređuje se tekst zakona, odgovarajući član Krivičnog zakonika i dosadašnja praksa Upravnog i
-          Višeg suda. U slučaju promene propisa od strane Narodne skupštine ili donošenja novih uputstava
-          Republičke izborne komisije, baza se redovno sinhronizuje kako bi kontrolori i birači uvek imali
-          100% tačne informacije na terenu.
+          Pravne reference su vezane za konkretne članove propisa i zvanične izvore. Pre svake upotrebe
+          proverite da li je zakon izmenjen, da li se primenjuje odgovarajući izborni nivo i da li je RIK
+          objavio novo uputstvo ili obrazac za konkretne izbore. Ovaj sajt je informativni alat, ne pravno mišljenje.
         </p>
       </div>
     </Container>

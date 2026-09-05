@@ -15,7 +15,6 @@ import {
   FileSpreadsheet,
   ShieldAlert,
   ArrowRight,
-  Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +27,8 @@ interface ListaGlasova {
 function toInt(v: string): number | null {
   if (v.trim() === "") return null;
   if (!/^\d+$/.test(v.trim())) return null;
-  return parseInt(v, 10);
+  const parsed = Number(v.trim());
+  return Number.isSafeInteger(parsed) ? parsed : null;
 }
 
 function Field({
@@ -51,7 +51,9 @@ function Field({
     <div className="flex flex-col justify-between rounded-xl border border-border/80 bg-surface/90 p-3 sm:p-4 transition-all focus-within:border-brand/60 focus-within:ring-2 focus-within:ring-brand/20">
       <div>
         <div className="flex items-center justify-between gap-2">
-          <span className="text-xs sm:text-sm font-bold text-ink">{label}</span>
+          <label htmlFor={`validator-${code}`} className="text-xs sm:text-sm font-bold text-ink">
+            {label}
+          </label>
           <span className="flex h-6 w-6 items-center justify-center rounded-md bg-surface-2 border border-border/60 text-xs font-mono font-bold text-brand">
             {code}
           </span>
@@ -60,6 +62,7 @@ function Field({
       </div>
 
       <input
+        id={`validator-${code}`}
         inputMode="numeric"
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -103,7 +106,9 @@ export function ZapisnikValidator() {
     [R, U, G, B, N, V, liste]
   );
 
-  const hasAnyInput = R !== "" || U !== "" || G !== "" || B !== "" || N !== "" || V !== "";
+  const hasAnyInput =
+    R !== "" || U !== "" || G !== "" || B !== "" || N !== "" || V !== "" ||
+    liste.some((lista) => lista.glasova !== "");
 
   // Check 1: Pravilo A (B <= G) - Čl. 116 ZINP (automatsko poništavanje)
   const isRuleACheckable = values.B !== null && values.G !== null;
@@ -115,6 +120,7 @@ export function ZapisnikValidator() {
   const sumUB = isRuleBCheckable ? (values.U! + values.B!) : 0;
   const diffB = isRuleBCheckable ? (sumUB - values.R!) : 0;
   const ruleBOk = isRuleBCheckable ? sumUB <= values.R! : null;
+  const ruleBExact = isRuleBCheckable ? sumUB === values.R! : null;
 
   // Check 3: Pravilo C (N + V === B) - Računsko poklapanje u kutiji
   const isRuleCCheckable = values.N !== null && values.V !== null && values.B !== null;
@@ -131,9 +137,9 @@ export function ZapisnikValidator() {
 
   // Overall Status
   const isAnnulmentFail = ruleAOk === false || ruleBOk === false;
-  const isCalculationFail = ruleCOk === false || ruleDOk === false;
-  const allEvaluated = ruleAOk !== null && ruleBOk !== null && ruleCOk !== null && ruleDOk !== null;
-  const isEverythingValid = allEvaluated && ruleAOk && ruleBOk && ruleCOk && ruleDOk;
+  const isCalculationFail = ruleBExact === false || ruleCOk === false || ruleDOk === false;
+  const allEvaluated = ruleAOk !== null && ruleBExact !== null && ruleCOk !== null && ruleDOk !== null;
+  const isEverythingValid = allEvaluated && ruleAOk && ruleBExact && ruleCOk && ruleDOk;
 
   function loadValidDemo() {
     setR("1000");
@@ -196,6 +202,7 @@ export function ZapisnikValidator() {
       if (ruleBOk === false) text += `- Pravilo B: Zbir (U+B) premašuje primljene za ${diffB} listića!\n`;
     } else if (isCalculationFail) {
       text += `⚠️ STATUS: RAČUNSKO NESLAGANJE\n`;
+      if (ruleBExact === false) text += `- Pravilo B: Zbir (U+B) se razlikuje od primljenih za ${diffB} listića.\n`;
       if (ruleCOk === false) text += `- Pravilo C: Važeći + nevažeći se ne slažu sa kutijom (razlika: ${diffC})!\n`;
       if (ruleDOk === false) text += `- Pravilo D: Zbir lista (${sumListe}) se ne slaže sa važećim (${V})!\n`;
     } else if (isEverythingValid) {
@@ -530,7 +537,7 @@ export function ZapisnikValidator() {
                     🚨 KRŠENJE: {values.B} u kutiji &gt; {values.G} glasalo (VIŠAK OD {diffA} LISTIĆA!)
                   </p>
                   <p className="text-[11px] text-ink-dim">
-                    Zakon o izboru narodnih poslanika (čl. 116): ako je broj listića u kutiji veći od broja birača koji su se potpisali, glasanje na tom biračkom mestu se poništava!
+                    Zakon o izboru narodnih poslanika (čl. 116): ako je broj listića u kutiji veći od broja birača koji su glasali, glasanje na tom biračkom mestu poništava se po službenoj dužnosti.
                   </p>
                 </div>
               )}
@@ -543,19 +550,23 @@ export function ZapisnikValidator() {
               "rounded-2xl border p-4 sm:p-5 transition-all",
               ruleBOk === null
                 ? "border-border/80 bg-surface/70"
-                : ruleBOk
+                : ruleBOk === false
+                ? "border-sev-ponistavanje/40 bg-sev-ponistavanje/[0.06]"
+                : ruleBExact
                 ? "border-sev-dozvoljeno/30 bg-sev-dozvoljeno/[0.04]"
-                : "border-sev-ponistavanje/40 bg-sev-ponistavanje/[0.06]"
+                : "border-sev-proveri/40 bg-sev-proveri/[0.06]"
             )}
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 {ruleBOk === null ? (
                   <span className="h-2 w-2 rounded-full bg-border" />
-                ) : ruleBOk ? (
+                ) : ruleBOk === false ? (
+                  <XCircle className="h-4.5 w-4.5 text-sev-ponistavanje shrink-0" />
+                ) : ruleBExact ? (
                   <CheckCircle2 className="h-4.5 w-4.5 text-sev-dozvoljeno shrink-0" />
                 ) : (
-                  <XCircle className="h-4.5 w-4.5 text-sev-ponistavanje shrink-0" />
+                  <AlertTriangle className="h-4.5 w-4.5 text-sev-proveri shrink-0" />
                 )}
                 <h4 className="text-xs sm:text-sm font-bold text-ink">
                   Pravilo B · Neupotrebljeni + kutija vs. Primljeno
@@ -568,17 +579,26 @@ export function ZapisnikValidator() {
             <div className="mt-2 text-xs leading-relaxed text-ink-dim">
               {ruleBOk === null ? (
                 <span>Unesi primljene (R), neupotrebljene (U) i listiće u kutiji (B).</span>
-              ) : ruleBOk ? (
-                <span className="text-sev-dozvoljeno font-medium">
-                  Ispravno: {sumUB} listića (U: {values.U} + B: {values.B}) ≤ {values.R} primljenih listića.
-                </span>
-              ) : (
+              ) : ruleBOk === false ? (
                 <div className="space-y-1 text-sev-ponistavanje">
                   <p className="font-bold">
                     🚨 KRŠENJE: Zbir ({sumUB}) premašuje primljenih {values.R} za {diffB} listića!
                   </p>
                   <p className="text-[11px] text-ink-dim">
-                    Zakon o izboru narodnih poslanika (čl. 116): ako je zbir veći od ukupno primljenih, pojavili su se fiktivni listići — razlog za automatsko poništavanje!
+                    Zakon o izboru narodnih poslanika (čl. 116): ako zbir neupotrebljenih listića i listića u kutiji premašuje broj primljenih, glasanje se poništava po službenoj dužnosti.
+                  </p>
+                </div>
+              ) : ruleBExact ? (
+                <span className="text-sev-dozvoljeno font-medium">
+                  Ispravno: {sumUB} listića (U: {values.U} + B: {values.B}) = {values.R} primljenih listića.
+                </span>
+              ) : (
+                <div className="space-y-1 text-sev-proveri">
+                  <p className="font-bold">
+                    ⚠️ NESLAGANJE: Zbir ({sumUB}) je manji od primljenih {values.R} za {Math.abs(diffB)} listića.
+                  </p>
+                  <p className="text-[11px] text-ink-dim">
+                    Ovo nije automatski razlog za poništavanje po čl. 116, ali odbor mora ponovo prebrojati materijal i razjasniti razliku pre potpisivanja zapisnika.
                   </p>
                 </div>
               )}

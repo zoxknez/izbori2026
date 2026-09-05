@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShieldCheck, Lock, ExternalLink, Phone, FileText, Scale, Heart } from "lucide-react";
+import { ShieldCheck, Lock } from "lucide-react";
 
 export function SiteFooter() {
   return (
@@ -29,7 +29,7 @@ export function SiteFooter() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-600 dark:text-emerald-400">
                 <Lock className="h-3.5 w-3.5 shrink-0" />
-                <span>100% lokalna obrada · Nema slanja podataka na server</span>
+                <span>Lokalna obrada · Podaci se ne šalju na server</span>
               </div>
             </div>
 

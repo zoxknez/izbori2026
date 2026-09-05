@@ -11,7 +11,6 @@ import {
   Trophy,
   Sparkles,
   BookOpen,
-  HelpCircle as QuestionMark,
   Award,
   ChevronRight,
 } from "lucide-react";

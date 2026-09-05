@@ -21,7 +21,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import type { Rule } from "@/lib/types";
-import { CATEGORY_META, ELECTION_TYPE_META, SEVERITY_META } from "@/lib/types";
+import { CATEGORY_META, ELECTION_TYPE_META } from "@/lib/types";
 import { PHASE_META } from "@/lib/phases";
 import { SeverityBadge } from "@/components/ui/severity-badge";
 import { RoleActions } from "@/components/role-actions";
@@ -296,7 +296,18 @@ export function RuleDetail({ rule, related }: { rule: Rule; related: Rule[] }) {
                   key={i}
                   className="rounded-lg border border-border/60 bg-surface-2/60 p-3 text-xs"
                 >
-                  <p className="font-semibold text-ink">{ref.law}</p>
+                  {ref.url ? (
+                    <a
+                      href={ref.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-brand hover:underline"
+                    >
+                      {ref.law}
+                    </a>
+                  ) : (
+                    <p className="font-semibold text-ink">{ref.law}</p>
+                  )}
                   <p className="mt-0.5 text-ink-dim font-mono text-[11px]">{ref.article}</p>
                 </div>
               ))}

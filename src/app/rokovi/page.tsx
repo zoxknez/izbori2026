@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Clock, FileText, Scale, AlertTriangle, ShieldCheck, CheckCircle2, ArrowRight, ExternalLink } from "lucide-react";
+import { FileText, Scale, ArrowRight, ExternalLink } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Card, CardBody } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ export const metadata = {
   title: "Izborni rokovi i pravni lekovi — Zaštita izbornog prava",
   description:
     "Kompletan vodič kroz zakonske rokove od 72 časa, podnošenje zahteva za poništavanje glasanja, nadležnosti izbornih komisija i sudsku zaštitu.",
+  alternates: { canonical: "/rokovi" },
 };
 
 const MANDATORY_ELEMENTS = [
@@ -21,8 +22,8 @@ const MANDATORY_ELEMENTS = [
     desc: "Tačan opis događaja: ko je šta uradio, u koje vreme (sat i minut) i na koji način je povređen zakon.",
   },
   {
-    title: "Pravni osnov (Član zakona)",
-    desc: "Pozivanje na konkretan član ZINP (npr. čl. 93 za tajnost glasanja, čl. 116 za poništavanje) ili Krivičnog zakonika.",
+    title: "Pravni osnov (član zakona)",
+    desc: "Pozivanje na konkretan član važećeg ZINP (npr. čl. 148–149 za zahtev za poništavanje) ili Krivičnog zakonika.",
   },
   {
     title: "Dokazi i materijalni prilozi",
@@ -75,11 +76,11 @@ export default function RokoviPage() {
                 <span className="rounded-full bg-brand/10 px-2.5 py-1 text-xs font-bold text-brand">
                   Uloga: Birač
                 </span>
-                <span className="text-xs font-semibold text-ink-faint">Član 102. ZINP</span>
+                <span className="text-xs font-semibold text-ink-faint">Član 148. ZINP</span>
               </div>
               <h3 className="text-base font-bold text-ink">Zahtev za poništavanje glasanja</h3>
               <p className="text-xs leading-relaxed text-ink-dim">
-                Birač ima pravo da podnese zahtev za poništavanje glasanja <strong>isključivo na biračkom mestu na kojem je upisan u birački spisak</strong>, i to u dva zakonom taksativno navedena slučaja:
+                Birač može u roku od 72 časa od zatvaranja biračkog mesta podneti zahtev za poništavanje glasanja <strong>na biračkom mestu na kojem je upisan u izvod</strong>, i to ako ga je odbor neosnovano sprečio da glasa ili mu je povređeno pravo na slobodno i tajno glasanje:
               </p>
               <ul className="space-y-2 text-xs text-ink-dim">
                 <li className="flex items-start gap-2">
@@ -104,11 +105,11 @@ export default function RokoviPage() {
                 <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
                   Uloga: Izborna lista
                 </span>
-                <span className="text-xs font-semibold text-ink-faint">Član 103. ZINP</span>
+                <span className="text-xs font-semibold text-ink-faint">Član 148. ZINP</span>
               </div>
               <h3 className="text-base font-bold text-ink">Široka aktivna legitimacija</h3>
               <p className="text-xs leading-relaxed text-ink-dim">
-                Podnosilac proglašene izborne liste ima zakonsko ovlašćenje da zahteva poništavanje glasanja na <strong>bilo kom biračkom mestu</strong> na teritoriji opštine/republike, zbog <strong>bilo koje nepravilnosti</strong> koja se dogodila:
+                Podnosilac proglašene izborne liste može u roku od 72 časa od zatvaranja biračkog mesta zahtevati poništavanje glasanja na <strong>bilo kom biračkom mestu</strong> zbog <strong>nepravilnosti tokom sprovođenja glasanja</strong>:
               </p>
               <ul className="space-y-2 text-xs text-ink-dim">
                 <li className="flex items-start gap-2">

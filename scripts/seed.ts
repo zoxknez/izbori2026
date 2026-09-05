@@ -11,6 +11,8 @@ async function main() {
   const { rules } = await import("../src/content/rules");
   const { criminalArticles } = await import("../src/content/criminal-articles");
   const { sources } = await import("../src/content/sources");
+  const reviewStatus = process.env.LEGAL_REVIEW_STATUS ?? "REVIEW_REQUIRED";
+  const lastLegalReview = process.env.LEGAL_REVIEW_DATE;
 
   console.log(`Seedujem ${rules.length} pravila...`);
   for (const r of rules) {
@@ -39,8 +41,8 @@ async function main() {
         mythCheck: r.mythCheck ?? null,
         isAutomaticAnnulment: r.isAutomaticAnnulment ?? false,
         order: r.order ?? 0,
-        reviewStatus: "VERIFIED",
-        lastLegalReview: "2026-09-05",
+        reviewStatus,
+        lastLegalReview,
       })
       .onConflictDoUpdate({
         target: rulesTable.id,
@@ -66,6 +68,8 @@ async function main() {
           mythCheck: r.mythCheck ?? null,
           isAutomaticAnnulment: r.isAutomaticAnnulment ?? false,
           order: r.order ?? 0,
+          reviewStatus,
+          lastLegalReview,
           updatedAt: new Date(),
         },
       });

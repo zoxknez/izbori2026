@@ -106,7 +106,7 @@ export default async function HomePage() {
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
                 </span>
                 <span>
-                  Propisi provereni: <strong className="text-ink font-semibold">5. septembar 2026.</strong> · Građanski vodič
+                  Pravni presek: <strong className="text-ink font-semibold">5. septembar 2026.</strong> · Građanski vodič
                 </span>
               </div>
 
@@ -327,7 +327,7 @@ export default async function HomePage() {
             <div className="lg:max-w-md">
               <div className="inline-flex items-center gap-2 rounded-full border border-sev-ponistavanje/30 bg-sev-ponistavanje/10 px-3 py-1 text-xs font-semibold text-sev-ponistavanje">
                 <ShieldAlert className="h-3.5 w-3.5" />
-                Zakon o izboru narodnih poslanika · Čl. 93
+                Zakon o izboru narodnih poslanika · Čl. 116
               </div>
               <h2 className="mt-4 text-xl sm:text-2xl font-bold tracking-tight text-ink">
                 Automatsko poništavanje glasanja

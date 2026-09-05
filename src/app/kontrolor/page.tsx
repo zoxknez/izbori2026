@@ -3,13 +3,9 @@ import {
   ArrowRight,
   ShieldAlert,
   ShieldCheck,
-  Scale,
   Ban,
   Calculator,
-  Vote,
   ClipboardList,
-  FileSpreadsheet,
-  AlertTriangle,
 } from "lucide-react";
 import { getAllRules } from "@/lib/data";
 import { Container } from "@/components/ui/container";
@@ -25,6 +21,7 @@ export const revalidate = 3600;
 export const metadata = {
   title: "Kontrolor: kontrolna lista i vodič",
   description: "Interaktivni protokol, hronološki redosled glasanja i brojanja, i pravni štit za članove biračkog odbora i posmatrače.",
+  alternates: { canonical: "/kontrolor" },
 };
 
 const PHASE_OVERVIEW = [
@@ -211,7 +208,7 @@ export default async function KontrolorPage() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-sev-ponistavanje/40 bg-sev-ponistavanje/15 px-3.5 py-1 text-xs font-bold text-sev-ponistavanje">
                 <ShieldAlert className="h-3.5 w-3.5" />
-                Član 93. Zakona o izboru narodnih poslanika
+                Član 116. Zakona o izboru narodnih poslanika
               </div>
               <h2 className="mt-3 text-2xl font-bold tracking-tight text-ink">
                 Automatsko poništavanje glasanja po službenoj dužnosti

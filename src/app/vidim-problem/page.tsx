@@ -9,6 +9,7 @@ export const metadata = {
   title: "Vidim problem sada — Hitna dijagnostika nepravilnosti",
   description:
     "Interaktivni vodič za hitnu intervenciju na biračkom mestu. Unesite šta vidite i saznajte tačnu zakonsku proceduru, korake za kontrolora i način unošenja u zapisnik.",
+  alternates: { canonical: "/vidim-problem" },
 };
 
 export default async function VidimProblemPage() {

@@ -6,6 +6,7 @@ export const metadata = {
   title: "Validator zapisnika",
   description:
     "Matematička i pravna kontrola brojeva iz zapisnika biračkog odbora prema članu 116. Zakona o izboru narodnih poslanika.",
+  alternates: { canonical: "/validator" },
 };
 
 export default function ValidatorPage() {
@@ -26,7 +27,7 @@ export default function ValidatorPage() {
 
             <p className="mt-3 text-base leading-relaxed text-ink-dim sm:text-lg">
               Unesi brojeve iz zapisnika i proveri da li se računica u potpunosti poklapa. Alat
-              automatski detektuje sva neslaganja za koja <strong>član 116. Zakona o izboru narodnih poslanika</strong> izričito nalaže poništavanje glasanja po službenoj dužnosti.
+              automatski proverava dve računovodstvene situacije koje <strong>član 116. Zakona o izboru narodnih poslanika</strong> navodi kao razloge za poništavanje glasanja po službenoj dužnosti, uz dodatne matematičke kontrole zapisnika.
             </p>
 
             <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-ink-faint">

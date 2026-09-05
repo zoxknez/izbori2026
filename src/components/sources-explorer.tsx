@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ExternalLink, Search, X, BookOpen, ShieldCheck, Globe, Users, CheckCircle2 } from "lucide-react";
+import { ExternalLink, Search, X, BookOpen, Globe, Users } from "lucide-react";
 import type { SourceEntry } from "@/content/sources";
-import { Card, CardBody } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 const TIER_META: Record<

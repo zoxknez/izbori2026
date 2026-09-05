@@ -10,11 +10,8 @@ import {
   Copy,
   Check,
   TriangleAlert,
-  AlertCircle,
   HelpCircle,
   BookOpen,
-  ArrowRight,
-  ShieldAlert,
 } from "lucide-react";
 import type { CriminalArticle } from "@/content/criminal-articles";
 import { cn } from "@/lib/utils";

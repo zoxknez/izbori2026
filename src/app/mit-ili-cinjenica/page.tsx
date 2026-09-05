@@ -2,7 +2,7 @@ import { getAllRules } from "@/lib/data";
 import { Container } from "@/components/ui/container";
 import { MythQuiz } from "@/components/myth-quiz";
 import type { MythCheck, Rule } from "@/lib/types";
-import { HelpCircle, Sparkles, BookOpen } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 export const revalidate = 3600;
 
@@ -10,6 +10,7 @@ export const metadata = {
   title: "Mit ili činjenica: izborne zablude i istine",
   description:
     "Testiraj svoje znanje: šta je zaista izborna nepravilnost, a šta samo tako deluje? Interaktivni kviz i katalog mitova sa tačnim pravnim osnovom.",
+  alternates: { canonical: "/mit-ili-cinjenica" },
 };
 
 export default async function MitIliCinjenicaPage() {

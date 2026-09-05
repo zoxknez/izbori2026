@@ -37,7 +37,7 @@ export const rules = pgTable("rules", {
     .default(null),
   isAutomaticAnnulment: boolean("is_automatic_annulment").default(false),
   order: integer("order").default(0),
-  reviewStatus: varchar("review_status", { length: 32 }).default("VERIFIED"),
+  reviewStatus: varchar("review_status", { length: 32 }).default("REVIEW_REQUIRED"),
   lastLegalReview: varchar("last_legal_review", { length: 32 }),
   validFrom: varchar("valid_from", { length: 32 }),
   validUntil: varchar("valid_until", { length: 32 }),

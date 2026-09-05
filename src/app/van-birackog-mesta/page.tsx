@@ -5,14 +5,10 @@ import {
   Clock,
   ShieldAlert,
   ShieldCheck,
-  CheckCircle2,
-  AlertTriangle,
-  Scale,
   ArrowRight,
   EyeOff,
   Mail,
   FileCheck,
-  Check,
 } from "lucide-react";
 import { getAllRules } from "@/lib/data";
 import { Container } from "@/components/ui/container";
@@ -24,6 +20,7 @@ export const metadata = {
   title: "Glasanje van biračkog mesta (kod kuće)",
   description:
     "Kompletan vodič za glasanje kod kuće: ko ima pravo, rokovi do 11:00h, tročlani tim poverenika, tajnost glasanja i crvene zastavice.",
+  alternates: { canonical: "/van-birackog-mesta" },
 };
 
 const STEPS = [
@@ -77,7 +74,7 @@ export default async function VanBirackogMestaPage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/10 px-3.5 py-1 text-xs font-semibold text-brand">
               <Home className="h-3.5 w-3.5" />
-              <span>Zakon o izboru narodnih poslanika · Čl. 72 i 73</span>
+              <span>Zakon o izboru narodnih poslanika · Čl. 96</span>
             </div>
 
             <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-5xl">

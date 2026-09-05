@@ -9,19 +9,14 @@ import {
   Search,
   X,
   Zap,
-  AlertTriangle,
-  Scale,
   Copy,
   Check,
   FileText,
-  Clock,
-  ExternalLink,
-  ShieldAlert,
 } from "lucide-react";
 import type { Rule, Severity } from "@/lib/types";
 import { PHASE_META, PHASE_ORDER } from "@/lib/phases";
 import { SeverityBadge } from "@/components/ui/severity-badge";
-import { Card, CardBody } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { RuleDetail } from "@/components/rule-detail";
 import { PhaseIcon } from "@/components/phase-icon";
 import { Button } from "@/components/ui/button";

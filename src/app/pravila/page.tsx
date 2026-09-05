@@ -7,6 +7,7 @@ export const revalidate = 3600;
 export const metadata = {
   title: "Baza nepravilnosti",
   description: "Kompletna baza izbornih nepravilnosti u Srbiji sa pravnim osnovom i uputstvom šta uraditi.",
+  alternates: { canonical: "/pravila" },
 };
 
 export default async function PravilaPage({

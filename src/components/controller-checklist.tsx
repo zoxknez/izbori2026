@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   CheckCircle2,
   Circle,
-  AlertTriangle,
   RotateCcw,
   ShieldAlert,
   Clock,
@@ -15,6 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { readChecklist, removeStoredValue, writeChecklist } from "@/lib/storage";
 
 interface ChecklistItem {
   id: string;
@@ -220,8 +220,9 @@ export function ControllerChecklist() {
     try {
       const saved = localStorage.getItem("izbori_kontrolor_checklist_v1");
       if (saved) {
+        // Hydration-safe localStorage rehydration; this runs only in the browser.
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setCompleted(JSON.parse(saved));
+        setCompleted(readChecklist("izbori_kontrolor_checklist_v1"));
       }
     } catch {
       // ignore
@@ -233,21 +234,13 @@ export function ControllerChecklist() {
   function toggleItem(id: string) {
     const next = { ...completed, [id]: !completed[id] };
     setCompleted(next);
-    try {
-      localStorage.setItem("izbori_kontrolor_checklist_v1", JSON.stringify(next));
-    } catch {
-      // ignore
-    }
+    writeChecklist("izbori_kontrolor_checklist_v1", next);
   }
 
   function handleReset() {
     if (window.confirm("Da li sigurno želiš da resetuješ sve čekirane stavke na kontrolnoj listi?")) {
       setCompleted({});
-      try {
-        localStorage.removeItem("izbori_kontrolor_checklist_v1");
-      } catch {
-        // ignore
-      }
+      removeStoredValue("izbori_kontrolor_checklist_v1");
     }
   }
 
@@ -288,7 +281,7 @@ export function ControllerChecklist() {
           <div>
             <div className="inline-flex items-center gap-1.5 rounded-full border border-brand/40 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
               <Sparkles className="h-3.5 w-3.5" />
-              Lokalno snimanje · Radi 100% offline
+              Lokalno snimanje · Bez mrežnog čuvanja
             </div>
             <h2 className="mt-2.5 text-xl sm:text-2xl font-bold tracking-tight text-ink">
               Interaktivni protokol kontrolora
@@ -369,6 +362,15 @@ export function ControllerChecklist() {
             <div
               key={item.id}
               onClick={() => toggleItem(item.id)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  toggleItem(item.id);
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-pressed={isDone}
               className={cn(
                 "group flex cursor-pointer items-start gap-4 rounded-2xl border p-4 sm:p-5 transition-all duration-150 select-none",
                 isDone
@@ -379,17 +381,16 @@ export function ControllerChecklist() {
               )}
             >
               {/* Checkbox Icon */}
-              <button
-                type="button"
+              <span
                 className="mt-0.5 shrink-0 text-ink-faint transition-colors group-hover:text-ink"
-                aria-label={isDone ? "Označi kao nezavršeno" : "Označi kao završeno"}
+                aria-hidden="true"
               >
                 {isDone ? (
                   <CheckCircle2 className="h-6 w-6 text-sev-dozvoljeno" />
                 ) : (
                   <Circle className="h-6 w-6 text-border group-hover:text-ink-dim" />
                 )}
-              </button>
+              </span>
 
               {/* Text content */}
               <div className="min-w-0 flex-1">

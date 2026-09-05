@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShieldCheck, Menu, Zap, Search, FileEdit, BookOpen, AlertCircle } from "lucide-react";
+import { ShieldCheck, Menu, Zap } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
 import { cn } from "@/lib/utils";
 

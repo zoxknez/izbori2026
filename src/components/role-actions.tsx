@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Vote, Gavel, Eye, CheckCircle2 } from "lucide-react";
+import { Vote, Gavel, Eye } from "lucide-react";
 
 const ROLES = [
   { key: "controller", label: "Član biračkog odbora", shortLabel: "Kontrolor", icon: Gavel },

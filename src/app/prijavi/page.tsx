@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ShieldAlert, FileText, CheckCircle2, Lock, Sparkles, Scale } from "lucide-react";
+import { FileText, CheckCircle2, Lock, Scale } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { IncidentForm } from "@/components/incident-form";
 
@@ -7,6 +7,7 @@ export const metadata = {
   title: "Prijavi incident — Generator hronologije i primedbe",
   description:
     "Generator činjenične hronologije izborne nepravilnosti, bez naloga i bez slanja na server. Spremno za unošenje u Zapisnik ili pravni tim.",
+  alternates: { canonical: "/prijavi" },
 };
 
 export default function PrijaviPage() {
@@ -64,10 +65,10 @@ export default function PrijaviPage() {
           </div>
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-              100% Privatno i lokalno
+              Privatno i lokalno
             </h3>
             <p className="mt-1 text-xs leading-relaxed text-ink-dim">
-              Nijedan podatak se ne šalje na server. Hronologija se formira i skladišti isključivo u memoriji vašeg pregledača.
+              Podaci se čuvaju lokalno u ovom pregledaču i aplikacija ih ne šalje na server.
             </p>
           </div>
         </div>

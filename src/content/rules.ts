@@ -1,12 +1,15 @@
 import type { Rule } from "@/lib/types";
 
 const ZINP = "Zakon o izboru narodnih poslanika";
-const ZINP_TOK = { law: ZINP, article: "čl. 87–99 (opšti tok glasanja)" };
-const ZINP_89 = { law: ZINP, article: "čl. 89" };
-const ZINP_93 = { law: ZINP, article: "čl. 93" };
-const ZINP_102 = { law: ZINP, article: "čl. 102" };
-const ZINP_116 = { law: ZINP, article: "čl. 116" };
+const ZINP_URL = "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php";
+const ZINP_TOK = { law: ZINP, article: "čl. 87–99 (opšti tok glasanja)", url: ZINP_URL };
+const ZINP_89 = { law: ZINP, article: "čl. 89", url: ZINP_URL };
+const ZINP_93 = { law: ZINP, article: "čl. 93", url: ZINP_URL };
+const ZINP_96 = { law: ZINP, article: "čl. 96 · glasanje van biračkog mesta", url: ZINP_URL };
+const ZINP_102 = { law: ZINP, article: "čl. 102 · utvrđivanje broja birača koji su glasali", url: ZINP_URL };
+const ZINP_116 = { law: ZINP, article: "čl. 116 · poništavanje po službenoj dužnosti", url: ZINP_URL };
 const KZ = "Krivični zakonik Republike Srbije";
+const KZ_URL = "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5";
 
 const SVI = ["narodni_poslanici", "predsednik", "lokalni"];
 
@@ -577,7 +580,7 @@ export const rules: Rule[] = [
     observerActions: ["Prijaviti nadležnim organima"],
     evidenceChecklist: ["Vreme", "Ko je uručio", "Ko je primio"],
     doNotDo: [],
-    lawReferences: [{ law: KZ, article: "čl. 157 · Zloupotreba prava glasanja" }],
+    lawReferences: [{ law: KZ, article: "čl. 157 · Zloupotreba prava glasanja", url: KZ_URL }],
     sourceUrls: [],
     relatedSlugs: [],
     order: 23,
@@ -599,7 +602,7 @@ export const rules: Rule[] = [
     observerActions: ["Prijaviti policiji"],
     evidenceChecklist: ["Identitet lica", "Vreme", "Svedoci"],
     doNotDo: [],
-    lawReferences: [{ law: KZ, article: "čl. 157 · Zloupotreba prava glasanja" }],
+    lawReferences: [{ law: KZ, article: "čl. 157 · Zloupotreba prava glasanja", url: KZ_URL }],
     sourceUrls: [],
     relatedSlugs: [],
     order: 24,
@@ -621,7 +624,7 @@ export const rules: Rule[] = [
     observerActions: ["Prijaviti nadležnim organima"],
     evidenceChecklist: [],
     doNotDo: [],
-    lawReferences: [{ law: KZ, article: "čl. 157 · Zloupotreba prava glasanja" }],
+    lawReferences: [{ law: KZ, article: "čl. 157 · Zloupotreba prava glasanja", url: KZ_URL }],
     sourceUrls: [],
     relatedSlugs: ["uv-trag-clan-biracke-komisije-izuzetak"],
     order: 25,
@@ -762,7 +765,7 @@ export const rules: Rule[] = [
     observerActions: ["Prijaviti nadležnim organima"],
     evidenceChecklist: ["Vreme", "Svedoci", "Opis položaja"],
     doNotDo: [],
-    lawReferences: [{ law: KZ, article: "čl. 160 · Povreda tajnosti glasanja" }],
+    lawReferences: [{ law: KZ, article: "čl. 160 · Povreda tajnosti glasanja", url: KZ_URL }],
     sourceUrls: [],
     relatedSlugs: ["neko-stoji-uz-paravan"],
     order: 31,
@@ -856,7 +859,7 @@ export const rules: Rule[] = [
     observerActions: ["Zabeleži okolnosti i svedoke"],
     evidenceChecklist: ["Ko je pretio", "Šta je tačno rečeno", "Svedoci"],
     doNotDo: [],
-    lawReferences: [{ law: KZ, article: "čl. 155 · Povreda prava glasanja" }],
+    lawReferences: [{ law: KZ, article: "čl. 155 · Povreda prava glasanja", url: KZ_URL }],
     sourceUrls: [],
     relatedSlugs: ["pretnja-poslom", "prinuda-fotografija-i-glas"],
     order: 35,
@@ -878,7 +881,7 @@ export const rules: Rule[] = [
     observerActions: [],
     evidenceChecklist: ["Ko je pretio", "Kada i kako", "Svedoci/poruke"],
     doNotDo: [],
-    lawReferences: [{ law: KZ, article: "čl. 155 · Povreda prava glasanja" }],
+    lawReferences: [{ law: KZ, article: "čl. 155 · Povreda prava glasanja", url: KZ_URL }],
     sourceUrls: [],
     relatedSlugs: ["pretnja-biracu"],
     order: 36,
@@ -901,8 +904,8 @@ export const rules: Rule[] = [
     evidenceChecklist: [],
     doNotDo: [],
     lawReferences: [
-      { law: KZ, article: "čl. 155 · Povreda prava glasanja" },
-      { law: KZ, article: "čl. 160 · Povreda tajnosti glasanja" },
+      { law: KZ, article: "čl. 155 · Povreda prava glasanja", url: KZ_URL },
+      { law: KZ, article: "čl. 160 · Povreda tajnosti glasanja", url: KZ_URL },
     ],
     sourceUrls: [],
     relatedSlugs: ["pretnja-biracu", "trazi-se-fotografija-kao-dokaz"],
@@ -930,7 +933,7 @@ export const rules: Rule[] = [
     observerActions: ["Zabeleži okolnosti, izbegavaj direktnu konfrontaciju"],
     evidenceChecklist: ["Ko je nudio", "Šta je nuđeno", "Kada", "Svedoci"],
     doNotDo: [],
-    lawReferences: [{ law: KZ, article: "čl. 156 · Davanje i primanje mita u vezi sa glasanjem" }],
+    lawReferences: [{ law: KZ, article: "čl. 156 · Davanje i primanje mita u vezi sa glasanjem", url: KZ_URL }],
     sourceUrls: [],
     relatedSlugs: ["trazi-se-fotografija-kao-dokaz"],
     mythCheck: {
@@ -1156,7 +1159,7 @@ export const rules: Rule[] = [
     observerActions: ["Zabeleži broj prisutnih članova"],
     evidenceChecklist: ["Broj prisutnih članova", "Vreme"],
     doNotDo: [],
-    lawReferences: [ZINP_TOK],
+    lawReferences: [ZINP_96],
     sourceUrls: [],
     relatedSlugs: ["samo-dva-clana-odbora-kod-kuce"],
     order: 47,
@@ -1178,7 +1181,7 @@ export const rules: Rule[] = [
     observerActions: [],
     evidenceChecklist: [],
     doNotDo: [],
-    lawReferences: [ZINP_TOK],
+    lawReferences: [ZINP_96],
     sourceUrls: [],
     relatedSlugs: ["samo-jedan-clan-odbora-kod-kuce"],
     order: 48,
@@ -1200,7 +1203,7 @@ export const rules: Rule[] = [
     observerActions: [],
     evidenceChecklist: [],
     doNotDo: [],
-    lawReferences: [ZINP_TOK],
+    lawReferences: [ZINP_96],
     sourceUrls: [],
     relatedSlugs: [],
     order: 49,
@@ -1222,7 +1225,7 @@ export const rules: Rule[] = [
     observerActions: [],
     evidenceChecklist: [],
     doNotDo: [],
-    lawReferences: [ZINP_93],
+    lawReferences: [ZINP_96],
     sourceUrls: [],
     relatedSlugs: ["nema-uv-provere-kod-kuce"],
     order: 50,
@@ -1244,7 +1247,7 @@ export const rules: Rule[] = [
     observerActions: [],
     evidenceChecklist: [],
     doNotDo: [],
-    lawReferences: [ZINP_93],
+    lawReferences: [ZINP_96],
     sourceUrls: [],
     relatedSlugs: ["identitet-nije-proveren-kod-kuce"],
     order: 51,
@@ -1266,7 +1269,7 @@ export const rules: Rule[] = [
     observerActions: [],
     evidenceChecklist: ["Da li potvrda postoji", "Potpis birača"],
     doNotDo: [],
-    lawReferences: [ZINP_TOK],
+    lawReferences: [ZINP_96],
     sourceUrls: [],
     relatedSlugs: [],
     order: 52,
@@ -1288,7 +1291,7 @@ export const rules: Rule[] = [
     observerActions: [],
     evidenceChecklist: [],
     doNotDo: [],
-    lawReferences: [ZINP_TOK],
+    lawReferences: [ZINP_96],
     sourceUrls: [],
     relatedSlugs: [],
     order: 53,
@@ -1310,7 +1313,7 @@ export const rules: Rule[] = [
     observerActions: [],
     evidenceChecklist: [],
     doNotDo: [],
-    lawReferences: [ZINP_TOK],
+    lawReferences: [ZINP_96],
     sourceUrls: [],
     relatedSlugs: ["pomagac-samostalno-odlucuje"],
     order: 54,
@@ -1332,7 +1335,7 @@ export const rules: Rule[] = [
     observerActions: [],
     evidenceChecklist: [],
     doNotDo: [],
-    lawReferences: [ZINP_TOK],
+    lawReferences: [ZINP_96],
     sourceUrls: [],
     relatedSlugs: [],
     order: 55,
@@ -1588,7 +1591,7 @@ export const rules: Rule[] = [
     observerActions: ["Sačuvaj sve beleške i dokaze o neslaganju brojeva"],
     evidenceChecklist: ["Sve zabeležene brojke tokom brojanja", "Fotografija istaknutog zapisnika", "Objavljeni zvanični rezultat"],
     doNotDo: [],
-    lawReferences: [{ law: KZ, article: "čl. 161 · Falsifikovanje rezultata glasanja" }],
+    lawReferences: [{ law: KZ, article: "čl. 161 · Falsifikovanje rezultata glasanja", url: KZ_URL }],
     sourceUrls: [],
     relatedSlugs: ["rezultat-se-razlikuje-od-prebrojanog"],
     order: 66,

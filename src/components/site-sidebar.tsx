@@ -13,10 +13,8 @@ import {
   Gavel,
   HelpCircle,
   Clock,
-  ExternalLink,
   X,
   Lock,
-  ChevronRight,
 } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
 import { cn } from "@/lib/utils";

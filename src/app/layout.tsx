@@ -14,13 +14,27 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://izborna-kontrola.vercel.app"),
+  metadataBase: new URL("https://izborilegalnost.vercel.app"),
   title: {
     default: "Izborna kontrola: vodič kroz izborne nepravilnosti u Srbiji",
     template: "%s · Izborna kontrola",
   },
   description:
     "Interaktivni građanski vodič za prepoznavanje, dokumentovanje i prijavljivanje izbornih nepravilnosti u Srbiji, sa pozivom na tačan član zakona.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "sr_RS",
+    siteName: "Izborna kontrola",
+    title: "Izborna kontrola: vodič kroz izborne nepravilnosti u Srbiji",
+    description:
+      "Interaktivni građanski vodič za prepoznavanje, dokumentovanje i prijavljivanje izbornih nepravilnosti u Srbiji.",
+  },
+  twitter: {
+    card: "summary",
+    title: "Izborna kontrola",
+    description: "Interaktivni građanski vodič kroz izborne nepravilnosti u Srbiji.",
+  },
   manifest: "/manifest.webmanifest",
 };
 
@@ -36,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="sr" className={`${inter.variable} h-full antialiased`}>
+    <html lang="sr-Latn" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full bg-canvas text-ink">
         <SidebarProvider>
           <SiteSidebar />

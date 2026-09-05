@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
-import { getAllRules, getRuleBySlug, getRulesByIds } from "@/lib/data";
+import { getAllRules, getRuleBySlug } from "@/lib/data";
 import { Container } from "@/components/ui/container";
 import { RuleDetail } from "@/components/rule-detail";
 
@@ -12,24 +13,24 @@ export async function generateStaticParams() {
   return rules.map((r) => ({ slug: r.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const rule = await getRuleBySlug(slug);
   if (!rule) return {};
   return {
     title: rule.naziv,
     description: rule.summary,
+    alternates: { canonical: `/pravila/${rule.slug}` },
   };
 }
 
 export default async function RuleDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const rule = await getRuleBySlug(slug);
+  const allRules = await getAllRules();
+  const rule = allRules.find((item) => item.slug === slug);
   if (!rule) notFound();
 
-  const related = await getRulesByIds(
-    (await getAllRules()).filter((r) => rule.relatedSlugs.includes(r.slug)).map((r) => r.id)
-  );
+  const related = allRules.filter((item) => rule.relatedSlugs.includes(item.slug));
 
   return (
     <Container className="py-8 sm:py-12">

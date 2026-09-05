@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   Copy,
@@ -13,7 +13,6 @@ import {
   FileText,
   RotateCcw,
   CheckCircle2,
-  ExternalLink,
   Info,
   ShieldCheck,
 } from "lucide-react";
@@ -24,6 +23,12 @@ import { PHASE_META, PHASE_ORDER } from "@/lib/phases";
 import { rules } from "@/content/rules";
 import { criminalArticles } from "@/content/criminal-articles";
 import { cn } from "@/lib/utils";
+import {
+  readSavedIncidents,
+  removeStoredValue,
+  writeSavedIncidents,
+  type SavedIncident,
+} from "@/lib/storage";
 
 const STORAGE_KEY = "izborna-kontrola:incidenti";
 
@@ -37,13 +42,13 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <label className="block">
+    <fieldset className="block">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold text-ink">{label}</span>
+        <legend className="text-sm font-semibold text-ink">{label}</legend>
         {hint && <span className="text-xs text-ink-faint">{hint}</span>}
       </div>
       <div className="mt-1.5">{children}</div>
-    </label>
+    </fieldset>
   );
 }
 
@@ -56,17 +61,14 @@ export function IncidentForm() {
   const searchParams = useSearchParams();
   const [data, setData] = useState<IncidentData>(EMPTY_INCIDENT);
   const [loadedRuleTitle, setLoadedRuleTitle] = useState<string | null>(null);
-  const [saved, setSaved] = useState<{ id: string; createdAt: string; data: IncidentData }[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [saved, setSaved] = useState<SavedIncident[]>([]);
+  const [, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    startTransition(() => setSaved(readSavedIncidents(STORAGE_KEY)));
+  }, [startTransition]);
 
   // Parse search params if user navigated from rules or criminal codes
   useEffect(() => {
@@ -137,31 +139,19 @@ export function IncidentForm() {
     setSaved(next);
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 2500);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      /* lokalno skladište nedostupno */
-    }
+    if (!writeSavedIncidents(STORAGE_KEY, next)) setSaveSuccess(false);
   }
 
   function removeSaved(id: string) {
     const next = saved.filter((s) => s.id !== id);
     setSaved(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      /* skladište nedostupno */
-    }
+    writeSavedIncidents(STORAGE_KEY, next);
   }
 
   function clearAllSaved() {
     if (window.confirm("Da li sigurno želiš da obrišeš sve sačuvane incidente sa ovog uređaja?")) {
       setSaved([]);
-      try {
-        localStorage.removeItem(STORAGE_KEY);
-      } catch {
-        /* skladište nedostupno */
-      }
+      removeStoredValue(STORAGE_KEY);
     }
   }
 

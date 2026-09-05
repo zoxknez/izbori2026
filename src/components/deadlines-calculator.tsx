@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Clock, Calendar, AlertTriangle, ArrowRight, CheckCircle2, ShieldAlert } from "lucide-react";
+import { Clock, AlertTriangle } from "lucide-react";
 import { Card, CardBody } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export function DeadlinesCalculator() {
-  // Default: Sunday 20:00
-  const [closeDate, setCloseDate] = useState(() => {
+  // Generic calculator: the legal trigger differs by remedy.
+  const [startDate, setStartDate] = useState(() => {
     const today = new Date();
     const sunday = new Date(today);
     // nearest or current date formatted
@@ -17,21 +15,18 @@ export function DeadlinesCalculator() {
     const d = String(sunday.getDate()).padStart(2, "0");
     return `${y}-${m}-${d}`;
   });
-  const [closeTime, setCloseTime] = useState("20:00");
+  const [startTime, setStartTime] = useState("20:00");
 
-  const closeTimestamp = new Date(`${closeDate}T${closeTime}:00`);
+  const startTimestamp = new Date(`${startDate}T${startTime}:00`);
 
   // Step 1: 72h to submit objection to OIK/RIK
-  const objectionDeadline = new Date(closeTimestamp.getTime() + 72 * 60 * 60 * 1000);
+  const objectionDeadline = new Date(startTimestamp.getTime() + 72 * 60 * 60 * 1000);
 
   // Step 2: 72h for commission to decide
   const decisionDeadline = new Date(objectionDeadline.getTime() + 72 * 60 * 60 * 1000);
 
   // Step 3: 72h to appeal to court
   const courtAppealDeadline = new Date(decisionDeadline.getTime() + 72 * 60 * 60 * 1000);
-
-  // Step 4: 72h for court judgment
-  const courtJudgmentDeadline = new Date(courtAppealDeadline.getTime() + 72 * 60 * 60 * 1000);
 
   function formatDate(d: Date) {
     if (isNaN(d.getTime())) return "—";
@@ -55,10 +50,10 @@ export function DeadlinesCalculator() {
             </span>
             <div>
               <h3 className="text-sm font-bold text-ink">
-                Kalkulator zakonskih rokova (Pravilo 72 časa)
+                Orijentacioni kalkulator roka od 72 časa
               </h3>
               <p className="text-xs text-ink-dim">
-                Unesite tačan momenat zatvaranja biračkog mesta za izračunavanje svih pravnih rokova.
+                Unesite početni momenat relevantan za konkretan rok, pa proverite merodavni propis i prijem dokumenta.
               </p>
             </div>
           </div>
@@ -69,30 +64,30 @@ export function DeadlinesCalculator() {
         {/* Input row */}
         <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-surface-2 p-3">
           <span className="text-xs font-semibold text-ink">
-            Vreme zatvaranja biračkog mesta:
+            Početni momenat roka:
           </span>
           <div className="flex items-center gap-2">
             <input
               type="date"
-              value={closeDate}
-              onChange={(e) => setCloseDate(e.target.value)}
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
               className="h-9 rounded-lg border border-border bg-surface px-2.5 text-xs text-ink focus:border-brand focus:outline-none"
             />
             <input
               type="time"
-              value={closeTime}
-              onChange={(e) => setCloseTime(e.target.value)}
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
               className="h-9 rounded-lg border border-border bg-surface px-2.5 text-xs text-ink focus:border-brand focus:outline-none"
             />
           </div>
           <button
             type="button"
             onClick={() => {
-              setCloseTime("20:00");
+              setStartTime("20:00");
             }}
             className="rounded-lg bg-surface px-2.5 py-1.5 text-xs font-semibold text-brand hover:bg-brand/10 transition-colors"
           >
-            Postavi na 20:00 (Redovno zatvaranje)
+            Postavi vreme na 20:00
           </button>
         </div>
 
@@ -104,7 +99,7 @@ export function DeadlinesCalculator() {
             <div className="flex-1 rounded-xl border border-rose-500/20 bg-rose-500/5 p-4">
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-                  1. Rok za podnošenje prigovora / zahteva za poništavanje
+                1. Zahtev za poništavanje glasanja
                 </span>
                 <span className="rounded-full bg-rose-600/10 px-2 py-0.5 text-xs font-bold text-rose-600 dark:text-rose-400">
                   Prekluzivan rok: 72 časa
@@ -114,7 +109,7 @@ export function DeadlinesCalculator() {
                 Ističe: {formatDate(objectionDeadline)}
               </p>
               <p className="mt-1 text-xs leading-relaxed text-ink-dim">
-                Birač (za svoje BM) ili podnosilac proglašene liste (za bilo koje BM) predaje zahtev lokalnoj izbornoj komisiji (OIK/GIK). Prekoračenje ovog roka za samo 1 minut znači automatsko odbacivanje.
+                Po članu 148. ZINP, zahtev se podnosi u roku od 72 časa od zatvaranja biračkog mesta; birač ga podnosi za BM na kom je upisan, a proglašena izborna lista za bilo koje BM zbog nepravilnosti tokom glasanja.
               </p>
             </div>
           </div>
@@ -125,7 +120,7 @@ export function DeadlinesCalculator() {
             <div className="flex-1 rounded-xl border border-border bg-surface p-4">
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                  2. Rok za odluku izborne komisije
+                  2. Rok za odluku po zahtevu
                 </span>
                 <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-bold text-ink-dim">
                   72 časa od prijema
@@ -135,7 +130,7 @@ export function DeadlinesCalculator() {
                 Maksimalno do: {formatDate(decisionDeadline)}
               </p>
               <p className="mt-1 text-xs leading-relaxed text-ink-dim">
-                Lokalna izborna komisija donosi rešenje kojim usvaja zahtev i poništava glasanje, ili ga odbija/odbacuje. Ako ne donese odluku u roku, smatra se da je zahtev odbijen (ćutanje uprave).
+                Nadležna izborna komisija odlučuje o zahtevu u roku od 72 časa od njegovog prijema i objavljuje rešenje. Nadležnost zavisi od toga da li se glasa u zemlji ili u inostranstvu.
               </p>
             </div>
           </div>
@@ -146,17 +141,20 @@ export function DeadlinesCalculator() {
             <div className="flex-1 rounded-xl border border-border bg-surface p-4">
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-brand">
-                  3. Rok za žalbu Višem sudu / Upravnom sudu
+                  3. Rok za žalbu Upravnom sudu
                 </span>
                 <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-bold text-ink-dim">
                   72 časa od prijema rešenja
                 </span>
               </div>
               <p className="mt-1 text-sm font-bold text-ink">
-                Rok za žalbu: 72 časa od dostavljanja negativnog rešenja
+                Orijentaciono: 72 časa od unetog početnog momenta
+              </p>
+              <p className="mt-2 rounded-lg bg-brand/5 px-2.5 py-2 text-xs font-semibold text-brand">
+                Okvirni krajnji termin: {formatDate(courtAppealDeadline)}
               </p>
               <p className="mt-1 text-xs leading-relaxed text-ink-dim">
-                Protiv negativnog rešenja izborne komisije podnosi se žalba nadležnom sudu preko izborne komisije koja je donela rešenje.
+                U postupku po prigovoru, žalba Upravnom sudu podnosi se u roku od 72 časa od objavljivanja rešenja Republičke izborne komisije, preko RIK-a (čl. 156. ZINP).
               </p>
             </div>
           </div>
@@ -167,17 +165,17 @@ export function DeadlinesCalculator() {
             <div className="flex-1 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                  4. Pravosnažna odluka suda
+                  4. Odluka Upravnog suda
                 </span>
                 <span className="rounded-full bg-emerald-600/10 px-2 py-0.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
                   72 časa od prijema spisa
                 </span>
               </div>
               <p className="mt-1 text-sm font-bold text-ink">
-                Sudska presuda je KONAČNA i izvršna
+                Odluka u roku od 72 časa od prijema žalbe sa spisima
               </p>
               <p className="mt-1 text-xs leading-relaxed text-ink-dim">
-                Ako sud usvoji žalbu, poništava glasanje na tom biračkom mestu ili preinačuje odluku komisije. Protiv odluke suda nema daljeg redovnog pravnog leka.
+                Upravni sud odlučuje po žalbi u roku od 72 časa od prijema žalbe sa spisima; odluka doneta u ovom postupku je pravnosnažna.
               </p>
             </div>
           </div>
@@ -187,7 +185,7 @@ export function DeadlinesCalculator() {
         <div className="flex items-start gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
           <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
           <div className="text-xs text-ink-dim leading-relaxed">
-            <strong className="text-ink">Pravilo računanja rokova:</strong> Rokovi u izbornom postupku računaju se na sate (član 104. ZINP). Ne primenjuju se opšta pravila o neradnim danima — rokovi teku i nedeljom i noću! Podnesak poslat poštom smatra se blagovremenim ako je predat pošti pre isteka roka (preporučena pošiljka sa tačnim vremenom na prijemnom listiću).
+                <strong className="text-ink">Važno:</strong> Ovo je samo računanje 72 časa od unetog početka, a ne utvrđivanje da li se taj rok primenjuje na vaš slučaj. Početak roka, način dostavljanja, nadležni organ i pravni lek proverite u važećem propisu ili sa pravnikom. Sačuvajte dokaz o predaji sa tačnim vremenom.
           </div>
         </div>
       </CardBody>
