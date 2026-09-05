@@ -34,7 +34,11 @@ Za produkcioni Auth.js potreban je i `AUTH_SECRET`.
 2. Pokreni `npx drizzle-kit migrate`, zatim `npm run dataset:snapshot`.
 3. `scripts/seed.ts` je namenjen samo svežoj lokalnoj/dev bazi. Nakon prve uspešne Admin objave
    ne pokretati ga nad produkcionim Neon-om; produkcija se menja kroz publish API koji validira
-   snapshot i upisuje audit log.
+   snapshot i upisuje audit log. Skripta sada i tehnički odbija produkcioni seed kada aktivnu
+   verziju potpisuje Admin umesto `bootstrap-script`.
+
+Coverage treninga je build gate: `npm run training:coverage` mora potvrditi minimalan broj pitanja
+po težini za svih 66 pravila, a isti check se automatski izvršava u `npm run build`.
 
 Ako menjaš šemu (`src/lib/db/schema.ts`), generiši migraciju sa
 `npx drizzle-kit generate --name opis-izmene`, proveri SQL, pa pokreni `npx drizzle-kit migrate`.
@@ -45,7 +49,8 @@ Na Next.js 16/Turbopack spike-u od 5. septembra 2026. zadržan je mali ručno re
 `public/sw.js` umesto Serwist webpack plugina: nema bundler workaround-a, a keš politike su
 transparentne i proverljive. Lifecycle konfiguracija eksplicitno drži `register: false` i
 `reloadOnOnline: false`; registracija se obavlja kroz sopstveni update UX, bez automatskog reload-a
-dok korisnik piše incident ili rešava simulator. Ako se Serwist uvede kasnije, njegov Turbopack setup
+dok korisnik piše incident, trening ili simulator. Sačuvani incidenti i draft flagovi koriste IndexedDB,
+a globalna pretraga koristi MiniSearch indeks nad aliasima i neformalnim upitima. Ako se Serwist uvede kasnije, njegov Turbopack setup
 mora prvo proći isti spike; u suprotnom koristiti zaseban `next build --webpack` korak.
 
 ## Deploy na Vercel

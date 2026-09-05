@@ -22,7 +22,7 @@ downgrade, pa je zamena tog migracionog toolchain-a ostavljena za tehničku hard
 
 ## Faza 1 — zajednički domen i formalizacija pravila
 
-Status: **u toku**.
+Status: **osnovna implementacija završena; preostale su samo eksplicitne hardening stavke**.
 
 Urađeno:
 
@@ -35,11 +35,11 @@ Urađeno:
 - uvedena prva Drizzle migracija i primenjena na Neon bazu, pa je dataset ponovo seedovan: 66 pravila, 8 krivičnih članova, 8 izvora i 3 stabla odluka;
 - UI filteri i prikaz koriste pluralne faze, dok je singularno `phase` zadržano samo kao privremena kompatibilnost za stare potrošače.
 
-Provere posle ove iteracije: typecheck, ESLint i Vitest prolaze (4 test fajla, 14 testova). Faza 1 još nije zatvorena dok se ne završe potpuni source provenance model, admin publish gate i preostale faze iz plana.
+Provere: domain invariant testovi, `validateCounting`, decision-tree evaluator i production build prolaze. Source provenance polja i Admin publish gate sada postoje; `isAutomaticAnnulment` se trenutno čuva kao obična kolona uz Zod/invariant zaštitu, a ne kao PostgreSQL generated kolona.
 
 ## Faza 2 — dataset versioning i offline temelj
 
-Status: **u toku**.
+Status: **završeno za DB-backed snapshot/offline temelj**.
 
 Urađeno:
 
@@ -52,11 +52,11 @@ Urađeno:
 - `dataset-manager` preuzima, validira i tek potom atomarno aktivira novu verziju;
 - Neon migriran i snapshotovan: aktivna verzija sadrži 66 pravila, 8 izvora i 3 decision tree-a.
 
-Provere: typecheck, ESLint, Vitest (5 fajlova / 18 testova) i production build prolaze. E2E smoke sada proverava i aktivni dataset API; kompletan network-failure E2E ostaje vezan za browser IndexedDB test harness u završnoj integracionoj fazi.
+Provere: typecheck, ESLint, Vitest i production build prolaze. E2E smoke proverava aktivni dataset API; kompletan network-failure E2E ostaje vezan za browser IndexedDB test harness u završnoj integracionoj fazi.
 
 ## Faza 3 — trening engine
 
-Status: **u toku**.
+Status: **engine i coverage implementirani; sadržajno obogaćivanje je otvoreno**.
 
 Urađeno:
 
@@ -71,7 +71,7 @@ Provere: coverage, mastery, selection i exam scoring imaju unit testove; typeche
 
 ## Faza 4 — simulator biračkog dana
 
-Status: **u toku**.
+Status: **engine implementiran; napredni modovi su otvoreni**.
 
 Urađeno:
 
@@ -86,7 +86,7 @@ Preostaju randomized mode sa formalnim condition ograničenjima u UI-ju, komplet
 
 ## Faza 5 — admin dependency/versioning/auth layer
 
-Status: **osnovna bezbednosna granica u toku**.
+Status: **osnovna bezbednosna granica završena; puni editor je otvoren**.
 
 Urađeno:
 
@@ -101,7 +101,7 @@ Preostaju kompletan content editor, impact/diff modal, dependency graph dashboar
 
 ## Faza 6 — service worker i PWA install sloj
 
-Status: **osnovni sloj u toku**.
+Status: **osnovni PWA sloj i ručno ažuriranje završeni; napredni storage UX je otvoren**.
 
 Urađeno:
 
@@ -111,7 +111,7 @@ Urađeno:
 - lifecycle politika eksplicitno testira `register: false` i `reloadOnOnline: false`, a UI ima offline indikator;
 - shell i SW imaju Playwright smoke proveru.
 
-Preostaju update prompt/critical update traka, storage management, MiniSearch indeks i pun scenario 9 sa draftom kroz online/offline prelaz.
+Implementirani su update prompt sa korisničkim aktiviranjem, zaštita od reload-a tokom otvorenog drafta, IndexedDB draft flagovi, IndexedDB migracija sačuvanih incidenata i MiniSearch globalna pretraga. Preostaju storage management UI i puni scenario 9 sa stvarnim online/offline prelazom u browser harness-u.
 
 ## Faza 7 — integracija i E2E hardening
 
@@ -121,7 +121,7 @@ Urađeno:
 
 - dodat cross-module Playwright tok: validator demo → trening učitavanje → simulator odluka;
 - dodate accessibility smoke provere za jedan `h1`, `main` landmark i missing image alt na javnim rutama;
-- E2E sada pokriva javne rute, offline API, SW/offline fallback, training i simulator stranice;
+- E2E sada pokriva javne rute, offline API, SW/offline fallback, training, simulator i indeksiranu globalnu pretragu (15 testova);
 - production build i deployment se proveravaju posle svake veće faze.
 
 Preostaje finalni performance budget sa realnim browser merenjem, scenario 9 online/offline sa incident draftom i kompletan admin publish → dataset → client update E2E.
