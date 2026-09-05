@@ -7,6 +7,7 @@ import { PHASE_META, PHASE_ORDER } from "@/lib/phases";
 import { SeverityBadge } from "@/components/ui/severity-badge";
 import { Card } from "@/components/ui/card";
 import { RuleDetail } from "@/components/rule-detail";
+import { PhaseIcon } from "@/components/phase-icon";
 import { cn } from "@/lib/utils";
 
 type Step = "phase" | "scenario" | "result";
@@ -72,9 +73,14 @@ export function ProblemWizard({ rules }: { rules: Rule[] }) {
                 }}
                 className="text-left"
               >
-                <Card className="p-4 transition-colors hover:border-brand/40 sm:p-5">
-                  <p className="font-semibold text-ink">{PHASE_META[p]?.label ?? p}</p>
-                  <p className="mt-1 text-xs leading-relaxed text-ink-faint">{PHASE_META[p]?.hint}</p>
+                <Card className="flex items-start gap-3.5 p-4 transition-colors hover:border-brand/40 sm:p-5">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-brand">
+                    <PhaseIcon icon={PHASE_META[p]?.icon ?? "triangle-alert"} className="h-4.5 w-4.5" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-ink">{PHASE_META[p]?.label ?? p}</p>
+                    <p className="mt-1 text-xs leading-relaxed text-ink-faint">{PHASE_META[p]?.hint}</p>
+                  </div>
                 </Card>
               </button>
             ))}
@@ -93,7 +99,7 @@ export function ProblemWizard({ rules }: { rules: Rule[] }) {
           </button>
           <h2 className="text-xl font-bold">{PHASE_META[phase]?.label}</h2>
           <p className="mt-1 text-sm text-ink-dim">Izaberi šta najbliže opisuje ono što si video/videla.</p>
-          <div className="mt-5 space-y-2.5">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {scenarios.map((rule) => (
               <button
                 key={rule.id}
@@ -101,14 +107,12 @@ export function ProblemWizard({ rules }: { rules: Rule[] }) {
                   setSelected(rule);
                   setStep("result");
                 }}
-                className="block w-full text-left"
+                className="text-left"
               >
-                <Card className="flex items-center justify-between gap-3 p-4 transition-colors hover:border-brand/40">
-                  <div className="min-w-0">
-                    <p className="truncate font-medium text-ink">{rule.naziv}</p>
-                    <p className="mt-0.5 line-clamp-1 text-xs text-ink-faint">{rule.summary}</p>
-                  </div>
-                  <SeverityBadge severity={rule.severity} size="sm" className="shrink-0" />
+                <Card className="flex h-full flex-col gap-2.5 p-4 transition-colors hover:border-brand/40">
+                  <SeverityBadge severity={rule.severity} size="sm" className="self-start" />
+                  <p className="font-semibold leading-snug text-ink">{rule.naziv}</p>
+                  <p className="line-clamp-2 text-xs leading-relaxed text-ink-faint">{rule.summary}</p>
                 </Card>
               </button>
             ))}

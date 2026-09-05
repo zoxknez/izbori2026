@@ -1,22 +1,25 @@
-import { ChevronDown } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 export function StepFlow({ steps }: { steps: { step: number; title: string; body: string }[] }) {
   return (
-    <ol className="space-y-2.5">
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {steps.map((s) => (
-        <li key={s.step}>
-          <details className="group rounded-xl border border-border bg-surface open:border-brand/30 open:bg-surface-2">
-            <summary className="flex cursor-pointer list-none items-center gap-3 p-4 select-none">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-2 text-xs font-bold text-brand group-open:bg-brand group-open:text-brand-ink">
-                {s.step}
-              </span>
-              <span className="flex-1 text-sm font-semibold text-ink">{s.title}</span>
-              <ChevronDown className="h-4 w-4 shrink-0 text-ink-faint transition-transform group-open:rotate-180" />
-            </summary>
-            <p className="px-4 pb-4 pl-[3.25rem] text-sm leading-relaxed text-ink-dim">{s.body}</p>
-          </details>
-        </li>
+        <Card
+          key={s.step}
+          className="relative flex flex-col gap-2 overflow-hidden p-5 transition-colors hover:border-brand/30"
+        >
+          <span className="pointer-events-none absolute -right-3 -top-3 text-6xl font-black text-white/[0.03]">
+            {String(s.step).padStart(2, "0")}
+          </span>
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/15 text-xs font-bold text-brand">
+              {s.step}
+            </span>
+            <h3 className="text-sm font-semibold text-ink">{s.title}</h3>
+          </div>
+          <p className="relative text-sm leading-relaxed text-ink-dim">{s.body}</p>
+        </Card>
       ))}
-    </ol>
+    </div>
   );
 }
