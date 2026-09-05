@@ -1,30 +1,31 @@
-import assert from "node:assert/strict";
-import test from "node:test";
+import { describe, expect, it } from "vitest";
 import { EMPTY_INCIDENT, generateChronology } from "./incident";
 
-test("generateChronology includes the core location and incident facts", () => {
-  const result = generateChronology({
-    ...EMPTY_INCIDENT,
-    opstina: "Novi Sad",
-    brojMesta: "42",
-    datum: "2026-09-05",
-    vreme: "14:20",
-    staSamVideo: "Lice je ušlo iza paravana sa dva listića.",
-    propis: "ZINP čl. 93",
+describe("generateChronology", () => {
+  it("includes the core location and incident facts", () => {
+    const result = generateChronology({
+      ...EMPTY_INCIDENT,
+      opstina: "Novi Sad",
+      brojMesta: "42",
+      datum: "2026-09-05",
+      vreme: "14:20",
+      staSamVideo: "Lice je ušlo iza paravana sa dva listića.",
+      propis: "ZINP čl. 93",
+    });
+
+    expect(result).toMatch(/Novi Sad/);
+    expect(result).toMatch(/biračkom mestu br\. 42/);
+    expect(result).toMatch(/14:20/);
+    expect(result).toMatch(/Lice je ušlo iza paravana/);
+    expect(result).toMatch(/ZINP čl\. 93/);
   });
 
-  assert.match(result, /Novi Sad/);
-  assert.match(result, /biračkom mestu br\. 42/);
-  assert.match(result, /14:20/);
-  assert.match(result, /Lice je ušlo iza paravana/);
-  assert.match(result, /ZINP čl\. 93/);
-});
+  it("remains usable when optional details are empty", () => {
+    const result = generateChronology(EMPTY_INCIDENT);
 
-test("generateChronology remains usable when optional details are empty", () => {
-  const result = generateChronology(EMPTY_INCIDENT);
-
-  assert.match(result, /datum\/vreme nije uneto/);
-  assert.match(result, /biračko mesto nije uneto/);
-  assert.match(result, /Birački odbor je o događaju upozoren/);
-  assert.doesNotMatch(result, /Relevantan propis:/);
+    expect(result).toMatch(/datum\/vreme nije uneto/);
+    expect(result).toMatch(/biračko mesto nije uneto/);
+    expect(result).toMatch(/Birački odbor je o događaju upozoren/);
+    expect(result).not.toMatch(/Relevantan propis:/);
+  });
 });

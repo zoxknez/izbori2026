@@ -1,6 +1,6 @@
 # Implementation Plan — Trening / Simulator / Admin / PWA Offline
 
-**Verzija: v2 (Revision 1).** Status: **plan only, ništa od ovoga još nije implementirano.**
+**Verzija: v2 (Revision 1).** Status: **Faza 0 završena; Faza 1 nije započeta.**
 
 ## Revision 1 — šta se promenilo u odnosu na v1 i zašto
 
