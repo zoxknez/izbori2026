@@ -55,7 +55,9 @@ Urađeno:
 - `dataset-manager` preuzima, validira i tek potom atomarno aktivira novu verziju;
 - Neon migriran i snapshotovan: aktivna verzija sadrži 66 pravila, 8 izvora i 3 decision tree-a.
 
-Provere: typecheck, ESLint, Vitest i production build prolaze. Dataset snapshot trenutno sadrži 66 pravila, 8 izvora, 3 stabla, 193 training reference-a i 80 simulation reference-a.
+Provere: typecheck, ESLint, Vitest i production build prolaze; testiran je i rollback pointera kada
+preuzimanje zakaže posle prvog fajla. Dataset snapshot trenutno sadrži 66 pravila, 8 izvora, 3 stabla,
+193 training reference-a i 80 simulation reference-a.
 
 ## Faza 3 — trening engine
 

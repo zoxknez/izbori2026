@@ -53,4 +53,16 @@ describe("offline dataset validation", () => {
     expect(active.version).toBe("test-1");
     expect(await readDatasetMeta("activeDatasetVersion")).toBe("test-1");
   });
+
+  it("zadržava prethodni pointer ako preuzimanje zakaže posle prvog fajla", async () => {
+    const oldFile = await file(snapshot());
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ files: [oldFile] }), { status: 200 })));
+    await downloadAndActivateDataset();
+
+    const nextFile = await file(snapshot({ version: "test-2" }));
+    const brokenFile = await file(snapshot({ version: "test-2", rules: [{ invalid: true }] }), false);
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ files: [nextFile, brokenFile] }), { status: 200 })));
+    await expect(downloadAndActivateDataset()).rejects.toThrow();
+    expect(await readDatasetMeta("activeDatasetVersion")).toBe("test-1");
+  });
 });
