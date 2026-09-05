@@ -6,7 +6,7 @@ import type { SourceEntry } from "@/content/sources";
 const sourceSchema = z.object({
   id: z.string().min(1),
   tier: z.union([z.literal(1), z.literal(2), z.literal(3)]),
-  type: z.enum(["law", "regulation", "report", "form", "reference"]).optional(),
+  type: z.enum(["law", "bylaw", "rik", "court", "odihr", "observer_report", "other"]).optional(),
   label: z.string().min(1),
   url: z.string().url(),
   description: z.string().optional(),

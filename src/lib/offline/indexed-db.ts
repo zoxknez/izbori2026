@@ -72,3 +72,28 @@ export async function hasOpenDraft(): Promise<boolean> {
   ]);
   return values.some(Boolean);
 }
+
+export async function getOfflineStorageSummary() {
+  const database = await getConnection();
+  const [activeDatasetVersion, incidentCount, knowledgeCount, simulationCount] = await Promise.all([
+    readDatasetMeta("activeDatasetVersion"),
+    database.count("incidentNotes"),
+    database.count("knowledgeState"),
+    database.count("simulationHistory"),
+  ]);
+  const estimate = await navigator.storage?.estimate();
+  return { activeDatasetVersion, incidentCount, knowledgeCount, simulationCount, usage: estimate?.usage ?? 0, quota: estimate?.quota ?? 0 };
+}
+
+export async function clearOfflineUserData(): Promise<void> {
+  const database = await getConnection();
+  const transaction = database.transaction(["incidentNotes", "trainingProgress", "knowledgeState", "simulationHistory", "userPreferences"], "readwrite");
+  await Promise.all([
+    transaction.objectStore("incidentNotes").clear(),
+    transaction.objectStore("trainingProgress").clear(),
+    transaction.objectStore("knowledgeState").clear(),
+    transaction.objectStore("simulationHistory").clear(),
+    transaction.objectStore("userPreferences").clear(),
+  ]);
+  await transaction.done;
+}

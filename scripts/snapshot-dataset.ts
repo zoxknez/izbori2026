@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 config({ path: ".env.local" });
 import type { DatasetSnapshot } from "../src/lib/offline/dataset-validator";
+import { simulationEvents } from "../src/lib/domain/simulator/seed-events";
 
 async function main() {
   const [{ db }, schema, validator] = await Promise.all([
@@ -27,7 +28,7 @@ async function main() {
       lastLegalReview: row.lastLegalReview ?? undefined,
     })),
     sources: (await db.select().from(schema.sources).orderBy(asc(schema.sources.tier))).map((row) => ({
-      id: row.id, tier: row.tier as 1 | 2 | 3, type: (row.type as "law" | "regulation" | "report" | "form" | "reference") ?? "reference", label: row.label, url: row.url, description: row.description ?? undefined,
+      id: row.id, tier: row.tier as 1 | 2 | 3, type: (row.type as "law" | "bylaw" | "rik" | "court" | "odihr" | "observer_report" | "other") ?? "other", label: row.label, url: row.url, description: row.description ?? undefined,
       publisher: row.publisher ?? undefined, version: row.version ?? undefined, validFromDate: row.validFromDate ?? undefined,
       validUntilDate: row.validUntilDate ?? undefined, status: (row.status as "active" | "superseded" | "archived") ?? "active", supersedesId: row.supersedesId ?? undefined,
     })),
@@ -45,6 +46,7 @@ async function main() {
     tree.nodes = treeNodes.filter((node) => node.treeId === tree.id).map((node) => ({ id: node.id, type: node.type as "question" | "result", prompt: node.prompt, options: node.options ?? [], ruleIds: node.ruleIds ?? [], order: node.order ?? 0 }));
   });
   snapshot.training = buildTrainingQuestions(snapshot.rules).map((question) => ({ ruleIds: [question.ruleId], sourceIds: question.sourceIds }));
+  snapshot.simulation = simulationEvents.flatMap((event) => event.choices.map((choice) => ({ ruleIds: choice.ruleIds, sourceIds: [] })));
   const parsed = validator.datasetSnapshotSchema.parse(snapshot);
   const serialized = validator.stableStringify(parsed);
   const sha256 = await validator.sha256Hex(serialized);

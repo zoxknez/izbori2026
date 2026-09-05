@@ -22,20 +22,22 @@ downgrade, pa je zamena tog migracionog toolchain-a ostavljena za tehničku hard
 
 ## Faza 1 — zajednički domen i formalizacija pravila
 
-Status: **osnovna implementacija završena; preostale su samo eksplicitne hardening stavke**.
+Status: **završeno**.
 
 Urađeno:
 
 - uvedeni kanonski tipovi za faze, status objave i pravni review;
 - uveden Zod domen model sa proverama jedinstvenih ID/slug vrednosti i invariantom da je automatsko poništavanje izvedeno iz `severity === "ponistavanje"`;
+- `isAutomaticAnnulment` je PostgreSQL generated column, a seed više ne može da ga upisuje kao nezavisnu vrednost;
 - izdvojen čist `validateCounting` engine sa osam testiranih scenarija, uključujući razliku između računskog manjka i zakonskog viška;
 - dodat DB model `decision_trees`/`decision_nodes`, tri seedovana stabla i evaluator bez cikličnih putanja;
 - `Vidim problem` sada učitava stabla iz baze i prikazuje formalni interaktivni vodič, uz postojeći eksplorator kao detaljni fallback;
-- prošireni `rules` i postojeći `sources` model bez pravljenja duplikata `legal_sources` tabele;
+- prošireni `rules` i postojeći `sources` model bez pravljenja duplikata `legal_sources` tabele; source `type` je usklađen sa planiranim `law/bylaw/rik/court/odihr/observer_report/other` modelom;
+- dodat je formalni dependency graph sa source→rule, source→training/simulation i source→decision-tree granama, kao i stale propagation obračun;
 - uvedena prva Drizzle migracija i primenjena na Neon bazu, pa je dataset ponovo seedovan: 66 pravila, 8 krivičnih članova, 8 izvora i 3 stabla odluka;
 - UI filteri i prikaz koriste pluralne faze, dok je singularno `phase` zadržano samo kao privremena kompatibilnost za stare potrošače.
 
-Provere: domain invariant testovi, `validateCounting`, decision-tree evaluator i production build prolaze. Source provenance polja i Admin publish gate sada postoje; `isAutomaticAnnulment` se trenutno čuva kao obična kolona uz Zod/invariant zaštitu, a ne kao PostgreSQL generated kolona.
+Provere: domain invariant testovi, `validateCounting`, decision-tree evaluator, dependency graph i production build prolaze. Dodat je `domain:guards` build gate koji odbija sirovi severity render u JSX-u.
 
 ## Faza 2 — dataset versioning i offline temelj
 
@@ -48,60 +50,61 @@ Urađeno:
 - `scripts/snapshot-dataset.ts` pravi aktivni server snapshot direktno iz Neon tabela;
 - API rute `/api/offline-dataset/current` i `/api/offline-dataset/[version]` vraćaju snapshot uz odgovarajuće cache politike;
 - `scripts/freeze-bootstrap.ts` pravi build-time fallback u `public/offline-data/bootstrap/`, bez proglašavanja fallbacka aktivnim datasetom;
-- uveden IndexedDB sloj sa `datasetMeta` pointerom i odvojenim store-ovima za buduće incidente, trening, znanje, simulacije i preference;
+- uveden IndexedDB sloj sa `datasetMeta` pointerom i odvojenim store-ovima za incidente, trening, znanje, simulacije i preference;
 - `dataset-manager` preuzima, validira i tek potom atomarno aktivira novu verziju;
 - Neon migriran i snapshotovan: aktivna verzija sadrži 66 pravila, 8 izvora i 3 decision tree-a.
 
-Provere: typecheck, ESLint, Vitest i production build prolaze. E2E smoke proverava aktivni dataset API; kompletan network-failure E2E ostaje vezan za browser IndexedDB test harness u završnoj integracionoj fazi.
+Provere: typecheck, ESLint, Vitest i production build prolaze. Dataset snapshot trenutno sadrži 66 pravila, 8 izvora, 3 stabla, 193 training reference-a i 80 simulation reference-a.
 
 ## Faza 3 — trening engine
 
-Status: **engine i coverage implementirani; sadržajno obogaćivanje je otvoreno**.
+Status: **engine, coverage, vežba i ispit implementirani; ručna pravna redakcija pitanja je otvorena**.
 
 Urađeno:
 
 - uvedeni tipovi za trening pitanje, izbor, odgovor i knowledge state;
 - coverage prag je centralizovan po severity-ju: normal 2, teška nepravilnost 3, krivično delo 4, poništavanje 4 pitanja po pravilu;
-- generator trenutno proizvodi 193 pitanja za svih 66 pravila i koristi isti rule/source reference format za dataset snapshot;
+- generator trenutno proizvodi 193 pitanja za svih 66 pravila, koristi sadržajno različite scenarije zasnovane na akcijama/dokazima/efektima i isti rule/source reference format za dataset snapshot;
 - uvedeni mastery, confidence, spaced-repetition intervali, due/weakness weighting i exam score breakdown;
-- dodat `/trening/kviz` sa klasifikacionim mit/činjenica pitanjima kao jednim tipom novog engine-a;
+- dodat `/trening/kviz` sa klasifikacionim mit/činjenica pitanjima, režimom vežbe (12) i ispita (20), mastery dashboard-om i breakdown-om po težini;
 - progres i knowledge state se čuvaju u IndexedDB `trainingProgress` store-u.
 
-Provere: coverage, mastery, selection i exam scoring imaju unit testove; typecheck, ESLint i Vitest prolaze. Preostaju production content enrichment (ručno revidirana pitanja umesto generičkih fallback-a), pun exam/progress dashboard i integracioni E2E refresh scenariji.
+Provere: coverage, mastery, selection i exam scoring imaju unit testove; typecheck, ESLint, Vitest i build coverage gate prolaze. Preostaje samo ručna legal/content redakcija promptova i objašnjenja.
 
 ## Faza 4 — simulator biračkog dana
 
-Status: **engine implementiran; napredni modovi su otvoreni**.
+Status: **engine, vođeni i randomizovani režim implementirani**.
 
 Urađeno:
 
 - uvedeni `SimulationEvent`, `SimulationChoice`, `SimulationCondition`, efekti i reducer-like engine;
-- seedovan tok sa 30 događaja i tačno 80 odluka, kroz sve faze izbornog dana;
+- seedovan tok sa 30 događaja i tačno 80 odluka, kroz sve faze izbornog dana, sa rule referencama za simulator dataset;
 - uslovi i efekti kontrolišu flagove, score, evidence i fazne prelaze; nedostupne odluke se odbijaju server-independent čistom funkcijom;
 - Counting Mode koristi direktno isti `validateCounting()` engine kao `/validator`, bez dupliranja matematike;
 - dodat `/simulator/biracki-dan` i čuvanje istorije u IndexedDB `simulationHistory` store-u;
 - unit testovi pokrivaju broj događaja/odluka, efekte, scoring, prerequisites i integraciju sa counting validatorom.
 
-Preostaju randomized mode sa formalnim condition ograničenjima u UI-ju, kompletan 30-event E2E tok i detaljniji breakdown rezultata.
+Provere uključuju randomizovani izbor samo među neposećenim događajima koji zadovoljavaju condition-e i kompletan 30-event E2E tok. Detaljniji analitički breakdown rezultata ostaje opciono unapređenje.
 
 ## Faza 5 — admin dependency/versioning/auth layer
 
-Status: **osnovna bezbednosna granica završena; puni editor je otvoren**.
+Status: **auth, RBAC, content editor, dependency dashboard i publish workflow implementirani**.
 
 Urađeno:
 
 - Auth.js Credentials provider sa JWT sesijom i bcrypt proverom lozinke;
 - `admin_users` sa ulogama `SUPER_ADMIN`, `LEGAL_EDITOR`, `CONTENT_EDITOR`, `REVIEWER`;
 - `src/proxy.ts` radi samo optimistički redirect, dok publish route ponovo proverava sesiju i RBAC;
-- `/api/admin/publish` validira isti `dataset-validator`, upisuje novu dataset verziju/fajl i append-only audit zapis;
+- `/api/admin/publish` validira isti `dataset-validator`, upisuje novu dataset verziju/fajl i append-only audit zapis u jednoj Neon batch transakciji;
+- `/admin/rules` i `PATCH /api/admin/rules/[id]` omogućavaju RBAC-controlled content/status izmene uz pre/post audit zapis; `/admin` prikazuje source dependency graph i publish kontrolu;
 - `/admin/login` i osnovna `/admin` kontrolna tabla; nema self-registration, a `scripts/seed-admin.ts` zahteva eksplicitne env vrednosti;
 - `AUTH_SECRET` je dodat kao sensitive production env varijabla na Vercelu.
 
-Preostaju kompletan content editor, impact/diff modal, dependency graph dashboard i transakciona publish orkestracija sa punim DB-backed edit modelom.
+Preostaje bogatiji diff/impact modal i napredniji multi-entity editor; osnovni DB-backed rule editor, dependency graph i transakcioni snapshot publish su završeni.
 
 ## Faza 6 — service worker i PWA install sloj
 
-Status: **osnovni PWA sloj i ručno ažuriranje završeni; napredni storage UX je otvoren**.
+Status: **završeno za osnovni PWA/update/storage scope**.
 
 Urađeno:
 
@@ -111,7 +114,7 @@ Urađeno:
 - lifecycle politika eksplicitno testira `register: false` i `reloadOnOnline: false`, a UI ima offline indikator;
 - shell i SW imaju Playwright smoke proveru.
 
-Implementirani su update prompt sa korisničkim aktiviranjem, zaštita od reload-a tokom otvorenog drafta, IndexedDB draft flagovi, IndexedDB migracija sačuvanih incidenata i MiniSearch globalna pretraga. Preostaju storage management UI i puni scenario 9 sa stvarnim online/offline prelazom u browser harness-u.
+Implementirani su update prompt sa korisničkim aktiviranjem, zaštita od reload-a tokom otvorenog drafta, IndexedDB draft flagovi, IndexedDB migracija sačuvanih incidenata, MiniSearch globalna pretraga i storage-management panel. Serwist ostaje svesno izostavljen posle dokumentovanog Turbopack spike-a.
 
 ## Faza 7 — integracija i E2E hardening
 
@@ -121,7 +124,7 @@ Urađeno:
 
 - dodat cross-module Playwright tok: validator demo → trening učitavanje → simulator odluka;
 - dodate accessibility smoke provere za jedan `h1`, `main` landmark i missing image alt na javnim rutama;
-- E2E sada pokriva javne rute, offline API, SW/offline fallback, training, simulator i indeksiranu globalnu pretragu (15 testova);
+- E2E sada pokriva javne rute, offline API, SW/offline fallback, training, randomizovani i kompletan 30-event simulator, indeksiranu globalnu pretragu, admin RBAC guard i incident draft kroz online/offline prelaz (17 testova);
 - production build i deployment se proveravaju posle svake veće faze.
 
-Preostaje finalni performance budget sa realnim browser merenjem, scenario 9 online/offline sa incident draftom i kompletan admin publish → dataset → client update E2E.
+Preostaje performance budget sa realnim browser merenjem i authenticated Admin publish → dataset → client update E2E (zahteva test admin nalog/fixture, koji namerno nije kreiran bez korisničkih kredencijala).

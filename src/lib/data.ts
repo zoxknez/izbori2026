@@ -86,7 +86,7 @@ export async function getSources() {
   return rows.map((row) => ({
     ...row,
     tier: row.tier as 1 | 2 | 3,
-    type: (row.type as "law" | "regulation" | "report" | "form" | "reference") ?? "reference",
+    type: (row.type as "law" | "bylaw" | "rik" | "court" | "odihr" | "observer_report" | "other") ?? "other",
     description: row.description ?? undefined,
     order: row.order ?? 0,
     publisher: row.publisher ?? undefined,

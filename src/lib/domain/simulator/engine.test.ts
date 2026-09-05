@@ -29,4 +29,12 @@ describe("simulator engine", () => {
     expect(availableChoices(event, state)).toHaveLength(0);
     expect(() => applyChoice(state, event, event.choices[0], simulationEvents)).toThrow("nije dostupna");
   });
+
+  it("randomizovani režim bira samo neposećene događaje koji ispunjavaju uslov", () => {
+    const state = createSimulationState(simulationEvents[0], "randomized", 17);
+    const next = applyChoice(state, simulationEvents[0], simulationEvents[0].choices[0], simulationEvents);
+    expect(next.currentEventId).not.toBe("E01");
+    expect(next.history).toHaveLength(1);
+    expect(simulationEvents.some((event) => event.id === next.currentEventId)).toBeTruthy();
+  });
 });

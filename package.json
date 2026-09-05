@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "tsx scripts/check-training-coverage.ts && tsx scripts/freeze-bootstrap.ts && next build",
+    "build": "tsx scripts/check-domain-guards.ts && tsx scripts/check-training-coverage.ts && tsx scripts/freeze-bootstrap.ts && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
@@ -13,6 +13,7 @@
     "test:e2e": "playwright test",
     "dataset:snapshot": "tsx scripts/snapshot-dataset.ts",
     "training:coverage": "tsx scripts/check-training-coverage.ts",
+    "domain:guards": "tsx scripts/check-domain-guards.ts",
     "admin:seed": "tsx scripts/seed-admin.ts"
   },
   "dependencies": {

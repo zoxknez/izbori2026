@@ -50,4 +50,17 @@ test.describe("public application smoke", () => {
     expect(await worker.text()).toContain("LEGAL_DATA_CACHE");
     expect(offline.ok()).toBeTruthy();
   });
+
+  test("admin mutacije ostaju zatvorene bez sesije", async ({ page }) => {
+    const admin = await page.request.get("/admin", { maxRedirects: 0 });
+    expect(admin.status()).toBe(302);
+    expect(admin.headers().location).toContain("/admin/login");
+    const editor = await page.request.get("/admin/rules", { maxRedirects: 0 });
+    expect(editor.status()).toBe(302);
+    expect(editor.headers().location).toContain("/admin/login");
+    const rules = await page.request.patch("/api/admin/rules/P01", { data: { summary: "neovlašćena izmena" } });
+    expect(rules.status()).toBe(401);
+    const publish = await page.request.post("/api/admin/publish", { data: {} });
+    expect(publish.status()).toBe(401);
+  });
 });

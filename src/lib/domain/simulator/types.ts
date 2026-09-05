@@ -2,6 +2,7 @@ import type { ElectionPhase, Severity } from "@/lib/types";
 import type { CountingInput, CountingResult } from "@/lib/domain/results-validator";
 
 export type SimulationOutcome = "routine" | "prevented" | "serious" | "criminal" | "annulment";
+export type SimulationMode = "guided" | "randomized";
 
 export interface SimulationCondition {
   requiresFlags?: string[];
@@ -45,6 +46,8 @@ export interface SimulationState {
   flags: string[];
   history: Array<{ eventId: string; choiceId: string; outcome: SimulationOutcome }>;
   finished: boolean;
+  mode: SimulationMode;
+  randomSeed: number;
 }
 
 export interface CountingModeState {

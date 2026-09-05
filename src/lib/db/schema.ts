@@ -8,6 +8,7 @@ import {
   boolean,
   date,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const rules = pgTable("rules", {
   id: varchar("id", { length: 16 }).primaryKey(),
@@ -39,7 +40,7 @@ export const rules = pgTable("rules", {
   mythCheck: jsonb("myth_check")
     .$type<{ claim: string; verdict: "mit" | "cinjenica" | "zavisi"; explanation: string } | null>()
     .default(null),
-  isAutomaticAnnulment: boolean("is_automatic_annulment").default(false),
+  isAutomaticAnnulment: boolean("is_automatic_annulment").generatedAlwaysAs(sql`("severity" = 'ponistavanje')`),
   order: integer("order").default(0),
   reviewStatus: varchar("review_status", { length: 32 }).default("legal_review"),
   publicationStatus: varchar("publication_status", { length: 32 }).default("published"),

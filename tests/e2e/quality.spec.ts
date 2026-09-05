@@ -12,6 +12,8 @@ test("cross-module public flows and accessibility landmarks", async ({ page }) =
 
   await page.goto("/simulator/biracki-dan");
   await expect(page.getByRole("heading", { name: /Vežbaj reakciju/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Randomizovani", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Randomizovani", exact: true }).click();
   await page.getByRole("button", { name: /Zaustavi radnju/i }).click();
   await expect(page.getByText(/Događaj 2 od 30/i)).toBeVisible();
 });
@@ -31,4 +33,31 @@ test("global search finds an incident through the indexed aliases", async ({ pag
   await search.fill("bugarski voz");
   await expect(page.getByText(/Pronađeno u bazi \(/i)).toBeVisible();
   await expect(page.getByText(/bugarski voz/i).first()).toBeVisible();
+});
+
+test("incident draft survives an online/offline transition without reload", async ({ page, context }) => {
+  await page.goto("/prijavi");
+  const description = page.locator("textarea").first();
+  await description.fill("Testni opis incidenta koji mora ostati sačuvan.");
+  await context.setOffline(true);
+  await expect(description).toHaveValue("Testni opis incidenta koji mora ostati sačuvan.");
+  await context.setOffline(false);
+  await expect(description).toHaveValue("Testni opis incidenta koji mora ostati sačuvan.");
+});
+
+test("guided simulator completes the full 30-event path", async ({ page }) => {
+  await page.goto("/simulator/biracki-dan");
+  for (let index = 0; index < 30; index += 1) {
+    await page.getByRole("button", { name: /Zaustavi radnju/i }).click();
+  }
+  await expect(page.getByText(/Birački dan završen/i)).toBeVisible();
+});
+
+test("public shell stays within the browser navigation budget", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const domContentLoaded = await page.evaluate(() => {
+    const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    return navigation ? navigation.domContentLoadedEventEnd - navigation.startTime : 0;
+  });
+  expect(domContentLoaded).toBeLessThan(5000);
 });
