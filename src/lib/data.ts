@@ -16,6 +16,7 @@ function toRule(row: RuleRow): Rule {
     phase: row.phase,
     summary: row.summary,
     legalRule: row.legalRule,
+    pravniOsnov: row.lawReferences?.[0]?.law,
     legalEffect: row.legalEffect ?? undefined,
     whatToCheck: row.whatToCheck ?? [],
     controllerActions: row.controllerActions ?? [],
@@ -51,9 +52,16 @@ export async function getRulesByIds(ids: string[]): Promise<Rule[]> {
 }
 
 export async function getCriminalArticles() {
-  return db.select().from(criminalArticlesTable).orderBy(asc(criminalArticlesTable.order));
+  const rows = await db.select().from(criminalArticlesTable).orderBy(asc(criminalArticlesTable.order));
+  return rows.map((row) => ({ ...row, nijeDokaz: row.nijeDokaz ?? undefined, order: row.order ?? 0 }));
 }
 
 export async function getSources() {
-  return db.select().from(sourcesTable).orderBy(asc(sourcesTable.tier));
+  const rows = await db.select().from(sourcesTable).orderBy(asc(sourcesTable.tier));
+  return rows.map((row) => ({
+    ...row,
+    tier: row.tier as 1 | 2 | 3,
+    description: row.description ?? undefined,
+    order: row.order ?? 0,
+  }));
 }

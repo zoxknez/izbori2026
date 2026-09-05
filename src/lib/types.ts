@@ -100,6 +100,7 @@ export interface Rule {
   phase: string;
   summary: string;
   legalRule: string;
+  pravniOsnov?: string;
   legalEffect?: string;
   whatToCheck: string[];
   controllerActions: string[];

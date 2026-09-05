@@ -29,12 +29,15 @@
 
 html {
   color-scheme: dark;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   background: var(--color-canvas);
   color: var(--color-ink);
   font-feature-settings: "cv11", "ss01";
+  -webkit-tap-highlight-color: transparent;
 }
 
 ::selection {
@@ -46,6 +49,15 @@ body {
   border-color: var(--color-border);
 }
 
+/* Prevent iOS Safari from auto-zooming on input focus */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
 .scrollbar-thin::-webkit-scrollbar {
   height: 6px;
   width: 6px;
@@ -53,6 +65,15 @@ body {
 .scrollbar-thin::-webkit-scrollbar-thumb {
   background: var(--color-border);
   border-radius: 999px;
+}
+
+/* Hide scrollbars for chips and tags */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @keyframes fade-up {

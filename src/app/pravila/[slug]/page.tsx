@@ -33,7 +33,10 @@ export default async function RuleDetailPage({ params }: { params: Promise<{ slu
 
   return (
     <Container className="py-8 sm:py-12">
-      <Link href="/pravila" className="inline-flex items-center gap-1.5 text-sm text-ink-dim hover:text-ink">
+      <Link
+        href="/pravila"
+        className="inline-flex items-center gap-2 rounded-lg border border-border/80 bg-surface-2/60 px-3.5 py-2 text-xs font-semibold text-ink-dim hover:border-brand/40 hover:bg-surface-2 hover:text-brand transition-colors"
+      >
         <ArrowLeft className="h-4 w-4" />
         Nazad na bazu nepravilnosti
       </Link>

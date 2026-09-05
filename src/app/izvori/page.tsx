@@ -1,67 +1,104 @@
-import { ExternalLink } from "lucide-react";
 import { getSources } from "@/lib/data";
 import { Container } from "@/components/ui/container";
 import { Card, CardBody } from "@/components/ui/card";
+import { SourcesExplorer } from "@/components/sources-explorer";
+import { BookOpen, ShieldCheck, Scale, FileText, CheckCircle2 } from "lucide-react";
 
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "Izvori",
-  description: "Zvanični i institucionalni izvori na koje se oslanja ovaj vodič.",
-};
-
-const TIER_LABEL: Record<number, string> = {
-  1: "Tier 1: normativni i zvanični izvori",
-  2: "Tier 2: pravna i institucionalna analiza",
-  3: "Tier 3: monitoring i posmatračke misije",
+  title: "Pravni izvori i propisi — Zvanična dokumentacija",
+  description:
+    "Zvanični pravni i institucionalni izvori: Zakon o izboru narodnih poslanika, Krivični zakonik, uputstva RIK-a i izveštaji posmatračkih misija OEBS/ODIHR i CRTA.",
 };
 
 export default async function IzvoriPage() {
   const sources = await getSources();
-  const grouped = sources.reduce<Record<number, typeof sources>>((acc, s) => {
-    (acc[s.tier] ??= []).push(s);
-    return acc;
-  }, {});
 
   return (
     <Container className="py-8 sm:py-12">
-      <h1 className="text-2xl font-bold sm:text-3xl">Izvori</h1>
-      <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-ink-dim">
-        Ovaj vodič se oslanja isključivo na zvanične propise, institucionalne izvore i
-        akreditovane posmatračke misije, nikada na pojedinačnu političku stranku kao jedini
-        izvor za pravnu klasifikaciju.
-      </p>
+      {/* Hero section */}
+      <div className="max-w-3xl">
+        <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/5 px-3 py-1 text-xs font-semibold text-brand">
+          <BookOpen className="h-3.5 w-3.5" />
+          <span>Pravna utemeljenost i transparentnost</span>
+        </div>
+        <h1 className="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl text-ink">
+          Zvanični pravni izvori i propisi
+        </h1>
+        <p className="mt-2 text-base leading-relaxed text-ink-dim sm:text-lg">
+          Ovaj vodič se oslanja isključivo na važeći pravni poredak Republike Srbije, zvanične
+          obrasce Republičke izborne komisije i međunarodno verifikovane posmatračke izveštaje.
+          Nijedna politička stranka ili neprovereni medijski navod ne koristi se kao izvor za
+          pravnu klasifikaciju.
+        </p>
+      </div>
 
-      <div className="mt-8 space-y-8">
-        {Object.entries(grouped).map(([tier, items]) => (
-          <div key={tier}>
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-faint">
-              {TIER_LABEL[Number(tier)] ?? `Tier ${tier}`}
-            </h2>
-            <div className="mt-3 space-y-3">
-              {items.map((s) => (
-                <Card key={s.id}>
-                  <CardBody className="pt-5">
-                    <a
-                      href={s.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-start justify-between gap-3 group"
-                    >
-                      <div>
-                        <p className="font-semibold text-ink group-hover:text-brand">{s.label}</p>
-                        {s.description && (
-                          <p className="mt-1 text-sm leading-relaxed text-ink-dim">{s.description}</p>
-                        )}
-                      </div>
-                      <ExternalLink className="mt-1 h-4 w-4 shrink-0 text-ink-faint group-hover:text-brand" />
-                    </a>
-                  </CardBody>
-                </Card>
-              ))}
-            </div>
+      {/* 3 Pillars of Legal Integrity */}
+      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="flex items-start gap-3 rounded-2xl border border-border bg-surface p-4 shadow-sm">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
+            <Scale className="h-5 w-5" />
           </div>
-        ))}
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
+              1. Pozitivno izborno pravo
+            </h3>
+            <p className="mt-1 text-xs leading-relaxed text-ink-dim">
+              Ustav RS, ZINP, Zakon o lokalnim izborima, Zakon o JBS i Krivični zakonik Srbije (čl. 154–161).
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3 rounded-2xl border border-border bg-surface p-4 shadow-sm">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400">
+            <ShieldCheck className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
+              2. Zvanična podzakonska akta
+            </h3>
+            <p className="mt-1 text-xs leading-relaxed text-ink-dim">
+              Pravilnik o radu biračkih odbora, uputstva o glasanju i zvanični obrasci RIK-a (uključujući ZP-4).
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3 rounded-2xl border border-border bg-surface p-4 shadow-sm">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <CheckCircle2 className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
+              3. Verifikovani monitoring
+            </h3>
+            <p className="mt-1 text-xs leading-relaxed text-ink-dim">
+              Nalazi međunarodnih posmatrača (OEBS / ODIHR) i akreditovanih domaćih organizacija (CRTA).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Interactive Sources Explorer */}
+      <div className="mt-10">
+        <SourcesExplorer sources={sources} />
+      </div>
+
+      {/* Methodological Box */}
+      <div className="mt-12 rounded-2xl border border-border bg-surface-2 p-6 shadow-sm">
+        <div className="flex items-center gap-2">
+          <FileText className="h-5 w-5 text-brand" />
+          <h2 className="text-sm font-bold text-ink">
+            Metodologija pravne obrade i ažuriranja baze
+          </h2>
+        </div>
+        <p className="mt-2 text-xs leading-relaxed text-ink-dim">
+          Svaka situacija, nepravilnost i preporuka u ovoj bazi prolazi rigoroznu unakrsnu proveru:
+          upoređuje se tekst zakona, odgovarajući član Krivičnog zakonika i dosadašnja praksa Upravnog i
+          Višeg suda. U slučaju promene propisa od strane Narodne skupštine ili donošenja novih uputstava
+          Republičke izborne komisije, baza se redovno sinhronizuje kako bi kontrolori i birači uvek imali
+          100% tačne informacije na terenu.
+        </p>
       </div>
     </Container>
   );
