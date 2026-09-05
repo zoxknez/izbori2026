@@ -7,12 +7,20 @@ async function main() {
     rules: rulesTable,
     criminalArticles: criminalArticlesTable,
     sources: sourcesTable,
+    decisionTrees: decisionTreesTable,
+    decisionNodes: decisionNodesTable,
   } = await import("../src/lib/db/schema");
   const { rules } = await import("../src/content/rules");
   const { criminalArticles } = await import("../src/content/criminal-articles");
   const { sources } = await import("../src/content/sources");
+  const { decisionTrees } = await import("../src/content/decision-trees");
+  const { assertRulesInvariants } = await import("../src/lib/domain/rules/invariants");
+  const { decisionTreeSchema } = await import("../src/lib/domain/decision-trees/types");
   const reviewStatus = process.env.LEGAL_REVIEW_STATUS ?? "REVIEW_REQUIRED";
   const lastLegalReview = process.env.LEGAL_REVIEW_DATE;
+
+  assertRulesInvariants(rules);
+  decisionTrees.forEach((tree) => decisionTreeSchema.parse(tree));
 
   console.log(`Seedujem ${rules.length} pravila...`);
   for (const r of rules) {
@@ -26,6 +34,7 @@ async function main() {
         severity: r.severity,
         electionTypes: r.electionTypes,
         phase: r.phase,
+        phases: r.phases?.length ? r.phases : [r.phase],
         summary: r.summary,
         legalRule: r.legalRule,
         legalEffect: r.legalEffect,
@@ -42,6 +51,7 @@ async function main() {
         isAutomaticAnnulment: r.isAutomaticAnnulment ?? false,
         order: r.order ?? 0,
         reviewStatus,
+        publicationStatus: r.publicationStatus ?? "published",
         lastLegalReview,
       })
       .onConflictDoUpdate({
@@ -53,6 +63,7 @@ async function main() {
           severity: r.severity,
           electionTypes: r.electionTypes,
           phase: r.phase,
+          phases: r.phases?.length ? r.phases : [r.phase],
           summary: r.summary,
           legalRule: r.legalRule,
           legalEffect: r.legalEffect,
@@ -69,6 +80,7 @@ async function main() {
           isAutomaticAnnulment: r.isAutomaticAnnulment ?? false,
           order: r.order ?? 0,
           reviewStatus,
+          publicationStatus: r.publicationStatus ?? "published",
           lastLegalReview,
           updatedAt: new Date(),
         },
@@ -114,6 +126,12 @@ async function main() {
         url: s.url,
         description: s.description,
         order: 0,
+        publisher: s.publisher,
+        version: s.version,
+        validFromDate: s.validFromDate,
+        validUntilDate: s.validUntilDate,
+        status: s.status ?? "active",
+        supersedesId: s.supersedesId,
       })
       .onConflictDoUpdate({
         target: sourcesTable.id,
@@ -122,8 +140,69 @@ async function main() {
           label: s.label,
           url: s.url,
           description: s.description,
+          publisher: s.publisher,
+          version: s.version,
+          validFromDate: s.validFromDate,
+          validUntilDate: s.validUntilDate,
+          status: s.status ?? "active",
+          supersedesId: s.supersedesId,
+          lastCheckedAt: new Date(),
         },
       });
+  }
+
+  console.log(`Seedujem ${decisionTrees.length} stabala odluka...`);
+  for (const tree of decisionTrees) {
+    await db
+      .insert(decisionTreesTable)
+      .values({
+        id: tree.id,
+        slug: tree.slug,
+        title: tree.title,
+        description: tree.description,
+        startNodeId: tree.startNodeId,
+        publicationStatus: tree.publicationStatus,
+        reviewStatus: tree.reviewStatus,
+        order: tree.order,
+      })
+      .onConflictDoUpdate({
+        target: decisionTreesTable.id,
+        set: {
+          slug: tree.slug,
+          title: tree.title,
+          description: tree.description,
+          startNodeId: tree.startNodeId,
+          publicationStatus: tree.publicationStatus,
+          reviewStatus: tree.reviewStatus,
+          order: tree.order,
+          updatedAt: new Date(),
+        },
+      });
+
+    for (const node of tree.nodes) {
+      await db
+        .insert(decisionNodesTable)
+        .values({
+          id: node.id,
+          treeId: tree.id,
+          type: node.type,
+          prompt: node.prompt,
+          options: node.options,
+          ruleIds: node.ruleIds,
+          order: node.order,
+        })
+        .onConflictDoUpdate({
+          target: decisionNodesTable.id,
+          set: {
+            treeId: tree.id,
+            type: node.type,
+            prompt: node.prompt,
+            options: node.options,
+            ruleIds: node.ruleIds,
+            order: node.order,
+          },
+        });
+    }
   }
 
   console.log("Gotovo.");

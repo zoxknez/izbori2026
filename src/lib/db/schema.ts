@@ -6,6 +6,7 @@ import {
   jsonb,
   timestamp,
   boolean,
+  date,
 } from "drizzle-orm/pg-core";
 
 export const rules = pgTable("rules", {
@@ -16,6 +17,7 @@ export const rules = pgTable("rules", {
   severity: varchar("severity", { length: 32 }).notNull(),
   electionTypes: jsonb("election_types").$type<string[]>().notNull(),
   phase: varchar("phase", { length: 64 }).notNull(),
+  phases: jsonb("phases").$type<string[]>().notNull().default([]),
   summary: text("summary").notNull(),
   legalRule: text("legal_rule").notNull(),
   legalEffect: text("legal_effect"),
@@ -38,6 +40,7 @@ export const rules = pgTable("rules", {
   isAutomaticAnnulment: boolean("is_automatic_annulment").default(false),
   order: integer("order").default(0),
   reviewStatus: varchar("review_status", { length: 32 }).default("REVIEW_REQUIRED"),
+  publicationStatus: varchar("publication_status", { length: 32 }).default("published"),
   lastLegalReview: varchar("last_legal_review", { length: 32 }),
   validFrom: varchar("valid_from", { length: 32 }),
   validUntil: varchar("valid_until", { length: 32 }),
@@ -56,6 +59,31 @@ export const criminalArticles = pgTable("criminal_articles", {
   order: integer("order").default(0),
 });
 
+export const decisionTrees = pgTable("decision_trees", {
+  id: varchar("id", { length: 32 }).primaryKey(),
+  slug: varchar("slug", { length: 160 }).notNull().unique(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  startNodeId: varchar("start_node_id", { length: 64 }).notNull(),
+  publicationStatus: varchar("publication_status", { length: 32 }).default("published"),
+  reviewStatus: varchar("review_status", { length: 32 }).default("REVIEW_REQUIRED"),
+  order: integer("order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const decisionNodes = pgTable("decision_nodes", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  treeId: varchar("tree_id", { length: 32 }).notNull(),
+  type: varchar("type", { length: 16 }).notNull(),
+  prompt: text("prompt").notNull(),
+  options: jsonb("options")
+    .$type<{ id: string; label: string; nextNodeId?: string; ruleIds: string[] }[]>()
+    .default([]),
+  ruleIds: jsonb("rule_ids").$type<string[]>().default([]),
+  order: integer("order").default(0),
+});
+
 export const sources = pgTable("sources", {
   id: varchar("id", { length: 64 }).primaryKey(),
   tier: integer("tier").notNull(),
@@ -63,9 +91,18 @@ export const sources = pgTable("sources", {
   url: text("url").notNull(),
   description: text("description"),
   order: integer("order").default(0),
+  publisher: text("publisher"),
+  version: varchar("version", { length: 64 }),
+  validFromDate: date("valid_from_date"),
+  validUntilDate: date("valid_until_date"),
+  status: varchar("status", { length: 32 }).default("active"),
+  supersedesId: varchar("supersedes_id", { length: 64 }),
+  lastCheckedAt: timestamp("last_checked_at"),
 });
 
 export type RuleRow = typeof rules.$inferSelect;
 export type NewRuleRow = typeof rules.$inferInsert;
 export type CriminalArticleRow = typeof criminalArticles.$inferSelect;
 export type SourceRow = typeof sources.$inferSelect;
+export type DecisionTreeRow = typeof decisionTrees.$inferSelect;
+export type DecisionNodeRow = typeof decisionNodes.$inferSelect;

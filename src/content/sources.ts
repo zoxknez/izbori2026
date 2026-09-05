@@ -4,6 +4,12 @@ export interface SourceEntry {
   label: string;
   url: string;
   description?: string;
+  publisher?: string;
+  version?: string;
+  validFromDate?: string;
+  validUntilDate?: string;
+  status?: "active" | "superseded" | "archived";
+  supersedesId?: string;
 }
 
 export const sources: SourceEntry[] = [

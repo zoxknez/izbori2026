@@ -17,6 +17,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { validateCounting } from "@/lib/domain/results-validator";
 
 interface ListaGlasova {
   id: string;
@@ -106,40 +107,29 @@ export function ZapisnikValidator() {
     [R, U, G, B, N, V, liste]
   );
 
-  const hasAnyInput =
-    R !== "" || U !== "" || G !== "" || B !== "" || N !== "" || V !== "" ||
-    liste.some((lista) => lista.glasova !== "");
-
-  // Check 1: Pravilo A (B <= G) - Čl. 116 ZINP (automatsko poništavanje)
-  const isRuleACheckable = values.B !== null && values.G !== null;
-  const diffA = isRuleACheckable ? (values.B! - values.G!) : 0;
-  const ruleAOk = isRuleACheckable ? values.B! <= values.G! : null;
-
-  // Check 2: Pravilo B (U + B <= R) - Čl. 116 ZINP (automatsko poništavanje)
-  const isRuleBCheckable = values.U !== null && values.B !== null && values.R !== null;
-  const sumUB = isRuleBCheckable ? (values.U! + values.B!) : 0;
-  const diffB = isRuleBCheckable ? (sumUB - values.R!) : 0;
-  const ruleBOk = isRuleBCheckable ? sumUB <= values.R! : null;
-  const ruleBExact = isRuleBCheckable ? sumUB === values.R! : null;
-
-  // Check 3: Pravilo C (N + V === B) - Računsko poklapanje u kutiji
-  const isRuleCCheckable = values.N !== null && values.V !== null && values.B !== null;
-  const sumNV = isRuleCCheckable ? (values.N! + values.V!) : 0;
-  const diffC = isRuleCCheckable ? (sumNV - values.B!) : 0;
-  const ruleCOk = isRuleCCheckable ? sumNV === values.B! : null;
-
-  // Check 4: Pravilo D (Zbir lista === V)
-  const hasAllListValues = values.liste.length > 0 && values.liste.every((v) => v !== null);
-  const sumListe = hasAllListValues ? values.liste.reduce((a, b) => a! + b!, 0) : null;
-  const isRuleDCheckable = sumListe !== null && values.V !== null;
-  const diffD = isRuleDCheckable ? (sumListe! - values.V!) : 0;
-  const ruleDOk = isRuleDCheckable ? sumListe === values.V! : null;
-
-  // Overall Status
-  const isAnnulmentFail = ruleAOk === false || ruleBOk === false;
-  const isCalculationFail = ruleBExact === false || ruleCOk === false || ruleDOk === false;
-  const allEvaluated = ruleAOk !== null && ruleBExact !== null && ruleCOk !== null && ruleDOk !== null;
-  const isEverythingValid = allEvaluated && ruleAOk && ruleBExact && ruleCOk && ruleDOk;
+  const validation = useMemo(
+    () => validateCounting({ ...values, listVotes: values.liste }),
+    [values],
+  );
+  const { ruleA: ruleAResult, ruleB: ruleBResult, ruleC: ruleCResult, ruleD: ruleDResult } = validation;
+  const hasAnyInput = validation.hasAnyInput;
+  const diffA = ruleAResult.difference ?? 0;
+  const sumUB = ruleBResult.actual ?? 0;
+  const diffB = ruleBResult.difference ?? 0;
+  const ruleAOk = ruleAResult.ok;
+  const ruleBOk = ruleBResult.ok;
+  const ruleBExact = ruleBResult.actual === null || ruleBResult.expected === null
+    ? null
+    : ruleBResult.actual === ruleBResult.expected;
+  const sumNV = ruleCResult.actual ?? 0;
+  const diffC = ruleCResult.difference ?? 0;
+  const ruleCOk = ruleCResult.ok;
+  const sumListe = ruleDResult.actual;
+  const diffD = ruleDResult.difference ?? 0;
+  const ruleDOk = ruleDResult.ok;
+  const isAnnulmentFail = validation.isAnnulmentFail;
+  const isCalculationFail = validation.isCalculationFail;
+  const isEverythingValid = validation.isEverythingValid;
 
   function loadValidDemo() {
     setR("1000");

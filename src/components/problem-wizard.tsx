@@ -13,7 +13,7 @@ import {
   Check,
   FileText,
 } from "lucide-react";
-import type { Rule, Severity } from "@/lib/types";
+import { ruleHasPhase, type Rule, type Severity } from "@/lib/types";
 import { PHASE_META, PHASE_ORDER } from "@/lib/phases";
 import { SeverityBadge } from "@/components/ui/severity-badge";
 import { Card } from "@/components/ui/card";
@@ -46,7 +46,7 @@ export function ProblemWizard({ rules }: { rules: Rule[] }) {
   const [copiedAction, setCopiedAction] = useState(false);
 
   const phasesPresent = useMemo(
-    () => PHASE_ORDER.filter((p) => rules.some((r) => r.phase === p)),
+    () => PHASE_ORDER.filter((p) => rules.some((r) => ruleHasPhase(r, p))),
     [rules]
   );
 
@@ -54,7 +54,7 @@ export function ProblemWizard({ rules }: { rules: Rule[] }) {
   const phaseCounts = useMemo(() => {
     const map: Record<string, number> = {};
     for (const p of PHASE_ORDER) {
-      map[p] = rules.filter((r) => r.phase === p).length;
+      map[p] = rules.filter((r) => ruleHasPhase(r, p)).length;
     }
     return map;
   }, [rules]);
@@ -75,7 +75,7 @@ export function ProblemWizard({ rules }: { rules: Rule[] }) {
   // Scenarios inside selected phase
   const scenarios = useMemo(() => {
     if (!phase) return [];
-    let list = rules.filter((r) => r.phase === phase);
+    let list = rules.filter((r) => ruleHasPhase(r, phase));
     if (phaseFilterSeverity !== "sve") {
       list = list.filter((r) => r.severity === phaseFilterSeverity);
     }
@@ -395,7 +395,7 @@ export function ProblemWizard({ rules }: { rules: Rule[] }) {
                     : "bg-surface-2 text-ink-dim hover:text-ink"
                 )}
               >
-                Sve ({rules.filter((r) => r.phase === phase).length})
+                Sve ({rules.filter((r) => ruleHasPhase(r, phase)).length})
               </button>
               <button
                 onClick={() => setPhaseFilterSeverity("ponistavanje")}

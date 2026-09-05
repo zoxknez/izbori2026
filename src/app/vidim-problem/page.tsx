@@ -1,7 +1,8 @@
-import { getAllRules } from "@/lib/data";
+import { getAllRules, getDecisionTrees } from "@/lib/data";
 import { Container } from "@/components/ui/container";
 import { ProblemWizard } from "@/components/problem-wizard";
 import { Zap, Clock, ShieldAlert, FileEdit } from "lucide-react";
+import { DecisionTreeNavigator } from "@/components/decision-tree-navigator";
 
 export const revalidate = 3600;
 
@@ -13,7 +14,7 @@ export const metadata = {
 };
 
 export default async function VidimProblemPage() {
-  const rules = await getAllRules();
+  const [rules, decisionTrees] = await Promise.all([getAllRules(), getDecisionTrees()]);
 
   return (
     <Container className="py-8 sm:py-12">
@@ -79,6 +80,9 @@ export default async function VidimProblemPage() {
       </div>
 
       {/* Main interactive wizard */}
+      <div className="mt-8">
+        <DecisionTreeNavigator trees={decisionTrees} rules={rules} />
+      </div>
       <div className="mt-8">
         <ProblemWizard rules={rules} />
       </div>

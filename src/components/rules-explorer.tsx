@@ -12,7 +12,7 @@ import {
   RotateCcw,
   SlidersHorizontal,
 } from "lucide-react";
-import type { Rule, Severity } from "@/lib/types";
+import { ruleHasPhase, type Rule, type Severity } from "@/lib/types";
 import { CATEGORY_META, SEVERITY_ORDER, SEVERITY_META } from "@/lib/types";
 import { PHASE_META } from "@/lib/phases";
 import { RuleCard } from "@/components/rule-card";
@@ -78,7 +78,7 @@ export function RulesExplorer({
     return rules.filter((r) => {
       if (category && r.kategorija !== category) return false;
       if (severity && r.severity !== severity) return false;
-      if (phase && r.phase !== phase) return false;
+      if (phase && !ruleHasPhase(r, phase)) return false;
       if (!q) return true;
       return (
         r.naziv.toLowerCase().includes(q) ||

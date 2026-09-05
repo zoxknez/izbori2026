@@ -10,6 +10,25 @@ export const SEVERITY_ORDER = [
 
 export type Severity = (typeof SEVERITY_ORDER)[number];
 
+export const ELECTION_PHASES = [
+  "pre_otvaranja",
+  "identifikacija",
+  "glasanje",
+  "van_birackog_mesta",
+  "zatvaranje",
+  "brojanje",
+  "zapisnik",
+  "svaka",
+] as const;
+
+export type ElectionPhase = (typeof ELECTION_PHASES)[number];
+
+export const PUBLICATION_STATUSES = ["draft", "published", "archived"] as const;
+export type PublicationStatus = (typeof PUBLICATION_STATUSES)[number];
+
+export const REVIEW_STATUSES = ["UNREVIEWED", "REVIEW_REQUIRED", "REVIEWED"] as const;
+export type ReviewStatus = (typeof REVIEW_STATUSES)[number];
+
 export const SEVERITY_META: Record<
   Severity,
   { label: string; emoji: string; className: string }
@@ -97,7 +116,9 @@ export interface Rule {
   kategorija: string;
   severity: Severity;
   electionTypes: string[];
+  /** @deprecated Use phases. Kept until all consumers are migrated. */
   phase: string;
+  phases?: ElectionPhase[];
   summary: string;
   legalRule: string;
   pravniOsnov?: string;
@@ -114,6 +135,11 @@ export interface Rule {
   mythCheck?: MythCheck | null;
   isAutomaticAnnulment?: boolean;
   order?: number;
-  reviewStatus?: string;
+  publicationStatus?: PublicationStatus;
+  reviewStatus?: ReviewStatus;
   lastLegalReview?: string;
+}
+
+export function ruleHasPhase(rule: Rule, phase: string): boolean {
+  return (rule.phases?.length ? rule.phases : [rule.phase]).includes(phase as ElectionPhase);
 }

@@ -1,7 +1,13 @@
 import "server-only";
 import { cache } from "react";
 import { db } from "@/lib/db";
-import { rules as rulesTable, criminalArticles as criminalArticlesTable, sources as sourcesTable } from "@/lib/db/schema";
+import {
+  rules as rulesTable,
+  criminalArticles as criminalArticlesTable,
+  sources as sourcesTable,
+  decisionTrees as decisionTreesTable,
+  decisionNodes as decisionNodesTable,
+} from "@/lib/db/schema";
 import { asc } from "drizzle-orm";
 import type { Rule } from "@/lib/types";
 import type { RuleRow } from "@/lib/db/schema";
@@ -29,6 +35,7 @@ function toRule(row: RuleRow): Rule {
         })(),
     electionTypes: row.electionTypes ?? [],
     phase: row.phase,
+    phases: (row.phases?.length ? row.phases : [row.phase]) as Rule["phases"],
     summary: row.summary,
     legalRule: row.legalRule,
     pravniOsnov: row.lawReferences?.[0]?.law,
@@ -45,7 +52,8 @@ function toRule(row: RuleRow): Rule {
     mythCheck: row.mythCheck ?? null,
     isAutomaticAnnulment: row.isAutomaticAnnulment ?? false,
     order: row.order ?? 0,
-    reviewStatus: row.reviewStatus ?? undefined,
+    publicationStatus: (row.publicationStatus as Rule["publicationStatus"]) ?? "published",
+    reviewStatus: (row.reviewStatus as Rule["reviewStatus"]) ?? "REVIEW_REQUIRED",
     lastLegalReview: row.lastLegalReview ?? undefined,
   };
 }
@@ -78,5 +86,38 @@ export async function getSources() {
     tier: row.tier as 1 | 2 | 3,
     description: row.description ?? undefined,
     order: row.order ?? 0,
+    publisher: row.publisher ?? undefined,
+    version: row.version ?? undefined,
+    validFromDate: row.validFromDate ?? undefined,
+    validUntilDate: row.validUntilDate ?? undefined,
+    status: (row.status as "active" | "superseded" | "archived") ?? "active",
+    supersedesId: row.supersedesId ?? undefined,
   }));
 }
+
+export const getDecisionTrees = cache(async () => {
+  const [trees, nodes] = await Promise.all([
+    db.select().from(decisionTreesTable).orderBy(asc(decisionTreesTable.order)),
+    db.select().from(decisionNodesTable).orderBy(asc(decisionNodesTable.order)),
+  ]);
+  return trees.map((tree) => ({
+    id: tree.id,
+    slug: tree.slug,
+    title: tree.title,
+    description: tree.description,
+    startNodeId: tree.startNodeId,
+    publicationStatus: (tree.publicationStatus as "draft" | "published" | "archived") ?? "published",
+    reviewStatus: (tree.reviewStatus as "UNREVIEWED" | "REVIEW_REQUIRED" | "REVIEWED") ?? "REVIEW_REQUIRED",
+    order: tree.order ?? 0,
+    nodes: nodes
+      .filter((node) => node.treeId === tree.id)
+      .map((node) => ({
+        id: node.id,
+        type: node.type as "question" | "result",
+        prompt: node.prompt,
+        options: node.options ?? [],
+        ruleIds: node.ruleIds ?? [],
+        order: node.order ?? 0,
+      })),
+  }));
+});
