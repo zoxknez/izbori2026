@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { encode } from "next-auth/jwt";
 
 const routes = [
   "/",
@@ -61,11 +62,46 @@ test.describe("public application smoke", () => {
     const sourceEditor = await page.request.get("/admin/sources", { maxRedirects: 0 });
     expect(sourceEditor.status()).toBe(302);
     expect(sourceEditor.headers().location).toContain("/admin/login");
+    const treeEditor = await page.request.get("/admin/decision-trees", { maxRedirects: 0 });
+    expect(treeEditor.status()).toBe(302);
+    expect(treeEditor.headers().location).toContain("/admin/login");
+    const audit = await page.request.get("/admin/audit", { maxRedirects: 0 });
+    expect(audit.status()).toBe(302);
+    expect(audit.headers().location).toContain("/admin/login");
     const rules = await page.request.patch("/api/admin/rules/P01", { data: { summary: "neovlašćena izmena" } });
     expect(rules.status()).toBe(401);
     const sources = await page.request.patch("/api/admin/sources/rik-zakoni", { data: { status: "superseded" } });
     expect(sources.status()).toBe(401);
+    const trees = await page.request.patch("/api/admin/decision-trees/DT01", { data: { title: "unauthorized" } });
+    expect(trees.status()).toBe(401);
     const publish = await page.request.post("/api/admin/publish", { data: {} });
     expect(publish.status()).toBe(401);
+  });
+
+  test("content editor sa validnom sesijom ne može da zaobiđe publish RBAC", async ({ page }) => {
+    const token = await encode({
+      token: { sub: "e2e-content-editor", email: "e2e-content@example.test", role: "CONTENT_EDITOR" },
+      secret: "local-e2e-only-secret",
+      salt: "authjs.session-token",
+    });
+    await page.context().addCookies([{ name: "authjs.session-token", value: token, domain: "127.0.0.1", path: "/", httpOnly: true, secure: false }]);
+    const publish = await page.request.post("/api/admin/publish", { data: {} });
+    expect(publish.status()).toBe(403);
+  });
+
+  test("potpisana super-admin sesija otvara sve admin prikaze", async ({ page }) => {
+    const token = await encode({
+      token: { sub: "e2e-super-admin", email: "e2e-admin@example.test", role: "SUPER_ADMIN" },
+      secret: "local-e2e-only-secret",
+      salt: "authjs.session-token",
+    });
+    await page.context().addCookies([{ name: "authjs.session-token", value: token, domain: "127.0.0.1", path: "/", httpOnly: true, secure: false }]);
+    for (const route of ["/admin", "/admin/rules", "/admin/sources", "/admin/decision-trees", "/admin/audit"]) {
+      const response = await page.goto(route);
+      expect(response?.ok(), `${route} should render for a signed admin session`).toBeTruthy();
+      await expect(page.locator("h1").first()).toBeVisible();
+    }
+    const invalidPublish = await page.request.post("/api/admin/publish", { data: { snapshot: { schemaVersion: 1 } } });
+    expect(invalidPublish.status()).toBe(400);
   });
 });
