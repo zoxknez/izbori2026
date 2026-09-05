@@ -7,6 +7,7 @@ import {
   timestamp,
   boolean,
   date,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
@@ -96,7 +97,11 @@ export const datasetVersions = pgTable("dataset_versions", {
   createdAt: timestamp("created_at").defaultNow(),
   publishedAt: timestamp("published_at"),
   publishedBy: varchar("published_by", { length: 64 }),
-});
+}, (table) => ({
+  oneActiveDataset: uniqueIndex("dataset_versions_one_active_idx")
+    .on(table.status)
+    .where(sql`${table.status} = 'active'`),
+}));
 
 export const datasetFiles = pgTable("dataset_files", {
   id: varchar("id", { length: 64 }).primaryKey(),

@@ -54,6 +54,7 @@ Urađeno:
 - uveden IndexedDB sloj sa `datasetMeta` pointerom i odvojenim store-ovima za incidente, trening, znanje, simulacije i preference;
 - `dataset-manager` preuzima, validira i tek potom atomarno aktivira novu verziju;
 - Neon migriran i snapshotovan: aktivna verzija sadrži 66 pravila, 8 izvora i 3 decision tree-a.
+- dodata DB-level parcijalna unique zaštita da u svakom trenutku postoji najviše jedan `active` dataset; offline downloader proverava i top-level manifest, verziju i usklađenost svih snapshot fajlova pre activation-a.
 
 Provere: typecheck, ESLint, Vitest i production build prolaze; testiran je i rollback pointera kada
 preuzimanje zakaže posle prvog fajla. Dataset snapshot trenutno sadrži 66 pravila, 8 izvora, 3 stabla,
@@ -100,7 +101,7 @@ Urađeno:
 - Auth.js Credentials provider sa JWT sesijom i bcrypt proverom lozinke;
 - `admin_users` sa ulogama `SUPER_ADMIN`, `LEGAL_EDITOR`, `CONTENT_EDITOR`, `REVIEWER`;
 - `src/proxy.ts` radi samo optimistički redirect, dok publish route ponovo proverava sesiju i RBAC;
-- `/api/admin/publish` validira isti `dataset-validator`, upisuje novu dataset verziju/fajl i append-only audit zapis u jednoj Neon batch transakciji;
+- `/api/admin/publish` validira isti `dataset-validator`, upisuje novu dataset verziju/fajl i append-only audit zapis u jednoj Neon batch transakciji; DB-level partial unique index sprečava konkurentne publish pozive da ostave više aktivnih verzija;
 - `/admin/rules` i `PATCH /api/admin/rules/[id]` omogućavaju RBAC-controlled content/status izmene uz pre/post audit zapis; `/admin` prikazuje source dependency graph i publish kontrolu;
 - `/admin/login` i osnovna `/admin` kontrolna tabla; nema self-registration, a `scripts/seed-admin.ts` zahteva eksplicitne env vrednosti;
 - `AUTH_SECRET` je dodat kao sensitive production env varijabla na Vercelu.

@@ -28,6 +28,10 @@ async function file(payload: unknown, hash = true): Promise<DatasetFile> {
   };
 }
 
+function responseFor(files: DatasetFile[], version = (files[0].payload as { version: string }).version) {
+  return new Response(JSON.stringify({ version, manifestHash: files[0].sha256, files }), { status: 200 });
+}
+
 describe("offline dataset validation", () => {
   beforeEach(() => {
     vi.stubGlobal("window", {});
@@ -48,7 +52,7 @@ describe("offline dataset validation", () => {
 
   it("validira, preuzima i tek onda aktivira snapshot", async () => {
     const validFile = await file(snapshot());
-    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ files: [validFile] }), { status: 200 })));
+    vi.stubGlobal("fetch", vi.fn(async () => responseFor([validFile])));
     const active = await downloadAndActivateDataset();
     expect(active.version).toBe("test-1");
     expect(await readDatasetMeta("activeDatasetVersion")).toBe("test-1");
@@ -56,13 +60,25 @@ describe("offline dataset validation", () => {
 
   it("zadržava prethodni pointer ako preuzimanje zakaže posle prvog fajla", async () => {
     const oldFile = await file(snapshot());
-    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ files: [oldFile] }), { status: 200 })));
+    vi.stubGlobal("fetch", vi.fn(async () => responseFor([oldFile])));
     await downloadAndActivateDataset();
 
     const nextFile = await file(snapshot({ version: "test-2" }));
     const brokenFile = await file(snapshot({ version: "test-2", rules: [{ invalid: true }] }), false);
-    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ files: [nextFile, brokenFile] }), { status: 200 })));
+    vi.stubGlobal("fetch", vi.fn(async () => responseFor([nextFile, brokenFile])));
     await expect(downloadAndActivateDataset()).rejects.toThrow();
+    expect(await readDatasetMeta("activeDatasetVersion")).toBe("test-1");
+  });
+
+  it("odbija manifest koji meša verzije ili ne odgovara payload-u", async () => {
+    const first = await file(snapshot());
+    const second = await file(snapshot({ version: "test-2" }));
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({
+      version: "test-1",
+      manifestHash: first.sha256,
+      files: [first, second],
+    }), { status: 200 })));
+    await expect(downloadAndActivateDataset()).rejects.toThrow("nisu usklađeni");
     expect(await readDatasetMeta("activeDatasetVersion")).toBe("test-1");
   });
 });

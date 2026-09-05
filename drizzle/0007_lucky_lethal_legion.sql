@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "dataset_versions_one_active_idx" ON "dataset_versions" USING btree ("status") WHERE "dataset_versions"."status" = 'active';
