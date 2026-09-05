@@ -5,11 +5,11 @@ export function SiteFooter() {
   return (
     <footer className="mt-20 border-t border-border bg-surface/50 pb-24 sm:pb-12 text-xs">
       <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
-          {/* Column 1: Brand & Mission (Span 2 on lg) */}
-          <div className="space-y-4 lg:col-span-2">
+        <div className="grid grid-cols-2 gap-8 sm:gap-10 lg:grid-cols-5">
+          {/* Column 1: Brand & Mission (Full width on mobile/tablet, span 2 on lg) */}
+          <div className="col-span-2 space-y-4 lg:col-span-2">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand/10 text-brand">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand/10 text-brand shrink-0">
                 <ShieldCheck className="h-5 w-5" strokeWidth={2.5} />
               </div>
               <div>
@@ -22,26 +22,28 @@ export function SiteFooter() {
               </div>
             </div>
 
-            <p className="max-w-sm text-xs leading-relaxed text-ink-dim">
+            <p className="max-w-xl text-xs leading-relaxed text-ink-dim">
               Nezavisna građanska platforma za prepoznavanje, dokumentovanje i pravno procesuiranje izbornih nepravilnosti. Nije povezana ni sa jednim organom vlasti niti političkom partijom.
             </p>
 
-            <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-600 dark:text-emerald-400">
-              <Lock className="h-3.5 w-3.5" />
-              <span>100% lokalna obrada · Nema slanja podataka na server</span>
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-600 dark:text-emerald-400">
+                <Lock className="h-3.5 w-3.5 shrink-0" />
+                <span>100% lokalna obrada · Nema slanja podataka na server</span>
+              </div>
             </div>
 
-            <p className="text-[11px] text-ink-faint leading-relaxed">
-              Poslednja verifikacija propisa: <strong>Septembar 2026.</strong> Usaglašeno sa Zakonom o izboru narodnih poslanika i aktuelnim uputstvima RIK-a.
+            <p className="max-w-xl text-[11px] text-ink-faint leading-relaxed">
+              Poslednja verifikacija propisa: <strong className="text-ink">Septembar 2026.</strong> Usaglašeno sa Zakonom o izboru narodnih poslanika i aktuelnim uputstvima RIK-a.
             </p>
           </div>
 
           {/* Column 2: Operativni alati */}
-          <div className="space-y-3">
+          <div className="col-span-1 space-y-3">
             <p className="font-bold uppercase tracking-wider text-ink text-[11px]">
               Operativni alati
             </p>
-            <ul className="space-y-2 text-ink-dim">
+            <ul className="space-y-2.5 text-ink-dim">
               <li>
                 <Link href="/kontrolor" className="hover:text-brand transition-colors">
                   Checklista za kontrolore
@@ -71,11 +73,11 @@ export function SiteFooter() {
           </div>
 
           {/* Column 3: Baza znanja & Propisi */}
-          <div className="space-y-3">
+          <div className="col-span-1 space-y-3">
             <p className="font-bold uppercase tracking-wider text-ink text-[11px]">
               Baza znanja i propisi
             </p>
-            <ul className="space-y-2 text-ink-dim">
+            <ul className="space-y-2.5 text-ink-dim">
               <li>
                 <Link href="/pravila" className="hover:text-brand transition-colors">
                   Baza svih nepravilnosti
@@ -105,33 +107,33 @@ export function SiteFooter() {
           </div>
 
           {/* Column 4: Hitni brojevi i institucije */}
-          <div className="space-y-3">
+          <div className="col-span-2 space-y-3 rounded-2xl border border-border/60 bg-surface/40 p-4 sm:border-0 sm:bg-transparent sm:p-0 lg:col-span-1">
             <p className="font-bold uppercase tracking-wider text-ink text-[11px]">
               Hitni kontakti i prijava
             </p>
             <ul className="space-y-2.5 text-ink-dim">
-              <li className="flex items-center justify-between">
+              <li className="flex items-center justify-between gap-2">
                 <span>Policija (Incidenti/Krivična dela)</span>
-                <span className="font-mono font-bold text-ink">192</span>
+                <span className="font-mono font-bold text-ink shrink-0">192</span>
               </li>
-              <li className="flex items-center justify-between">
+              <li className="flex items-center justify-between gap-2">
                 <span>Republička izborna komisija</span>
                 <a
                   href="https://www.rik.parlament.gov.rs"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-brand hover:underline inline-flex items-center gap-0.5"
+                  className="font-medium text-brand hover:underline inline-flex items-center gap-0.5 shrink-0"
                 >
                   rik.parlament.gov.rs
                 </a>
               </li>
-              <li className="flex items-center justify-between">
+              <li className="flex items-center justify-between gap-2">
                 <span>CRTA posmatračka misija</span>
                 <a
                   href="https://crta.rs"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-brand hover:underline inline-flex items-center gap-0.5"
+                  className="font-medium text-brand hover:underline inline-flex items-center gap-0.5 shrink-0"
                 >
                   crta.rs
                 </a>
@@ -144,13 +146,13 @@ export function SiteFooter() {
         </div>
 
         {/* Bottom copyright & disclaimer */}
-        <div className="mt-12 flex flex-col gap-4 border-t border-border/80 pt-8 sm:flex-row sm:items-center sm:justify-between text-ink-faint text-[11px]">
+        <div className="mt-12 flex flex-col gap-3 border-t border-border/80 pt-6 sm:flex-row sm:items-center sm:justify-between text-ink-faint text-[11px]">
           <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
             <span>Sistem je operativan za izbore u Republici Srbiji. Otvorenog koda za slobodnu upotrebu.</span>
           </div>
 
-          <p className="max-w-md text-right text-[10px] leading-relaxed sm:text-left">
+          <p className="text-[10px] leading-relaxed sm:text-right max-w-md">
             Ovaj portal pruža edukativne i pravno-informativne podatke i ne predstavlja formalno pravno zastupanje. Za podnošenje zvaničnih tužbi obratite se advokatu.
           </p>
         </div>
