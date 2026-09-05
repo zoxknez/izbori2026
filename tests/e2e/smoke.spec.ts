@@ -8,6 +8,8 @@ const routes = [
   "/rokovi",
   "/prijavi",
   "/izvori",
+  "/trening/kviz",
+  "/simulator/biracki-dan",
 ];
 
 test.describe("public application smoke", () => {

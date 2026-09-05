@@ -9,6 +9,7 @@ async function main() {
     import("../src/lib/offline/dataset-validator"),
   ]);
   const { asc, eq } = await import("drizzle-orm");
+  const { buildTrainingQuestions } = await import("../src/lib/domain/training/generate-questions");
   const version = process.env.DATASET_VERSION ?? `2026.09.05-${Date.now()}`;
   const snapshot: DatasetSnapshot = {
     schemaVersion: 1 as const,
@@ -22,7 +23,7 @@ async function main() {
       whatToCheck: row.whatToCheck ?? [], controllerActions: row.controllerActions ?? [], voterActions: row.voterActions ?? [], observerActions: row.observerActions ?? [], evidenceChecklist: row.evidenceChecklist ?? [], doNotDo: row.doNotDo ?? [], lawReferences: row.lawReferences ?? [], sourceUrls: row.sourceUrls ?? [], relatedSlugs: row.relatedSlugs ?? [], mythCheck: row.mythCheck ?? null,
       isAutomaticAnnulment: row.severity === "ponistavanje", order: row.order ?? 0,
       publicationStatus: (row.publicationStatus as "draft" | "published" | "archived") ?? "published",
-      reviewStatus: (row.reviewStatus as "UNREVIEWED" | "REVIEW_REQUIRED" | "REVIEWED") ?? "REVIEW_REQUIRED",
+      reviewStatus: (row.reviewStatus as "unreviewed" | "content_review" | "legal_review" | "verified" | "stale") ?? "legal_review",
       lastLegalReview: row.lastLegalReview ?? undefined,
     })),
     sources: (await db.select().from(schema.sources).orderBy(asc(schema.sources.tier))).map((row) => ({
@@ -33,7 +34,7 @@ async function main() {
     decisionTrees: (await db.select().from(schema.decisionTrees).orderBy(asc(schema.decisionTrees.order))).map((tree) => ({
       id: tree.id, slug: tree.slug, title: tree.title, description: tree.description, startNodeId: tree.startNodeId,
       publicationStatus: (tree.publicationStatus as "draft" | "published" | "archived") ?? "published",
-      reviewStatus: (tree.reviewStatus as "UNREVIEWED" | "REVIEW_REQUIRED" | "REVIEWED") ?? "REVIEW_REQUIRED", order: tree.order ?? 0,
+      reviewStatus: (tree.reviewStatus as "unreviewed" | "content_review" | "legal_review" | "verified" | "stale") ?? "legal_review", order: tree.order ?? 0,
       nodes: [],
     })),
     training: [],
@@ -43,6 +44,7 @@ async function main() {
   snapshot.decisionTrees.forEach((tree) => {
     tree.nodes = treeNodes.filter((node) => node.treeId === tree.id).map((node) => ({ id: node.id, type: node.type as "question" | "result", prompt: node.prompt, options: node.options ?? [], ruleIds: node.ruleIds ?? [], order: node.order ?? 0 }));
   });
+  snapshot.training = buildTrainingQuestions(snapshot.rules).map((question) => ({ ruleIds: [question.ruleId], sourceIds: question.sourceIds }));
   const parsed = validator.datasetSnapshotSchema.parse(snapshot);
   const serialized = validator.stableStringify(parsed);
   const sha256 = await validator.sha256Hex(serialized);

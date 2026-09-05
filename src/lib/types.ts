@@ -26,7 +26,7 @@ export type ElectionPhase = (typeof ELECTION_PHASES)[number];
 export const PUBLICATION_STATUSES = ["draft", "published", "archived"] as const;
 export type PublicationStatus = (typeof PUBLICATION_STATUSES)[number];
 
-export const REVIEW_STATUSES = ["UNREVIEWED", "REVIEW_REQUIRED", "REVIEWED"] as const;
+export const REVIEW_STATUSES = ["unreviewed", "content_review", "legal_review", "verified", "stale"] as const;
 export type ReviewStatus = (typeof REVIEW_STATUSES)[number];
 
 export const SEVERITY_META: Record<

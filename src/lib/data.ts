@@ -53,7 +53,7 @@ function toRule(row: RuleRow): Rule {
     isAutomaticAnnulment: row.isAutomaticAnnulment ?? false,
     order: row.order ?? 0,
     publicationStatus: (row.publicationStatus as Rule["publicationStatus"]) ?? "published",
-    reviewStatus: (row.reviewStatus as Rule["reviewStatus"]) ?? "REVIEW_REQUIRED",
+    reviewStatus: (row.reviewStatus as Rule["reviewStatus"]) ?? "legal_review",
     lastLegalReview: row.lastLegalReview ?? undefined,
   };
 }
@@ -107,7 +107,7 @@ export const getDecisionTrees = cache(async () => {
     description: tree.description,
     startNodeId: tree.startNodeId,
     publicationStatus: (tree.publicationStatus as "draft" | "published" | "archived") ?? "published",
-    reviewStatus: (tree.reviewStatus as "UNREVIEWED" | "REVIEW_REQUIRED" | "REVIEWED") ?? "REVIEW_REQUIRED",
+    reviewStatus: (tree.reviewStatus as "unreviewed" | "content_review" | "legal_review" | "verified" | "stale") ?? "legal_review",
     order: tree.order ?? 0,
     nodes: nodes
       .filter((node) => node.treeId === tree.id)

@@ -52,7 +52,7 @@ export function canonicalizeRule(rule: Rule): CanonicalRule {
     isAutomaticAnnulment,
     order: rule.order ?? 0,
     publicationStatus: rule.publicationStatus ?? "published",
-    reviewStatus: rule.reviewStatus ?? "REVIEW_REQUIRED",
+    reviewStatus: rule.reviewStatus ?? "legal_review",
     mythCheck: rule.mythCheck ?? null,
   });
 

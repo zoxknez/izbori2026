@@ -53,3 +53,33 @@ Urađeno:
 - Neon migriran i snapshotovan: aktivna verzija sadrži 66 pravila, 8 izvora i 3 decision tree-a.
 
 Provere: typecheck, ESLint, Vitest (5 fajlova / 18 testova) i production build prolaze. E2E smoke sada proverava i aktivni dataset API; kompletan network-failure E2E ostaje vezan za browser IndexedDB test harness u završnoj integracionoj fazi.
+
+## Faza 3 — trening engine
+
+Status: **u toku**.
+
+Urađeno:
+
+- uvedeni tipovi za trening pitanje, izbor, odgovor i knowledge state;
+- coverage prag je centralizovan po severity-ju: normal 2, teška nepravilnost 3, krivično delo 4, poništavanje 4 pitanja po pravilu;
+- generator trenutno proizvodi 193 pitanja za svih 66 pravila i koristi isti rule/source reference format za dataset snapshot;
+- uvedeni mastery, confidence, spaced-repetition intervali, due/weakness weighting i exam score breakdown;
+- dodat `/trening/kviz` sa klasifikacionim mit/činjenica pitanjima kao jednim tipom novog engine-a;
+- progres i knowledge state se čuvaju u IndexedDB `trainingProgress` store-u.
+
+Provere: coverage, mastery, selection i exam scoring imaju unit testove; typecheck, ESLint i Vitest prolaze. Preostaju production content enrichment (ručno revidirana pitanja umesto generičkih fallback-a), pun exam/progress dashboard i integracioni E2E refresh scenariji.
+
+## Faza 4 — simulator biračkog dana
+
+Status: **u toku**.
+
+Urađeno:
+
+- uvedeni `SimulationEvent`, `SimulationChoice`, `SimulationCondition`, efekti i reducer-like engine;
+- seedovan tok sa 30 događaja i tačno 80 odluka, kroz sve faze izbornog dana;
+- uslovi i efekti kontrolišu flagove, score, evidence i fazne prelaze; nedostupne odluke se odbijaju server-independent čistom funkcijom;
+- Counting Mode koristi direktno isti `validateCounting()` engine kao `/validator`, bez dupliranja matematike;
+- dodat `/simulator/biracki-dan` i čuvanje istorije u IndexedDB `simulationHistory` store-u;
+- unit testovi pokrivaju broj događaja/odluka, efekte, scoring, prerequisites i integraciju sa counting validatorom.
+
+Preostaju randomized mode sa formalnim condition ograničenjima u UI-ju, kompletan 30-event E2E tok i detaljniji breakdown rezultata.

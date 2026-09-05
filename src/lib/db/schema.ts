@@ -39,7 +39,7 @@ export const rules = pgTable("rules", {
     .default(null),
   isAutomaticAnnulment: boolean("is_automatic_annulment").default(false),
   order: integer("order").default(0),
-  reviewStatus: varchar("review_status", { length: 32 }).default("REVIEW_REQUIRED"),
+  reviewStatus: varchar("review_status", { length: 32 }).default("legal_review"),
   publicationStatus: varchar("publication_status", { length: 32 }).default("published"),
   lastLegalReview: varchar("last_legal_review", { length: 32 }),
   validFrom: varchar("valid_from", { length: 32 }),
@@ -66,7 +66,7 @@ export const decisionTrees = pgTable("decision_trees", {
   description: text("description").notNull(),
   startNodeId: varchar("start_node_id", { length: 64 }).notNull(),
   publicationStatus: varchar("publication_status", { length: 32 }).default("published"),
-  reviewStatus: varchar("review_status", { length: 32 }).default("REVIEW_REQUIRED"),
+  reviewStatus: varchar("review_status", { length: 32 }).default("legal_review"),
   order: integer("order").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -105,6 +105,27 @@ export const datasetFiles = pgTable("dataset_files", {
   size: integer("size").notNull(),
 });
 
+export const adminUsers = pgTable("admin_users", {
+  id: varchar("id", { length: 32 }).primaryKey(),
+  email: varchar("email", { length: 254 }).notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  role: varchar("role", { length: 32 }).notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const auditLog = pgTable("audit_log", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  actorUserId: varchar("actor_user_id", { length: 32 }),
+  action: varchar("action", { length: 64 }).notNull(),
+  entityType: varchar("entity_type", { length: 64 }).notNull(),
+  entityId: varchar("entity_id", { length: 64 }).notNull(),
+  before: jsonb("before"),
+  after: jsonb("after"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const sources = pgTable("sources", {
   id: varchar("id", { length: 64 }).primaryKey(),
   tier: integer("tier").notNull(),
@@ -129,3 +150,5 @@ export type DecisionTreeRow = typeof decisionTrees.$inferSelect;
 export type DecisionNodeRow = typeof decisionNodes.$inferSelect;
 export type DatasetVersionRow = typeof datasetVersions.$inferSelect;
 export type DatasetFileRow = typeof datasetFiles.$inferSelect;
+export type AdminUserRow = typeof adminUsers.$inferSelect;
+export type AuditLogRow = typeof auditLog.$inferSelect;

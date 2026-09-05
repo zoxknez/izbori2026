@@ -16,7 +16,7 @@ async function main() {
   const { decisionTrees } = await import("../src/content/decision-trees");
   const { assertRulesInvariants } = await import("../src/lib/domain/rules/invariants");
   const { decisionTreeSchema } = await import("../src/lib/domain/decision-trees/types");
-  const reviewStatus = process.env.LEGAL_REVIEW_STATUS ?? "REVIEW_REQUIRED";
+  const reviewStatus = process.env.LEGAL_REVIEW_STATUS ?? "legal_review";
   const lastLegalReview = process.env.LEGAL_REVIEW_DATE;
 
   assertRulesInvariants(rules);

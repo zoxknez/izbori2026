@@ -49,3 +49,11 @@ export async function readActiveDatasetFile(filename: string): Promise<DatasetFi
   const file = await (await getConnection()).get("datasetFiles", `${version}:${filename}`);
   return file ? { filename: file.filename, payload: file.payload, sha256: file.sha256, size: file.size } : undefined;
 }
+
+export async function readOfflineValue<T>(store: "incidentNotes" | "trainingProgress" | "knowledgeState" | "simulationHistory" | "userPreferences", key: string): Promise<T | undefined> {
+  return (await getConnection()).get(store, key) as Promise<T | undefined>;
+}
+
+export async function writeOfflineValue(store: "incidentNotes" | "trainingProgress" | "knowledgeState" | "simulationHistory" | "userPreferences", key: string, value: unknown): Promise<void> {
+  await (await getConnection()).put(store, value, key);
+}

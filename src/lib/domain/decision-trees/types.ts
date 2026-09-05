@@ -25,7 +25,7 @@ export const decisionTreeSchema = z.object({
   startNodeId: z.string().min(1),
   nodes: z.array(decisionNodeSchema).min(1),
   publicationStatus: z.enum(["draft", "published", "archived"]),
-  reviewStatus: z.enum(["UNREVIEWED", "REVIEW_REQUIRED", "REVIEWED"]),
+  reviewStatus: z.enum(["unreviewed", "content_review", "legal_review", "verified", "stale"]),
   order: z.number().int().nonnegative(),
 });
 

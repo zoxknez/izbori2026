@@ -38,7 +38,7 @@ describe("offline dataset validation", () => {
   });
 
   it("odbija decision tree koji referencira nepostojeće pravilo", async () => {
-    const tree = { id: "T", slug: "t", title: "T", description: "T", startNodeId: "R", publicationStatus: "published" as const, reviewStatus: "REVIEW_REQUIRED" as const, order: 0, nodes: [{ id: "R", type: "result" as const, prompt: "R", options: [], ruleIds: ["UNKNOWN"], order: 0 }] };
+    const tree = { id: "T", slug: "t", title: "T", description: "T", startNodeId: "R", publicationStatus: "published" as const, reviewStatus: "legal_review" as const, order: 0, nodes: [{ id: "R", type: "result" as const, prompt: "R", options: [], ruleIds: ["UNKNOWN"], order: 0 }] };
     await expect(validateDatasetFile(await file(snapshot({ decisionTrees: [tree] })))).rejects.toThrow("nepoznata pravila");
   });
 

@@ -8,7 +8,7 @@ export const decisionTrees: DecisionTree[] = [
     description: "Brza provera problema sa kutijom, kontrolnim listom i pečaćenjem pre glasanja.",
     startNodeId: "DT01-N1",
     publicationStatus: "published",
-    reviewStatus: "REVIEW_REQUIRED",
+    reviewStatus: "legal_review",
     order: 1,
     nodes: [
       { id: "DT01-N1", type: "question", prompt: "Da li je kontrolni list pravilno popunjen i potpisan?", options: [{ id: "yes", label: "Da", nextNodeId: "DT01-N2", ruleIds: [] }, { id: "no", label: "Ne", nextNodeId: "DT01-R1", ruleIds: ["P06", "P07", "P08"] }], ruleIds: [], order: 1 },
@@ -25,7 +25,7 @@ export const decisionTrees: DecisionTree[] = [
     description: "Razlikujte pomoć biraču, pritisak i fotografisanje glasačkog listića.",
     startNodeId: "DT02-N1",
     publicationStatus: "published",
-    reviewStatus: "REVIEW_REQUIRED",
+    reviewStatus: "legal_review",
     order: 2,
     nodes: [
       { id: "DT02-N1", type: "question", prompt: "Da li je birač fotografisao svoj listić ili pokazao kako je glasao?", options: [{ id: "yes", label: "Da", nextNodeId: "DT02-R1", ruleIds: ["T09"] }, { id: "no", label: "Ne", nextNodeId: "DT02-N2", ruleIds: [] }], ruleIds: [], order: 1 },
@@ -42,7 +42,7 @@ export const decisionTrees: DecisionTree[] = [
     description: "Odredite da li neslaganje zahteva ponovno brojanje ili ukazuje na automatsko poništavanje.",
     startNodeId: "DT03-N1",
     publicationStatus: "published",
-    reviewStatus: "REVIEW_REQUIRED",
+    reviewStatus: "legal_review",
     order: 3,
     nodes: [
       { id: "DT03-N1", type: "question", prompt: "Da li je broj listića u kutiji veći od broja birača koji su glasali?", options: [{ id: "yes", label: "Da", nextNodeId: "DT03-R1", ruleIds: ["Z01"] }, { id: "no", label: "Ne", nextNodeId: "DT03-N2", ruleIds: [] }], ruleIds: [], order: 1 },
