@@ -1,26 +1,70 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-canvas: #0b0d12;
+  --color-surface: #12151c;
+  --color-surface-2: #171b24;
+  --color-border: #262b36;
+  --color-border-soft: #1d212b;
+  --color-ink: #eef1f6;
+  --color-ink-dim: #a6adba;
+  --color-ink-faint: #6b7280;
+
+  --color-brand: #4fd1c5;
+  --color-brand-strong: #2dd4bf;
+  --color-brand-ink: #04201d;
+
+  --color-sev-dozvoljeno: #34d399;
+  --color-sev-info: #38bdf8;
+  --color-sev-proveri: #fbbf24;
+  --color-sev-nepravilnost: #fb923c;
+  --color-sev-teska: #f87171;
+  --color-sev-krivicno: #cbd5e1;
+  --color-sev-ponistavanje: #fb7185;
+
+  --shadow-card: 0 1px 0 0 rgba(255,255,255,0.03) inset, 0 8px 24px -12px rgba(0,0,0,0.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-feature-settings: "cv11", "ss01";
+}
+
+::selection {
+  background: var(--color-brand);
+  color: var(--color-brand-ink);
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 0.35s ease both;
 }

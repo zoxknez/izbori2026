@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Izborna kontrola
 
-## Getting Started
+Interaktivni građanski vodič za prepoznavanje, dokumentovanje i prijavljivanje izbornih
+nepravilnosti u Srbiji. Next.js (App Router) + Tailwind CSS v4 + Drizzle ORM + Neon Postgres.
 
-First, run the development server:
+## Sadržaj
+
+- **Vidim problem sada** (`/vidim-problem`) — dijagnostika u 3 koraka
+- **Baza nepravilnosti** (`/pravila`) — 66 situacija sa filterima po fazi/kategoriji/težini
+- **Validator zapisnika** (`/validator`) — matematička kontrola brojeva iz zapisnika
+- **Kontrolor** (`/kontrolor`) — propisani tok glasanja i brojanja
+- **Glasanje van biračkog mesta**, **Krivična dela**, **Mit ili činjenica**, **Rokovi**,
+  **Prijavi incident** (generator hronologije, čuva se samo lokalno u pregledaču), **Izvori**
+
+Sadržaj pravila (`src/content/rules.ts`) živi u Neon Postgres bazi (tabele `rules`,
+`criminal_articles`, `sources` — vidi `src/lib/db/schema.ts`). Aplikacija je server-rendered uz
+ISR (revalidate 1h), pa je i dalje brza bez obzira na bazu.
+
+## Pokretanje lokalno
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Aplikaciji je potreban `DATABASE_URL` u `.env.local` (Neon connection string, već podešen).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Menjanje sadržaja pravila
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Izmeni `src/content/rules.ts` (ili `criminal-articles.ts` / `sources.ts`)
+2. Pokreni `npx tsx scripts/seed.ts` da upsertuješ izmene u Neon bazu
+3. Stranice se osvežavaju automatski u roku od 1h (ISR), ili odmah na sledećem build-u
 
-## Learn More
+Ako menjaš šemu (`src/lib/db/schema.ts`), pokreni `npx drizzle-kit push` pre seed-a.
 
-To learn more about Next.js, take a look at the following resources:
+## Deploy na Vercel
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Push-uj repo na GitHub
+2. Import u Vercel (New Project → izaberi repo)
+3. U Vercel → Settings → Environment Variables dodaj `DATABASE_URL` (isti Neon connection
+   string iz `.env.local`)
+4. Deploy — Vercel automatski prepoznaje Next.js build (`next build`)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Neon i Vercel rade odlično zajedno preko `@neondatabase/serverless` HTTP drajvera koji ovaj
+projekat već koristi — nema potrebe za connection pooling podešavanjima na strani aplikacije.
 
-## Deploy on Vercel
+## Napomena
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Ovo nije pravni savet. Sadržaj je zasnovan na javno dostupnim izbornim zakonima Republike Srbije
+i izveštajima akreditovanih posmatračkih misija (pravni presek: septembar 2026). Za konkretan
+slučaj obratiti se lokalnoj izbornoj komisiji, advokatu ili nadležnom tužilaštvu.

@@ -1,0 +1,17 @@
+{
+  "name": "Izborna kontrola",
+  "short_name": "Izborna kontrola",
+  "description": "Interaktivni građanski vodič za prepoznavanje izbornih nepravilnosti u Srbiji.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0d12",
+  "theme_color": "#0b0d12",
+  "lang": "sr",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}
