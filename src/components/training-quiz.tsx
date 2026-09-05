@@ -5,7 +5,7 @@ import { CheckCircle2, RotateCcw, Trophy, XCircle } from "lucide-react";
 import type { KnowledgeState, TrainingQuestion } from "@/lib/domain/training/types";
 import { selectNextQuestion, scoreExam } from "@/lib/domain/training/selection-engine";
 import { updateKnowledgeState } from "@/lib/domain/training/mastery";
-import { readOfflineValue, writeOfflineValue } from "@/lib/offline/indexed-db";
+import { readOfflineValue, setDraftInProgress, writeOfflineValue } from "@/lib/offline/indexed-db";
 import { cn } from "@/lib/utils";
 
 export function TrainingQuiz({ questions }: { questions: TrainingQuestion[] }) {
@@ -30,6 +30,11 @@ export function TrainingQuiz({ questions }: { questions: TrainingQuestion[] }) {
     }).catch(() => { if (mounted) setHydrated(true); });
     return () => { mounted = false; };
   }, []);
+
+  useEffect(() => {
+    void setDraftInProgress("training", askedIds.length > 0);
+    return () => { void setDraftInProgress("training", false); };
+  }, [askedIds.length]);
 
   async function choose(choiceId: string) {
     if (!current || selectedChoice) return;

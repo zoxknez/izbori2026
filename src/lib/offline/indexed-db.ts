@@ -11,6 +11,8 @@ interface OfflineDB extends DBSchema {
   userPreferences: { key: string; value: unknown };
 }
 
+export type OfflineDraftKind = "incident" | "training" | "simulation";
+
 let connection: Promise<IDBPDatabase<OfflineDB>> | undefined;
 
 function getConnection() {
@@ -56,4 +58,17 @@ export async function readOfflineValue<T>(store: "incidentNotes" | "trainingProg
 
 export async function writeOfflineValue(store: "incidentNotes" | "trainingProgress" | "knowledgeState" | "simulationHistory" | "userPreferences", key: string, value: unknown): Promise<void> {
   await (await getConnection()).put(store, value, key);
+}
+
+export async function setDraftInProgress(kind: OfflineDraftKind, inProgress: boolean): Promise<void> {
+  await writeOfflineValue("userPreferences", `draft:${kind}`, inProgress);
+}
+
+export async function hasOpenDraft(): Promise<boolean> {
+  const values = await Promise.all([
+    readOfflineValue<boolean>("userPreferences", "draft:incident"),
+    readOfflineValue<boolean>("userPreferences", "draft:training"),
+    readOfflineValue<boolean>("userPreferences", "draft:simulation"),
+  ]);
+  return values.some(Boolean);
 }

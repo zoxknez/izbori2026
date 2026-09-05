@@ -24,3 +24,11 @@ test("public routes have one h1, main landmark and no missing image alt", async 
     expect(await page.locator("img:not([alt])").count(), `${route} missing alt`).toBe(0);
   }
 });
+
+test("global search finds an incident through the indexed aliases", async ({ page }) => {
+  await page.goto("/vidim-problem");
+  const search = page.getByPlaceholder(/Pretraži: sprej, slikanje, paravan/i);
+  await search.fill("bugarski voz");
+  await expect(page.getByText(/Pronađeno u bazi \(/i)).toBeVisible();
+  await expect(page.getByText(/bugarski voz/i).first()).toBeVisible();
+});

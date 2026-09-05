@@ -3,7 +3,7 @@ const LEGAL_DATA_CACHE = "legal-data-v1";
 const SHELL = ["/", "/offline", "/pravila", "/validator", "/trening/kviz", "/simulator/biracki-dan"];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(SHELL_CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(SHELL_CACHE).then((cache) => cache.addAll(SHELL)));
 });
 
 self.addEventListener("activate", (event) => {

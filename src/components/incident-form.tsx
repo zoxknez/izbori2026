@@ -29,6 +29,7 @@ import {
   writeSavedIncidentsOffline,
   type SavedIncident,
 } from "@/lib/storage";
+import { setDraftInProgress } from "@/lib/offline/indexed-db";
 
 const STORAGE_KEY = "izborna-kontrola:incidenti";
 
@@ -71,6 +72,11 @@ export function IncidentForm() {
       startTransition(() => setSaved(incidents));
     });
   }, [startTransition]);
+
+  useEffect(() => {
+    const draftFields = [data.opstina, data.brojMesta, data.datum, data.vreme, data.staSamVideo, data.spornaRadnja, data.koJeVideo, data.propis, data.napomena];
+    void setDraftInProgress("incident", draftFields.some(Boolean));
+  }, [data]);
 
   // Parse search params if user navigated from rules or criminal codes
   useEffect(() => {

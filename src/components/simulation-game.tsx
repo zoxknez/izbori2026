@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, Flag, RotateCcw, ShieldAlert } from "lucide-react";
 import { simulationEvents } from "@/lib/domain/simulator/seed-events";
 import { applyChoice, availableChoices, createSimulationState } from "@/lib/domain/simulator/engine";
 import type { SimulationState } from "@/lib/domain/simulator/types";
-import { writeOfflineValue } from "@/lib/offline/indexed-db";
+import { setDraftInProgress, writeOfflineValue } from "@/lib/offline/indexed-db";
 import { cn } from "@/lib/utils";
 
 export function SimulationGame() {
@@ -13,6 +13,11 @@ export function SimulationGame() {
   const [state, setState] = useState<SimulationState>(() => createSimulationState(simulationEvents[0]));
   const event = eventMap.get(state.currentEventId);
   const choices = event ? availableChoices(event, state) : [];
+
+  useEffect(() => {
+    void setDraftInProgress("simulation", !state.finished);
+    return () => { void setDraftInProgress("simulation", false); };
+  }, [state.finished]);
 
   async function choose(choiceId: string) {
     if (!event) return;

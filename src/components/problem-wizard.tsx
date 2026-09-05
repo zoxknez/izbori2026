@@ -21,6 +21,7 @@ import { RuleDetail } from "@/components/rule-detail";
 import { PhaseIcon } from "@/components/phase-icon";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import MiniSearch from "minisearch";
 
 type Step = "phase" | "scenario" | "result";
 
@@ -59,20 +60,36 @@ export function ProblemWizard({ rules }: { rules: Rule[] }) {
     return map;
   }, [rules]);
 
-  // Instant global search results (Emergency mode)
-  const searchResults = useMemo(() => {
-    const q = globalSearch.trim().toLowerCase();
-    if (!q) return [];
-    return rules.filter(
-      (r) =>
-        r.naziv.toLowerCase().includes(q) ||
-        r.summary.toLowerCase().includes(q) ||
-        r.legalRule.toLowerCase().includes(q) ||
-        r.slug.toLowerCase().includes(q) ||
-        r.aliases?.some((alias) => alias.toLowerCase().includes(q)) ||
-        r.informalQueries?.some((query) => query.toLowerCase().includes(q))
+  const searchIndex = useMemo(() => {
+    const index = new MiniSearch({
+      fields: ["naziv", "summary", "legalRule", "slug", "aliases", "informalQueries"],
+      storeFields: ["id"],
+      searchOptions: { prefix: true, fuzzy: 0.2 },
+    });
+    index.addAll(
+      rules.map((rule) => ({
+        id: rule.id,
+        naziv: rule.naziv,
+        summary: rule.summary,
+        legalRule: rule.legalRule,
+        slug: rule.slug,
+        aliases: (rule.aliases ?? []).join(" "),
+        informalQueries: (rule.informalQueries ?? []).join(" "),
+      }))
     );
-  }, [rules, globalSearch]);
+    return index;
+  }, [rules]);
+
+  // Instant global search results (Emergency mode), indexed for typo-tolerant lookup.
+  const searchResults = useMemo(() => {
+    const q = globalSearch.trim();
+    if (!q) return [];
+    const byId = new Map(rules.map((rule) => [rule.id, rule]));
+    return searchIndex
+      .search(q)
+      .map((result) => byId.get(String(result.id)))
+      .filter((rule): rule is Rule => Boolean(rule));
+  }, [rules, searchIndex, globalSearch]);
 
   // Scenarios inside selected phase
   const scenarios = useMemo(() => {
