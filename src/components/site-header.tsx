@@ -14,7 +14,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/validator": "Validator izbornog zapisnika",
   "/van-birackog-mesta": "Glasanje van biračkog mesta",
   "/krivicna-dela": "Krivična dela protiv izbornih prava",
-  "/mit-ili-cinjenica": "Mit ili činjenica — Kviz znanja",
+  "/mit-ili-cinjenica": "Mit ili činjenica - Kviz znanja",
   "/prijavi": "Generator hronologije i primedbe",
   "/rokovi": "Izborni rokovi i pravni lekovi",
   "/izvori": "Zvanični pravni izvori i propisi",

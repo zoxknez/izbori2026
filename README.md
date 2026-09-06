@@ -5,17 +5,17 @@ nepravilnosti u Srbiji. Next.js (App Router) + Tailwind CSS v4 + Drizzle ORM + N
 
 ## Sadržaj
 
-- **Vidim problem sada** (`/vidim-problem`) — dijagnostika u 3 koraka
-- **Baza nepravilnosti** (`/pravila`) — 66 situacija sa filterima po fazi/kategoriji/težini
-- **Validator zapisnika** (`/validator`) — matematička kontrola brojeva iz zapisnika
-- **Kontrolor** (`/kontrolor`) — propisani tok glasanja i brojanja
+- **Vidim problem sada** (`/vidim-problem`) - dijagnostika u 3 koraka
+- **Baza nepravilnosti** (`/pravila`) - 66 situacija sa filterima po fazi/kategoriji/težini
+- **Validator zapisnika** (`/validator`) - matematička kontrola brojeva iz zapisnika
+- **Kontrolor** (`/kontrolor`) - propisani tok glasanja i brojanja
 - **Glasanje van biračkog mesta**, **Krivična dela**, **Mit ili činjenica**, **Rokovi**,
   **Prijavi incident** (generator hronologije, čuva se samo lokalno u pregledaču), **Izvori**
-- **Trening / Kviz** (`/trening/kviz`) — 193 coverage pitanja sa offline mastery stanjem
-- **Simulator biračkog dana** (`/simulator/biracki-dan`) — 30 događaja i 80 odluka
+- **Trening / Kviz** (`/trening/kviz`) - 193 coverage pitanja sa offline mastery stanjem
+- **Simulator biračkog dana** (`/simulator/biracki-dan`) - 30 događaja i 80 odluka
 
 Sadržaj pravila (`src/content/rules.ts`) živi u Neon Postgres bazi (tabele `rules`,
-`criminal_articles`, `sources` — vidi `src/lib/db/schema.ts`). Aplikacija je server-rendered uz
+`criminal_articles`, `sources` - vidi `src/lib/db/schema.ts`). Aplikacija je server-rendered uz
 ISR (revalidate 1h), pa je i dalje brza bez obzira na bazu.
 
 ## Pokretanje lokalno
@@ -64,10 +64,10 @@ mora prvo proći isti spike; u suprotnom koristiti zaseban `next build --webpack
 2. Import u Vercel (New Project → izaberi repo)
 3. U Vercel → Settings → Environment Variables dodaj `DATABASE_URL` (isti Neon connection
    string iz `.env.local`)
-4. Deploy — Vercel automatski prepoznaje Next.js build (`next build`)
+4. Deploy - Vercel automatski prepoznaje Next.js build (`next build`)
 
 Neon i Vercel rade odlično zajedno preko `@neondatabase/serverless` HTTP drajvera koji ovaj
-projekat već koristi — nema potrebe za connection pooling podešavanjima na strani aplikacije.
+projekat već koristi - nema potrebe za connection pooling podešavanjima na strani aplikacije.
 
 ## Napomena
 

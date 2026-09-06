@@ -8,7 +8,7 @@ export const revalidate = 3600;
 export const metadata = {
   title: "Krivična dela protiv izbornih prava (Glava XV KZ RS)",
   description:
-    "Glava XV Krivičnog zakonika Republike Srbije (čl. 154–161): kupovina glasova, pretnje, falsifikovanje i zloupotrebe na biračkom mestu sa zaprećenim zatvorskim kaznama.",
+    "Glava XV Krivičnog zakonika Republike Srbije (čl. 154-161): kupovina glasova, pretnje, falsifikovanje i zloupotrebe na biračkom mestu sa zaprećenim zatvorskim kaznama.",
   alternates: { canonical: "/krivicna-dela" },
 };
 
@@ -23,7 +23,7 @@ export default async function KrivicnaDelaPage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-slate-500/40 bg-slate-500/10 px-3.5 py-1 text-xs font-semibold text-slate-300">
               <Scale className="h-3.5 w-3.5" />
-              <span>Krivični zakonik Republike Srbije · Glava XV (čl. 154–161)</span>
+              <span>Krivični zakonik Republike Srbije · Glava XV (čl. 154-161)</span>
             </div>
 
             <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-5xl">
@@ -31,7 +31,7 @@ export default async function KrivicnaDelaPage() {
             </h1>
 
             <p className="mt-3 text-base leading-relaxed text-ink-dim sm:text-lg">
-              Izborne neregularnosti nisu samo proceduralne greške — najteže zloupotrebe predstavljaju{" "}
+              Izborne neregularnosti nisu samo proceduralne greške - najteže zloupotrebe predstavljaju{" "}
               <strong>krivična dela za koja je zaprećena višegodišnja zatvorska kazna</strong>. Sva ova
               dela se gone <strong>po službenoj dužnosti</strong> od strane javnog tužilaštva.
             </p>
@@ -70,7 +70,7 @@ export default async function KrivicnaDelaPage() {
               </div>
               <h3 className="mt-3 text-sm font-bold text-ink">Bezbedno prikupi činjenice</h3>
               <p className="mt-1 text-xs leading-relaxed text-ink-dim">
-                Lična bezbednost je na prvom mestu — ne ulazi u fizički sukob. Zapiši tačno vreme, imena učesnika, registarske tablice vozila i obezbedi svedoke.
+                Lična bezbednost je na prvom mestu - ne ulazi u fizički sukob. Zapiši tačno vreme, imena učesnika, registarske tablice vozila i obezbedi svedoke.
               </p>
             </div>
 

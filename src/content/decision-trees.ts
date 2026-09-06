@@ -13,7 +13,7 @@ export const decisionTrees: DecisionTree[] = [
     nodes: [
       { id: "DT01-N1", type: "question", prompt: "Da li je kontrolni list pravilno popunjen i potpisan?", options: [{ id: "yes", label: "Da", nextNodeId: "DT01-N2", ruleIds: [] }, { id: "no", label: "Ne", nextNodeId: "DT01-R1", ruleIds: ["P06", "P07", "P08"] }], ruleIds: [], order: 1 },
       { id: "DT01-N2", type: "question", prompt: "Da li je glasačka kutija pokazana prazna pre prvog glasa?", options: [{ id: "yes", label: "Da", nextNodeId: "DT01-R2", ruleIds: [] }, { id: "no", label: "Ne", nextNodeId: "DT01-R3", ruleIds: ["P05"] }], ruleIds: [], order: 2 },
-      { id: "DT01-R1", type: "result", prompt: "Mogući zakonski osnov za poništavanje — otvorite relevantno pravilo.", options: [], ruleIds: ["P06", "P07", "P08"], order: 3 },
+      { id: "DT01-R1", type: "result", prompt: "Mogući zakonski osnov za poništavanje - otvorite relevantno pravilo.", options: [], ruleIds: ["P06", "P07", "P08"], order: 3 },
       { id: "DT01-R2", type: "result", prompt: "Osnovna procedura je ispunjena.", options: [], ruleIds: ["P06", "P07", "P08"], order: 4 },
       { id: "DT01-R3", type: "result", prompt: "Zabeležite proceduralnu nepravilnost i zahtevajte ponavljanje kontrole.", options: [], ruleIds: ["P05"], order: 5 },
     ],
@@ -47,7 +47,7 @@ export const decisionTrees: DecisionTree[] = [
     nodes: [
       { id: "DT03-N1", type: "question", prompt: "Da li je broj listića u kutiji veći od broja birača koji su glasali?", options: [{ id: "yes", label: "Da", nextNodeId: "DT03-R1", ruleIds: ["Z01"] }, { id: "no", label: "Ne", nextNodeId: "DT03-N2", ruleIds: [] }], ruleIds: [], order: 1 },
       { id: "DT03-N2", type: "question", prompt: "Da li zbir neupotrebljenih listića i listića u kutiji premašuje primljene listiće?", options: [{ id: "yes", label: "Da", nextNodeId: "DT03-R1", ruleIds: ["Z01"] }, { id: "no", label: "Ne", nextNodeId: "DT03-R2", ruleIds: [] }], ruleIds: [], order: 2 },
-      { id: "DT03-R1", type: "result", prompt: "Mogući osnov za poništavanje po članu 116 — odmah zabeležite tačne brojeve.", options: [], ruleIds: ["Z01"], order: 3 },
+      { id: "DT03-R1", type: "result", prompt: "Mogući osnov za poništavanje po članu 116 - odmah zabeležite tačne brojeve.", options: [], ruleIds: ["Z01"], order: 3 },
       { id: "DT03-R2", type: "result", prompt: "Ponovo prebrojte i razjasnite računsku razliku pre potpisivanja.", options: [], ruleIds: ["Z01"], order: 4 },
     ],
   },

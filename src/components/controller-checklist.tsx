@@ -203,8 +203,8 @@ const CHECKLIST_ITEMS: ChecklistItem[] = [
 
 const PHASES = [
   { key: "all", label: "Sve provere", icon: Clock },
-  { key: "pre", label: "1. Pre otvaranja (06–07h)", icon: Clock },
-  { key: "glasanje", label: "2. Tok glasanja (07–20h)", icon: Clock },
+  { key: "pre", label: "1. Pre otvaranja (06-07h)", icon: Clock },
+  { key: "glasanje", label: "2. Tok glasanja (07-20h)", icon: Clock },
   { key: "brojanje", label: "3. Zatvaranje i brojanje", icon: Clock },
   { key: "zapisnik", label: "4. Zapisnik i pakovanje", icon: Clock },
 ] as const;

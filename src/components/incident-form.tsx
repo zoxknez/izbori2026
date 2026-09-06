@@ -538,7 +538,7 @@ export function IncidentForm() {
               <div className="relative rounded-xl border border-border/80 bg-surface p-4 shadow-inner">
                 <div className="mb-2 flex items-center justify-between border-b border-border/60 pb-2 text-[11px] font-semibold text-ink-faint uppercase tracking-wider">
                   <span>Izborna Nepravilnost</span>
-                  <span>{data.opstina || "Srbija"} · BM {data.brojMesta || "—"}</span>
+                  <span>{data.opstina || "Srbija"} · BM {data.brojMesta || "-"}</span>
                 </div>
                 <pre className="max-h-[380px] overflow-y-auto whitespace-pre-wrap font-mono text-[12.5px] leading-relaxed text-ink selection:bg-brand/20">
                   {chronology}

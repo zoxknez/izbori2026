@@ -6,7 +6,7 @@ import { BookOpen, ShieldCheck, Scale, FileText, CheckCircle2 } from "lucide-rea
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "Pravni izvori i propisi — Zvanična dokumentacija",
+  title: "Pravni izvori i propisi - Zvanična dokumentacija",
   description:
     "Zvanični pravni i institucionalni izvori: Zakon o izboru narodnih poslanika, Krivični zakonik, uputstva RIK-a i izveštaji posmatračkih misija OEBS/ODIHR i CRTA.",
   alternates: { canonical: "/izvori" },
@@ -44,7 +44,7 @@ export default async function IzvoriPage() {
               1. Pozitivno izborno pravo
             </h3>
             <p className="mt-1 text-xs leading-relaxed text-ink-dim">
-              Ustav RS, ZINP, Zakon o lokalnim izborima, Zakon o JBS i Krivični zakonik Srbije (čl. 154–161).
+              Ustav RS, ZINP, Zakon o lokalnim izborima, Zakon o JBS i Krivični zakonik Srbije (čl. 154-161).
             </p>
           </div>
         </div>

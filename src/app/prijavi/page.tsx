@@ -4,7 +4,7 @@ import { Container } from "@/components/ui/container";
 import { IncidentForm } from "@/components/incident-form";
 
 export const metadata = {
-  title: "Prijavi incident — Generator hronologije i primedbe",
+  title: "Prijavi incident - Generator hronologije i primedbe",
   description:
     "Generator činjenične hronologije izborne nepravilnosti, bez naloga i bez slanja na server. Spremno za unošenje u Zapisnik ili pravni tim.",
   alternates: { canonical: "/prijavi" },
@@ -24,7 +24,7 @@ export default function PrijaviPage() {
         </h1>
         <p className="mt-2 text-base leading-relaxed text-ink-dim sm:text-lg">
           Popunite samo ono što pouzdano znate. Alat automatski generiše činjeničnu, pravno
-          preciznu hronologiju bez politizacije — spremnu za unošenje u Zapisnik o radu biračkog
+          preciznu hronologiju bez politizacije - spremnu za unošenje u Zapisnik o radu biračkog
           odbora ili slanje pravnom timu.
         </p>
       </div>

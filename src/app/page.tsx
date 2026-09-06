@@ -74,7 +74,7 @@ const QUICK_LINKS = [
   {
     href: "/prijavi",
     label: "Prijavi incident",
-    desc: "Generator hronologije i dokaza — podaci ostaju na tvom uređaju",
+    desc: "Generator hronologije i dokaza - podaci ostaju na tvom uređaju",
     icon: ShieldQuestion,
   },
 ];

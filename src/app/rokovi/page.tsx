@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DeadlinesCalculator } from "@/components/deadlines-calculator";
 
 export const metadata = {
-  title: "Izborni rokovi i pravni lekovi — Zaštita izbornog prava",
+  title: "Izborni rokovi i pravni lekovi - Zaštita izbornog prava",
   description:
     "Kompletan vodič kroz zakonske rokove od 72 časa, podnošenje zahteva za poništavanje glasanja, nadležnosti izbornih komisija i sudsku zaštitu.",
   alternates: { canonical: "/rokovi" },
@@ -23,7 +23,7 @@ const MANDATORY_ELEMENTS = [
   },
   {
     title: "Pravni osnov (član zakona)",
-    desc: "Pozivanje na konkretan član važećeg ZINP (npr. čl. 148–149 za zahtev za poništavanje) ili Krivičnog zakonika.",
+    desc: "Pozivanje na konkretan član važećeg ZINP (npr. čl. 148-149 za zahtev za poništavanje) ili Krivičnog zakonika.",
   },
   {
     title: "Dokazi i materijalni prilozi",

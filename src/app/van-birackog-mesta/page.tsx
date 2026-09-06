@@ -142,7 +142,7 @@ export default async function VanBirackogMestaPage() {
               Kod birača uvek idu <strong>tri člana biračkog odbora</strong>, imenovana na predlog tri <strong>različita ovlašćena predlagača</strong>.
             </p>
             <div className="mt-3 rounded-lg border border-sev-ponistavanje/20 bg-sev-ponistavanje/5 p-2 text-[11px] text-sev-ponistavanje">
-              🚨 Ako dođu samo 1 ili 2 člana, ili sva tri iz iste koalicije — to je teška nepravilnost!
+              🚨 Ako dođu samo 1 ili 2 člana, ili sva tri iz iste koalicije - to je teška nepravilnost!
             </div>
           </div>
         </div>
@@ -162,7 +162,7 @@ export default async function VanBirackogMestaPage() {
                   ZLATNO PRAVILO · Član 73. ZINP
                 </div>
                 <h2 className="mt-2 text-xl sm:text-2xl font-black tracking-tight text-ink">
-                  Bez potpisane potvrde — listić se NE UZIMA U OBZIR!
+                  Bez potpisane potvrde - listić se NE UZIMA U OBZIR!
                 </h2>
                 <p className="mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed text-ink-dim">
                   Ako se zapečaćeni koverat vrati na biračko mesto, a uz njega <strong>nema potpisane potvrde o izbornom pravu</strong> od strane birača, zakon propisuje da se smatra da birač nije glasao: poseban koverat sa listićem se ne otvara, već se odlaže sa neupotrebljenim listićima.

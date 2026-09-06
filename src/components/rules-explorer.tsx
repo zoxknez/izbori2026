@@ -191,8 +191,8 @@ export function RulesExplorer({
             >
               <option value="priority">Sort: Najkritičnije prvo</option>
               <option value="annulment">Sort: Poništavanja prvo</option>
-              <option value="az">Sort: Po nazivu (A–Z)</option>
-              <option value="za">Sort: Po nazivu (Z–A)</option>
+              <option value="az">Sort: Po nazivu (A-Z)</option>
+              <option value="za">Sort: Po nazivu (Z-A)</option>
             </select>
           </div>
 
@@ -333,7 +333,7 @@ export function RulesExplorer({
       <div className="flex flex-wrap items-center justify-between gap-3 border-y border-border-soft py-3 text-xs text-ink-faint">
         <div className="flex items-center gap-2">
           <span>
-            Prikazano <strong>{totalItems === 0 ? 0 : isAll ? `1–${totalItems}` : `${(safePage - 1) * pageSize + 1}–${Math.min(safePage * pageSize, totalItems)}`}</strong> od <strong>{totalItems}</strong> nepravilnosti
+            Prikazano <strong>{totalItems === 0 ? 0 : isAll ? `1-${totalItems}` : `${(safePage - 1) * pageSize + 1}-${Math.min(safePage * pageSize, totalItems)}`}</strong> od <strong>{totalItems}</strong> nepravilnosti
             {totalItems !== rules.length && (
               <span className="ml-1 text-ink-dim">(filtrirano od ukupno {rules.length})</span>
             )}

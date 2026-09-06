@@ -1,6 +1,6 @@
 # Implementation Report
 
-## Faza 0 — test i tooling temelj
+## Faza 0 - test i tooling temelj
 
 Status: završeno 5. septembra 2026.
 
@@ -20,7 +20,7 @@ Napomena o zavisnostima: `npm audit --omit=dev` je čist. Puni audit prijavljuje
 nalaza u razvojnom lancu `drizzle-kit`/zastareli `esbuild`; `npm audit fix --force` bi uveo breaking
 downgrade, pa je zamena tog migracionog toolchain-a ostavljena za tehničku hardening stavku.
 
-## Faza 1 — zajednički domen i formalizacija pravila
+## Faza 1 - zajednički domen i formalizacija pravila
 
 Status: **završeno**.
 
@@ -40,7 +40,7 @@ Urađeno:
 
 Provere: domain invariant testovi, `validateCounting`, decision-tree evaluator, dependency graph i production build prolaze. Dodat je `domain:guards` build gate koji odbija sirovi severity render u JSX-u.
 
-## Faza 2 — dataset versioning i offline temelj
+## Faza 2 - dataset versioning i offline temelj
 
 Status: **završeno za DB-backed snapshot/offline temelj**.
 
@@ -60,7 +60,7 @@ Provere: typecheck, ESLint, Vitest i production build prolaze; testiran je i rol
 preuzimanje zakaže posle prvog fajla. Dataset snapshot trenutno sadrži 66 pravila, 8 izvora, 3 stabla,
 193 training reference-a i 80 simulation reference-a.
 
-## Faza 3 — trening engine
+## Faza 3 - trening engine
 
 Status: **engine, coverage, vežba i ispit implementirani; ručna pravna redakcija pitanja je otvorena**.
 
@@ -75,7 +75,7 @@ Urađeno:
 
 Provere: coverage, mastery, selection i exam scoring imaju unit testove; typecheck, ESLint, Vitest i build coverage gate prolaze. Preostaje samo ručna legal/content redakcija promptova i objašnjenja.
 
-## Faza 4 — simulator biračkog dana
+## Faza 4 - simulator biračkog dana
 
 Status: **engine, vođeni i randomizovani režim implementirani**.
 
@@ -92,7 +92,7 @@ Provere uključuju randomizovani izbor samo među neposećenim događajima koji 
 eksplicitnu 50/25/15/7/3 raspodelu rizika i kompletan 30-event E2E tok. Detaljniji analitički breakdown
 rezultata ostaje opciono unapređenje.
 
-## Faza 5 — admin dependency/versioning/auth layer
+## Faza 5 - admin dependency/versioning/auth layer
 
 Status: **auth, RBAC, content editor, dependency dashboard i publish workflow implementirani**.
 
@@ -114,7 +114,7 @@ editor pojedinačnih decision-tree čvorova ostaje opciono proširenje; metapoda
 su dostupni kroz DB-backed admin rute, a osnovni rule/source/tree editor, dependency graph i transakcioni snapshot
 publish su završeni.
 
-## Faza 6 — service worker i PWA install sloj
+## Faza 6 - service worker i PWA install sloj
 
 Status: **završeno za osnovni PWA/update/storage scope**.
 
@@ -128,7 +128,7 @@ Urađeno:
 
 Implementirani su update prompt sa korisničkim aktiviranjem, zaštita od reload-a tokom otvorenog drafta, IndexedDB draft flagovi, IndexedDB migracija sačuvanih incidenata, MiniSearch globalna pretraga i storage-management panel. Serwist ostaje svesno izostavljen posle dokumentovanog Turbopack spike-a.
 
-## Faza 7 — integracija i E2E hardening
+## Faza 7 - integracija i E2E hardening
 
 Status: **završeno**.
 
@@ -146,13 +146,13 @@ na privremenom Neon branch-u. Produkcioni admin nalog nije kreiran bez korisnič
 Ne postoji self-registration. Ručna pravna redakcija generisanih trening objašnjenja ostaje domen-
 proces za pravnog reviewera, a ne automatizovana zamena za pravnu proveru.
 
-## Content/legal QA — završena korekcija kritičnih formulacija
+## Content/legal QA - završena korekcija kritičnih formulacija
 
 Primarni izvori su ponovo provereni 6. septembra 2026. RIK-ov važeći tekst Zakona o izboru narodnih
-poslanika potvrđuje tok iz čl. 89, 91–98, 102, 104–106 i razliku između nemogućnosti utvrđivanja
+poslanika potvrđuje tok iz čl. 89, 91-98, 102, 104-106 i razliku između nemogućnosti utvrđivanja
 rezultata (čl. 115) i poništavanja po službenoj dužnosti (čl. 116). Zakon o lokalnim izborima i
 Zakon o izboru predsednika Republike upućuju na primenu pravila Zakona o izboru narodnih poslanika
-za pitanja koja posebno ne uređuju. Krivični zakonik je proveren za čl. 155–161.
+za pitanja koja posebno ne uređuju. Krivični zakonik je proveren za čl. 155-161.
 
 Korigovano je sledeće:
 

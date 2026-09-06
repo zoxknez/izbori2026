@@ -2,7 +2,7 @@ import type { Rule } from "@/lib/types";
 
 const ZINP = "Zakon o izboru narodnih poslanika";
 const ZINP_URL = "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php";
-const ZINP_TOK = { law: ZINP, article: "čl. 87–99 (opšti tok glasanja)", url: ZINP_URL };
+const ZINP_TOK = { law: ZINP, article: "čl. 87-99 (opšti tok glasanja)", url: ZINP_URL };
 const ZINP_89 = { law: ZINP, article: "čl. 89", url: ZINP_URL };
 const ZINP_93 = { law: ZINP, article: "čl. 93", url: ZINP_URL };
 const ZINP_96 = { law: ZINP, article: "čl. 96 · glasanje van biračkog mesta", url: ZINP_URL };

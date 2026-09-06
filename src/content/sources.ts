@@ -71,7 +71,7 @@ export const sources: SourceEntry[] = [
     type: "law",
     label: "Krivični zakonik Republike Srbije",
     url: "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
-    description: "Glava XV: Krivična dela protiv izbornih prava (čl. 154–161).",
+    description: "Glava XV: Krivična dela protiv izbornih prava (čl. 154-161).",
   },
   {
     id: "crta",

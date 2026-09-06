@@ -29,7 +29,7 @@ export function DeadlinesCalculator() {
   const courtAppealDeadline = new Date(decisionDeadline.getTime() + 72 * 60 * 60 * 1000);
 
   function formatDate(d: Date) {
-    if (isNaN(d.getTime())) return "—";
+    if (isNaN(d.getTime())) return "-";
     return d.toLocaleDateString("sr-RS", {
       weekday: "long",
       year: "numeric",

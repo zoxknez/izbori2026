@@ -34,7 +34,7 @@ export default async function MitIliCinjenicaPage() {
 
             <p className="mt-3 text-base leading-relaxed text-ink-dim sm:text-lg">
               Neke stvari koje birači i posmatrači smatraju izbornom krađom su po zakonu potpuno
-              dozvoljene, dok su druge, naizgled bezazlene radnje — ozbiljne nepravilnosti.
+              dozvoljene, dok su druge, naizgled bezazlene radnje - ozbiljne nepravilnosti.
               Proveri svoje znanje kroz kviz ili prelistaj ceo katalog.
             </p>
           </div>
