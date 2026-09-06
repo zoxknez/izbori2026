@@ -164,6 +164,11 @@ Korigovano je sledeće:
   i policija kada okolnosti to zahtevaju;
 - uklonjena je neprecizna kvalifikacija propagande kao automatskog prekršaja i dodate su bezbedne
   operativne radnje za kritična krivičnopravna pravila.
+- migracija `0010_content-legal-hardening.sql` je uslovno uskladila DB-backed pravila sa ovim
+  korekcijama i ostavila append-only audit trag; aktivni offline dataset je zatim obnovljen kao
+  `2026.09.06-legal-hardening-52693e2`;
+- detalj pravila (`/pravila/[slug]`) prebačen je na dinamičko DB čitanje, jer pravni sadržaj ne sme
+  ostati iza sat vremena ISR keša nakon Admin publish/source promene.
 
 Ovo je content hardening, ne zamena za potpis pravnog reviewera. RIK-ova stranica sa zakonima i
 podzakonskim aktima ostaje kanonski ulaz za nove izmene; supersession izvora mora pokrenuti stale
