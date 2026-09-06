@@ -451,7 +451,7 @@ export function ZapisnikValidator() {
                 {!hasAnyInput
                   ? "Unesi brojeve u levu kolonu ili klikni na demo primer za automatsku forenziku."
                   : isAnnulmentFail
-                  ? "Uočeno je zakonsko neslaganje po čl. 116 ZINP. Glasanje se po sili zakona poništava po službenoj dužnosti. Član odbora NE SME potpisati zapisnik bez unosa primedbe!"
+                  ? "Uočeno je neslaganje koje čl. 116 ZINP navodi kao razlog za poništavanje po službenoj dužnosti. Nadležna izborna komisija donosi odluku; pre potpisivanja unesite tačne brojeve i primedbu u zapisnik."
                   : isCalculationFail
                   ? "Brojevi se logički ne poklapaju. Odbor mora ponovo prebrojati listiće pre zaključivanja zapisnika."
                   : "Sve četiri kontrolne provere prolaze. Brojevi u kutiji i na listama se u potpunosti slažu sa biračkim spiskom."}

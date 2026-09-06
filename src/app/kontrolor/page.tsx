@@ -211,11 +211,12 @@ export default async function KontrolorPage() {
                 Član 116. Zakona o izboru narodnih poslanika
               </div>
               <h2 className="mt-3 text-2xl font-bold tracking-tight text-ink">
-                Automatsko poništavanje glasanja po službenoj dužnosti
+                Zakonski razlozi za poništavanje po službenoj dužnosti
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-dim">
-                U ovim situacijama zakon ne ostavlja mogućnost kompromisa. Glasanje se mora poništiti,
-                a kontrolor mora odmah zahtevati zvaničan unos u zapisnik pre brojanja glasova.
+                U ovim situacijama nadležna izborna komisija po službenoj dužnosti donosi odluku o
+                poništavanju kada utvrdi zakonski razlog. Kontrolor treba odmah da zabeleži činjenice,
+                proveri brojeve i zahteva da se primedba unese u zapisnik.
               </p>
             </div>
 

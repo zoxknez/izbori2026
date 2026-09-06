@@ -1,6 +1,6 @@
 # Implementation Plan — Trening / Simulator / Admin / PWA Offline
 
-**Verzija: v2 (Revision 1).** Status: **Faza 7 u toku; Faze 0–6 završene.**
+**Verzija: v2 (Revision 1).** Status: **plan sproveden; Faze 0–7 završene.**
 
 ## Revision 1 — šta se promenilo u odnosu na v1 i zašto
 
@@ -401,17 +401,17 @@ pređe na nova polja (kraj Faze 1).
 
 ---
 
-## 7. Otvorene odluke (potrebna tvoja potvrda pre Faze 5)
+## 7. Odluke i status realizacije
 
 | Pitanje | Preporuka | Status |
 |---|---|---|
-| Admin UI biblioteka | shadcn/ui **samo** unutar `components/admin/*` | Otvoreno, niska rizičnost |
-| Admin autentikacija | Auth.js Credentials + `admin_users` u istom Neon-u | Otvoreno |
+| Admin UI biblioteka | shadcn/ui **samo** unutar `components/admin/*` | Svesno nije uvedena; postojeći admin UI je dovoljan |
+| Admin autentikacija | Auth.js Credentials + `admin_users` u istom Neon-u | **Zaključano i implementirano** |
 | SW bundler (Turbopack vs webpack za build koraka) | Opcija A (Turbopack) posle spike-a, fallback opcija B | **Zaključano kao proces** (§5 Faza 6) — ishod spike-a se upisuje u `IMPLEMENTATION_REPORT.md` |
-| Search indeks | MiniSearch | Otvoreno |
+| Search indeks | MiniSearch | **Zaključano i implementirano** |
 | Migracije | `generate`+`migrate` umesto `push` | **Zaključano** — vidi §6, stavka 1 |
 
-Ako se ne javiš sa izmenama, nastavljam sa preporukama iz srednje kolone kada dođe red na te faze.
+Preostaje samo redovni pravni/content review kada RIK objavi novi zakon, izmenu ili novo uputstvo; takva promena treba da pokrene stale workflow i novi Admin publish.
 
 ---
 
@@ -438,7 +438,7 @@ Ako se ne javiš sa izmenama, nastavljam sa preporukama iz srednje kolone kada d
 - Ne uvodi politički klasifikovan sadržaj niti menja neutralan ton postojećih 66 pravila.
 - Ne migrira javni dizajn-sistem na shadcn/ui (samo admin).
 - Ne uvodi obavezan nalog za javni deo sajta.
-- Ne implementira ništa u ovom koraku — plan kreće od Faze 0 tek nakon potvrde §7.
+- Plan je implementiran kroz Fazu 7; ovaj dokument sada služi kao arhitektonska i operativna evidencija.
 - Ne dira paralelni vizuelni redizajn javnih stranica koji trenutno teče van ove sesije (§1
   napomena) — jedino traži da svaka nova komponenta ostane unutar `Rule` tipa iz `src/lib/types.ts`.
 
@@ -446,7 +446,11 @@ Ako se ne javiš sa izmenama, nastavljam sa preporukama iz srednje kolone kada d
 
 ## 10. Sledeći deliverable
 
-Po završetku svake faze iz §5, ažurira se `IMPLEMENTATION_REPORT.md` (kreira se kad Faza 0 krene) sa:
+Po završetku svake faze iz §5 ažuriran je `IMPLEMENTATION_REPORT.md` sa:
 urađenim funkcijama, arhitektonskim odlukama (uključujući ishod Turbopack/webpack spike-a iz Faze 6),
 testovima, poznatim ograničenjima, dataset coverage tabelom (realan broj pitanja iz §5 Faza 3
 formule), i preporučenim sledećim korakom.
+
+Za dalje održavanje, sledeći deliverable je periodični pravni/content review: proveriti aktuelne RIK
+zakone i uputstva, označiti zavisne zapise kao `stale` kada se izvor zameni i objaviti novi validirani
+dataset tek nakon pregleda.

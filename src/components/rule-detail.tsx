@@ -90,7 +90,7 @@ export function RuleDetail({ rule, related }: { rule: Rule; related: Rule[] }) {
           {rule.isAutomaticAnnulment && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-sev-ponistavanje/40 bg-sev-ponistavanje/15 px-3 py-1 text-xs font-bold text-sev-ponistavanje shadow-xs">
               <ShieldAlert className="h-3.5 w-3.5" />
-              Automatsko poništavanje BM
+              Zakonski osnov za poništavanje BM
             </span>
           )}
 

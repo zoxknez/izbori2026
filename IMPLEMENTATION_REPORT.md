@@ -146,4 +146,27 @@ na privremenom Neon branch-u. Produkcioni admin nalog nije kreiran bez korisnič
 Ne postoji self-registration. Ručna pravna redakcija generisanih trening objašnjenja ostaje domen-
 proces za pravnog reviewera, a ne automatizovana zamena za pravnu proveru.
 
+## Content/legal QA — završena korekcija kritičnih formulacija
+
+Primarni izvori su ponovo provereni 6. septembra 2026. RIK-ov važeći tekst Zakona o izboru narodnih
+poslanika potvrđuje tok iz čl. 89, 91–98, 102, 104–106 i razliku između nemogućnosti utvrđivanja
+rezultata (čl. 115) i poništavanja po službenoj dužnosti (čl. 116). Zakon o lokalnim izborima i
+Zakon o izboru predsednika Republike upućuju na primenu pravila Zakona o izboru narodnih poslanika
+za pitanja koja posebno ne uređuju. Krivični zakonik je proveren za čl. 155–161.
+
+Korigovano je sledeće:
+
+- javni UI više ne predstavlja poništavanje kao trenutnu automatsku radnju odbora; jasno navodi da
+  nadležna izborna komisija donosi odluku po službenoj dužnosti;
+- uklonjeni su saveti o naknadnom dopisivanju potpisa/podataka i uvedeno je razlikovanje radnje pre
+  pečaćenja od evidentiranja propusta nakon početka glasanja;
+- uklonjen je savet da se lice fizički zadržava; sada se naglašavaju bezbednost, predsednik odbora
+  i policija kada okolnosti to zahtevaju;
+- uklonjena je neprecizna kvalifikacija propagande kao automatskog prekršaja i dodate su bezbedne
+  operativne radnje za kritična krivičnopravna pravila.
+
+Ovo je content hardening, ne zamena za potpis pravnog reviewera. RIK-ova stranica sa zakonima i
+podzakonskim aktima ostaje kanonski ulaz za nove izmene; supersession izvora mora pokrenuti stale
+workflow i novi validirani publish.
+
 

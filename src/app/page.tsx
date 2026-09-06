@@ -330,11 +330,11 @@ export default async function HomePage() {
                 Zakon o izboru narodnih poslanika · Čl. 116
               </div>
               <h2 className="mt-4 text-xl sm:text-2xl font-bold tracking-tight text-ink">
-                Automatsko poništavanje glasanja
+                Zakonski razlozi za poništavanje glasanja
               </h2>
               <p className="mt-2.5 text-sm leading-relaxed text-ink-dim">
-                Za ove nepravilnosti zakon ne ostavlja diskreciono pravo odboru. Glasanje na biračkom mestu
-                se <strong>poništava po službenoj dužnosti</strong>, nezavisno od bilo čije namere ili rezultata.
+                Za ove nepravilnosti zakon propisuje postupak poništavanja po službenoj dužnosti. O odluci
+                odlučuje nadležna izborna komisija na osnovu utvrđenih činjenica, nezavisno od namere.
               </p>
               <div className="mt-6">
                 <Link

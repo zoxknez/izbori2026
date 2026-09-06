@@ -132,11 +132,12 @@ export const rules: Rule[] = [
     summary: "Pred prvim biračem nije utvrđeno da je glasačka kutija prazna i ispravna.",
     legalRule:
       "Pre početka glasanja, pred prvim biračem se utvrđuje da je glasačka kutija prazna i ispravna, nakon čega se ubacuje kontrolni list i kutija se pečati.",
-    legalEffect: "Proceduralna nepravilnost koja slabi kasniju kontrolu ispravnosti kutije.",
+    legalEffect:
+      "Ako je propust primećen pre pečaćenja, procedura se može sprovesti ispravno; ako je glasanje već počelo, činjenicu treba uneti u zapisnik i odmah obavestiti nadležnu izbornu komisiju.",
     whatToCheck: ["Da li je prvi birač zaista bio prisutan i video prazan prostor kutije"],
     controllerActions: [
-      "Zaustaviti dalje glasanje dok se procedura ne ponovi ispravno",
-      "Zahtevati da se činjenica unese u zapisnik",
+      "Ako kutija još nije zapečaćena, sprovesti proveru pred prvim biračem i popuniti kontrolni list",
+      "Ako je glasanje već počelo, ne pokušavati naknadnu rekonstrukciju; uneti činjenicu u zapisnik i obavestiti komisiju",
     ],
     voterActions: ["Ako si prvi birač i ovo se preskoči, zatraži da se procedura sprovede pre nego što glasaš"],
     observerActions: ["Zabeleži da li je provera sprovedena pred svedocima"],
@@ -162,8 +163,8 @@ export const rules: Rule[] = [
       "Ako se pri otvaranju kutije utvrdi da kontrolni list nije popunjen, to je jedan od zakonom izričito propisanih razloga za poništavanje glasanja na tom biračkom mestu po službenoj dužnosti.",
     whatToCheck: ["Da li kontrolni list uopšte postoji u kutiji pri otvaranju"],
     controllerActions: [
-      "Insistirati da se kontrolni list popuni i potpiše pre pečaćenja kutije",
-      "Zahtevati unos primedbe u zapisnik ako je propušteno",
+      "Pre pečaćenja popuniti i potpisati kontrolni list prema propisanoj proceduri",
+      "Ako je kutija već zapečaćena, ne dopisivati podatke naknadno; uneti činjenicu u zapisnik i obavestiti komisiju",
     ],
     voterActions: [],
     observerActions: ["Zabeleži da li je kontrolni list vidljivo popunjen pre pečaćenja"],
@@ -191,7 +192,10 @@ export const rules: Rule[] = [
     legalRule: "Kontrolni list mora potpisati prvi birač i najmanje jedan član biračkog odbora.",
     legalEffect: "Zakonski osnov za poništavanje glasanja na biračkom mestu po službenoj dužnosti.",
     whatToCheck: ["Da li potpis prvog birača zaista nedostaje ili je samo nečitak"],
-    controllerActions: ["Zahtevati dopunu potpisa pre pečaćenja kutije", "Uneti primedbu u zapisnik"],
+    controllerActions: [
+      "Pre pečaćenja obezbediti potpis prvog birača prema propisanoj proceduri",
+      "Ako je kutija već zapečaćena, ne dopisivati potpis naknadno; uneti primedbu u zapisnik",
+    ],
     voterActions: [],
     observerActions: ["Proveri vidljivost potpisa pri otvaranju kutije nakon glasanja"],
     evidenceChecklist: ["Fotografija/opis stanja kontrolnog lista pri otvaranju kutije"],
@@ -214,7 +218,10 @@ export const rules: Rule[] = [
     legalRule: "Kontrolni list mora potpisati i najmanje jedan član biračkog odbora, uz prvog birača.",
     legalEffect: "Zakonski osnov za poništavanje glasanja na biračkom mestu po službenoj dužnosti.",
     whatToCheck: [],
-    controllerActions: ["Zahtevati potpis pre pečaćenja kutije", "Uneti primedbu u zapisnik"],
+    controllerActions: [
+      "Pre pečaćenja obezbediti potpis najmanje jednog člana odbora prema propisanoj proceduri",
+      "Ako je kutija već zapečaćena, ne dopisivati potpis naknadno; uneti primedbu u zapisnik",
+    ],
     voterActions: [],
     observerActions: [],
     evidenceChecklist: [],
@@ -305,7 +312,7 @@ export const rules: Rule[] = [
     summary: "Na biračkom mestu ili neposredno ispred njega nalazi se stranački simbol ili izborni propagandni materijal.",
     legalRule:
       "Isticanje stranačkih simbola i izbornog propagandnog materijala na biračkom mestu ili neposredno ispred njega zakon navodi kao narušavanje reda.",
-    legalEffect: "Prekršajna nepravilnost: narušavanje reda na biračkom mestu.",
+    legalEffect: "Narušavanje reda na biračkom mestu koje birački odbor treba odmah da otkloni.",
     whatToCheck: ["Da li se materijal nalazi unutar ili neposredno ispred mesta"],
     controllerActions: ["Zahtevati uklanjanje materijala", "Uneti primedbu u zapisnik ako se ne ukloni"],
     voterActions: [],
@@ -597,7 +604,10 @@ export const rules: Rule[] = [
     legalRule: "Glasanje je strogo lično i vezano za sopstveni identitet birača.",
     legalEffect: "Krivično delo prema Krivičnom zakoniku.",
     whatToCheck: [],
-    controllerActions: ["Odbiti izdavanje listića", "Zadržati lice i pozvati nadležne organe"],
+    controllerActions: [
+      "Odbiti izdavanje listića pod tuđim imenom",
+      "Ne ulaziti u fizički sukob niti samostalno zadržavati lice; obavestiti predsednika odbora i pozvati policiju kada okolnosti to zahtevaju",
+    ],
     voterActions: [],
     observerActions: ["Prijaviti policiji"],
     evidenceChecklist: ["Identitet lica", "Vreme", "Svedoci"],
@@ -876,7 +886,10 @@ export const rules: Rule[] = [
     legalRule: "Prisiljavanje na glasanje, neglasanje ili glasanje na određeni način zabranjeno je bez obzira na sredstvo prinude.",
     legalEffect: "Krivično delo povrede prava glasanja.",
     whatToCheck: [],
-    controllerActions: [],
+    controllerActions: [
+      "Ako si član odbora, bezbedno evidentiraj navod i obavesti predsednika odbora",
+      "Ako postoji neposredna opasnost, pozovi policiju; ne ulazi u fizičku konfrontaciju",
+    ],
     voterActions: ["Prijavi slučaj: pretnja poslom u vezi sa glasanjem je krivično delo"],
     observerActions: [],
     evidenceChecklist: ["Ko je pretio", "Kada i kako", "Svedoci/poruke"],
@@ -898,7 +911,10 @@ export const rules: Rule[] = [
     legalRule: "Ova kombinacija istovremeno ugrožava tajnost glasanja i slobodu odlučivanja birača.",
     legalEffect: "Krivično delo povrede prava glasanja, uz moguću povredu tajnosti glasanja.",
     whatToCheck: [],
-    controllerActions: [],
+    controllerActions: [
+      "Ne ulaziti u fizički sukob; obavestiti predsednika odbora i sačuvati činjenice",
+      "Ako postoji neposredna opasnost, pozvati policiju",
+    ],
     voterActions: ["Prijavi slučaj policiji ili tužilaštvu"],
     observerActions: [],
     evidenceChecklist: [],
@@ -928,7 +944,10 @@ export const rules: Rule[] = [
     legalEffect:
       "Krivično delo davanja i primanja mita u vezi sa glasanjem. Kažnjivo je i nuđenje/davanje/obećavanje koristi i njeno traženje/primanje; za člana biračkog odbora predviđen je stroži oblik.",
     whatToCheck: ["Da li je korist zaista ponuđena/data ili se radi o legalnoj aktivnosti (npr. organizovan prevoz)"],
-    controllerActions: [],
+    controllerActions: [
+      "Ne prihvatati niti nuditi korist; zabeležiti šta je ponuđeno i ko je učestvovao",
+      "Bez direktne konfrontacije obavestiti nadležnu izbornu komisiju ili policiju",
+    ],
     voterActions: ["Ne prihvatati ponudu, prijaviti nadležnim organima"],
     observerActions: ["Zabeleži okolnosti, izbegavaj direktnu konfrontaciju"],
     evidenceChecklist: ["Ko je nudio", "Šta je nuđeno", "Kada", "Svedoci"],
@@ -1075,7 +1094,7 @@ export const rules: Rule[] = [
     summary: "Birački odbor sprečava akreditovanog posmatrača da prati otvaranje kutije i prebrojavanje.",
     legalRule:
       "Akreditovani posmatrač ima pravo da nesmetano prati rad biračkog odbora, od preuzimanja materijala, preko glasanja, do otvaranja kutije, brojanja i predaje materijala.",
-    legalEffect: "Ozbiljna nepravilnost; član odbora koji sprečava posmatrača može odgovarati za prekršaj.",
+    legalEffect: "Ozbiljna nepravilnost koja ograničava zakonom predviđeno posmatranje rada biračkog odbora.",
     whatToCheck: ["Da li posmatrač ima važeću akreditaciju"],
     controllerActions: ["Omogućiti nesmetano posmatranje u skladu sa pravilima reda"],
     voterActions: [],
@@ -1586,7 +1605,10 @@ export const rules: Rule[] = [
     legalEffect:
       "Krivično delo falsifikovanja rezultata glasanja. Republička izborna komisija je dužna da podnese krivičnu prijavu ako postoji osnovana sumnja da veliko neslaganje materijala i zapisnika potiče od svesne i namerne aktivnosti radi utvrđivanja neistinitog rezultata.",
     whatToCheck: [],
-    controllerActions: [],
+    controllerActions: [
+      "Ne menjati originalni materijal; sačuvati tačne brojke, primedbu i prateće dokaze",
+      "Obavestiti nadležnu izbornu komisiju, a kod osnovane sumnje i javno tužilaštvo",
+    ],
     voterActions: ["Prijavi neslaganje odmah nadležnoj izbornoj komisiji i, po potrebi, tužilaštvu"],
     observerActions: ["Sačuvaj sve beleške i dokaze o neslaganju brojeva"],
     evidenceChecklist: ["Sve zabeležene brojke tokom brojanja", "Fotografija istaknutog zapisnika", "Objavljeni zvanični rezultat"],
