@@ -6,12 +6,11 @@ import { getAllRules, getRuleBySlug } from "@/lib/data";
 import { Container } from "@/components/ui/container";
 import { RuleDetail } from "@/components/rule-detail";
 
-export const revalidate = 3600;
-
-export async function generateStaticParams() {
-  const rules = await getAllRules();
-  return rules.map((r) => ({ slug: r.slug }));
-}
+// Rule details are the authoritative DB-backed legal view. Do not serve an ISR
+// copy after an Admin publish/source change; offline clients use the separately
+// validated immutable dataset snapshot.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
