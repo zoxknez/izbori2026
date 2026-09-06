@@ -43,10 +43,10 @@ export default async function PravilaPage({
             {/* Quick counters */}
             <div className="flex flex-wrap items-center gap-2 text-xs">
               <span className="rounded-xl border border-sev-ponistavanje/30 bg-sev-ponistavanje/10 px-3 py-1.5 font-semibold text-sev-ponistavanje">
-                🚨 {annulmentCount} automatskih poništavanja
+                🚨 {annulmentCount} osnova za poništavanje po službenoj dužnosti
               </span>
               <span className="rounded-xl border border-border/80 bg-surface-2 px-3 py-1.5 font-semibold text-ink-dim">
-                ⚖️ {criminalCount} krivičnih dela
+                ⚖️ {criminalCount} mogućih krivičnih dela
               </span>
             </div>
           </div>

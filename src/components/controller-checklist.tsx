@@ -183,7 +183,7 @@ const CHECKLIST_ITEMS: ChecklistItem[] = [
     id: "rec_2",
     phase: "zapisnik",
     title: "Upisivanje primedbi kontrolora u zapisnik",
-    desc: "Predsednik BO NE SME odbiti upis primedbe! Ako odbije, to je teška nepravilnost.",
+    desc: "Primedbe članova biračkog odbora treba da budu obuhvaćene zapisnikom. Ako primedba nije uneta, zabeleži odbijanje i koristi propisano pravno sredstvo.",
     critical: true,
   },
   {

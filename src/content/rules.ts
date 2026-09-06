@@ -10,6 +10,9 @@ const ZINP_102 = { law: ZINP, article: "čl. 102 · utvrđivanje broja birača k
 const ZINP_116 = { law: ZINP, article: "čl. 116 · poništavanje po službenoj dužnosti", url: ZINP_URL };
 const KZ = "Krivični zakonik Republike Srbije";
 const KZ_URL = "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5";
+const KZ_157 = { law: KZ, article: "čl. 157 · Zloupotreba prava glasanja", url: KZ_URL };
+const KZ_160 = { law: KZ, article: "čl. 160 · Povreda tajnosti glasanja", url: KZ_URL };
+const KZ_161 = { law: KZ, article: "čl. 161 · Falsifikovanje rezultata glasanja", url: KZ_URL };
 
 const SVI = ["narodni_poslanici", "predsednik", "lokalni"];
 
@@ -1141,20 +1144,20 @@ export const rules: Rule[] = [
     summary:
       "Naziv za oblik organizovane manipulacije u kojem se službeni glasački listić protivpravno iznosi iz normalnog toka glasanja i koristi za kontrolisano/cirkularno glasanje.",
     legalRule:
-      "Iznošenje službenog glasačkog listića van propisanog toka glasanja i njegovo korišćenje van biračkog mesta je protivzakonito.",
-    legalEffect: "Ozbiljna sumnja na organizovanu izbornu manipulaciju sa mogućim krivičnopravnim posledicama.",
+      "Iznošenje službenog glasačkog listića izvan propisanog toka je ozbiljna izborna nepravilnost. Krivična kvalifikacija zavisi od dokazanih radnji, kao što su glasanje više puta, korišćenje više listića, povreda tajnosti ili menjanje rezultata.",
+    legalEffect: "Ozbiljna sumnja na organizovanu izbornu manipulaciju; moguće krivičnopravne posledice procenjuju nadležni organi prema konkretnim dokazima.",
     whatToCheck: [
       "Da li birač pokušava da napusti mesto sa glasačkim listićem",
       "Da li postoji službeni listić van mesta gde sme da bude",
       "Da li se broj izdatih, vraćenih i pronađenih listića ne slaže",
       "Da li neko van biračkog mesta traži od birača da donese ili pokaže listić",
     ],
-    controllerActions: ["Sprečiti iznošenje listića sa biračkog mesta", "Odmah obavestiti nadležne organe"],
+    controllerActions: ["Ne ulaziti u fizički sukob; obavestiti predsednika odbora i zahtevati da se činjenice unesu u zapisnik", "Prema okolnostima obavestiti nadležnu izbornu komisiju ili policiju"],
     voterActions: [],
     observerActions: ["Prijaviti sumnjive slučajeve policiji, kao što su to ranije radile akreditovane posmatračke organizacije"],
     evidenceChecklist: ["Vreme", "Opis situacije", "Svedoci", "Da li se računica listića slaže"],
     doNotDo: ["Ovaj vodič ne opisuje operativni način izvršenja, samo znake za prepoznavanje"],
-    lawReferences: [ZINP_TOK],
+    lawReferences: [ZINP_TOK, KZ_157, KZ_160, KZ_161],
     sourceUrls: [],
     relatedSlugs: ["vise-listica-u-kutiji-nego-biraca"],
     order: 46,

@@ -39,7 +39,7 @@ export const decisionTrees: DecisionTree[] = [
     id: "DT03",
     slug: "neslaganje-u-zapisniku",
     title: "Neslaganje brojeva u zapisniku",
-    description: "Odredite da li neslaganje zahteva ponovno brojanje ili ukazuje na automatsko poništavanje.",
+    description: "Odredite da li neslaganje zahteva ponovno brojanje ili predstavlja zakonski osnov za poništavanje po službenoj dužnosti.",
     startNodeId: "DT03-N1",
     publicationStatus: "published",
     reviewStatus: "legal_review",

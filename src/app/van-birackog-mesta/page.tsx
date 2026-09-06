@@ -27,7 +27,7 @@ const STEPS = [
   {
     step: 1,
     title: "Prijava i evidentiranje birača",
-    desc: "Birač (ili član porodice) prijavljuje se komisiji najranije 72h pre izbora, ili biračkom odboru na dan glasanja najkasnije do 11:00 časova. Posle 11:00h nove prijave su ZAKONSKI ZABRANJENE.",
+    desc: "Birač (ili član porodice) prijavljuje se komisiji najranije 72 časa pre izbora, ili biračkom odboru na dan glasanja najkasnije do 11:00 časova. Zahtev posle tog roka je po pravilu neblagovremen, osim ako aktuelno uputstvo nadležne komisije predvidi drugačije.",
     icon: Clock,
   },
   {
@@ -128,7 +128,7 @@ export default async function VanBirackogMestaPage() {
               Izbornoj komisiji: od 72 časa pre izbora. Biračkom odboru: na dan glasanja <strong>najkasnije do 11:00 časova</strong>.
             </p>
             <div className="mt-3 rounded-lg border border-sev-proveri/20 bg-sev-proveri/5 p-2 text-[11px] text-sev-proveri">
-              ⚠️ Prijave primljene posle 11:00 časova su nezakonite i birački odbor ih NE SME prihvatiti!
+              ⚠️ Redovni zakonski rok za prijavu ističe u 11:00 časova; kasniji zahtev je po pravilu neblagovremen i treba ga proveriti prema aktuelnom uputstvu nadležne komisije.
             </div>
           </div>
 
@@ -165,7 +165,7 @@ export default async function VanBirackogMestaPage() {
                   Bez potpisane potvrde — listić se NE UZIMA U OBZIR!
                 </h2>
                 <p className="mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed text-ink-dim">
-                  Ako se zapečaćeni koverat vrati na biračko mesto, a uz njega <strong>nema svojeručno potpisane Potvrde o biračkom pravu</strong> od strane birača, birački odbor <strong>NE SME</strong> otvoriti taj koverat niti ubaciti listić u glasačku kutiju! Listić se odlaže kao neupotrebljen, a primedba se unosi u zapisnik.
+                  Ako se zapečaćeni koverat vrati na biračko mesto, a uz njega <strong>nema potpisane potvrde o izbornom pravu</strong> od strane birača, zakon propisuje da se smatra da birač nije glasao: poseban koverat sa listićem se ne otvara, već se odlaže sa neupotrebljenim listićima.
                 </p>
               </div>
             </div>
