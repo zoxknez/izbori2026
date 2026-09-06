@@ -97,7 +97,7 @@ export function RuleDetail({ rule, related }: { rule: Rule; related: Rule[] }) {
           {isCriminal && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-500/40 bg-slate-500/15 px-3 py-1 text-xs font-bold text-slate-300 shadow-xs">
               <Gavel className="h-3.5 w-3.5" />
-              Krivično delo (KZ RS)
+              Moguće krivičnopravne posledice
             </span>
           )}
         </div>
