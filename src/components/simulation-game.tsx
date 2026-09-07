@@ -6,22 +6,25 @@ import { motion } from "motion/react";
 import {
   ArrowRight,
   Award,
+  BellRing,
   BookOpen,
   Calculator,
   CheckCircle2,
   ClipboardList,
   ChevronRight,
   Clock,
-  DoorOpen,
   Eye,
   Gavel,
-  MapPinned,
+  Gamepad2,
+  Radio,
+  ScanLine,
   NotebookPen,
   RotateCcw,
   ShieldAlert,
   Sparkles,
   TriangleAlert,
   Users,
+  UserRound,
   Vote,
   XCircle,
 } from "lucide-react";
@@ -199,28 +202,83 @@ function EvidenceTray({ items, count, compact = false }: { items: EvidenceItem[]
   );
 }
 
-function PollingPlaceMap({ phase }: { phase: string }) {
-  const active = new Set(ACTIVE_STATIONS[phase] ?? []);
+function GameScene({
+  event,
+  role,
+  eventNumber,
+  totalEvents,
+  pulse,
+}: {
+  event: SimulationEvent;
+  role: SimulationRole;
+  eventNumber: number;
+  totalEvents: number;
+  pulse: ChoiceClassification | null;
+}) {
+  const activeStations = ACTIVE_STATIONS[event.phase] ?? ["ulaz"];
+  const avatarStation = activeStations[0] ?? "ulaz";
+  const isDanger = event.riskBand === "criminal" || event.riskBand === "annulment";
+
   return (
-    <section aria-label="Raspored biračkog mesta" className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
-      <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink">
-        <MapPinned className="h-4 w-4 text-brand" /> Raspored biračkog mesta
-      </p>
-      <p className="mt-1 text-xs text-ink-faint">Aktivna zona prati trenutnu radnju.</p>
-      <div className="mt-3 grid grid-cols-4 gap-1.5 sm:grid-cols-8">
-        {STATIONS.map((station, index) => {
-          const isActive = active.has(station.id);
-          return (
-            <div key={station.id} className="min-w-0">
-              <div className={cn("flex h-8 items-center justify-center rounded-lg border text-[10px] font-extrabold", isActive ? "border-brand bg-brand text-brand-ink" : "border-border bg-surface-2 text-ink-faint")}>
-                {index + 1}
-              </div>
-              <p className={cn("mt-1 truncate text-center text-[9px] font-semibold", isActive ? "text-brand" : "text-ink-faint")}>{station.label}</p>
-            </div>
-          );
-        })}
+    <section
+      aria-label="Interaktivna scena biračkog mesta"
+      className={cn(
+        "game-shell relative overflow-hidden rounded-[28px] border p-3 shadow-card sm:p-5",
+        isDanger ? "border-rose-500/45" : "border-brand/25",
+        pulse === "correct" || pulse === "acceptable" ? "game-success" : pulse ? "game-danger" : "",
+      )}
+    >
+      <div className="pointer-events-none absolute inset-0 game-scanlines opacity-40" />
+      <div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-brand/15 blur-3xl" />
+      {isDanger ? <div className="pointer-events-none absolute -right-12 top-1/3 h-40 w-40 rounded-full bg-rose-500/20 blur-3xl" /> : null}
+
+      <div className="relative flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
+        <span className="inline-flex items-center gap-2 text-brand"><Radio className="h-3.5 w-3.5 animate-pulse" /> Živa smena</span>
+        <span className="font-mono">Sektor BM · {String(eventNumber).padStart(2, "0")}/{String(totalEvents).padStart(2, "0")}</span>
+        <span className={cn("inline-flex items-center gap-1.5", isDanger ? "text-rose-300" : "text-emerald-300")}><span className="h-1.5 w-1.5 rounded-full bg-current" /> {isDanger ? "Rizik detektovan" : "Sistem stabilan"}</span>
       </div>
-      <div className="mt-3 flex items-center gap-1.5 text-[11px] text-ink-faint"><DoorOpen className="h-3.5 w-3.5" /> Ulaz → UV → identitet → spisak → sprej → listić → paravan → kutija</div>
+
+      <div className="relative mt-4 grid min-h-[300px] gap-3 lg:grid-cols-[1fr_11rem]">
+        <div className="game-floor relative grid grid-cols-4 gap-2 rounded-2xl border border-white/10 p-3 sm:grid-cols-8 sm:gap-2.5 sm:p-5">
+          <div className="pointer-events-none absolute inset-x-5 top-1/2 border-t border-dashed border-white/10" />
+          {STATIONS.map((station, index) => {
+            const active = activeStations.includes(station.id);
+            const avatarHere = avatarStation === station.id;
+            return (
+              <motion.div
+                layout
+                key={station.id}
+                className={cn(
+                  "relative flex min-h-24 flex-col justify-between overflow-hidden rounded-xl border p-2.5 transition-colors sm:min-h-36 sm:p-3",
+                  active ? "border-brand/70 bg-brand/15 shadow-[0_0_0_1px_rgba(79,209,197,0.12),0_0_34px_rgba(79,209,197,0.2)]" : "border-white/10 bg-black/10",
+                )}
+              >
+                <span className={cn("text-[9px] font-bold uppercase tracking-wider", active ? "text-brand" : "text-ink-faint")}>{String(index + 1).padStart(2, "0")}</span>
+                {avatarHere ? (
+                  <motion.div layoutId="player-avatar" transition={{ type: "spring", stiffness: 240, damping: 20 }} className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
+                    <div className="game-avatar flex h-11 w-11 items-center justify-center rounded-2xl border border-brand/60 bg-brand text-brand-ink shadow-lg"><UserRound className="h-6 w-6" /></div>
+                  </motion.div>
+                ) : null}
+                {active && !avatarHere ? <span className="game-target absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-brand" /> : null}
+                <span className="text-[10px] font-bold text-ink sm:text-xs">{station.label}</span>
+              </motion.div>
+            );
+          })}
+          {isDanger ? <BellRing className="game-alert absolute right-5 top-5 h-7 w-7 text-rose-300" aria-label="Upozorenje" /> : null}
+        </div>
+
+        <aside className="flex flex-col justify-between rounded-2xl border border-white/10 bg-black/20 p-4">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-brand">Tvoj lik</p>
+            <p className="mt-1 text-sm font-extrabold text-ink">{SIMULATION_ROLE_LABELS[role]}</p>
+            <p className="mt-3 text-[11px] leading-relaxed text-ink-dim">{PHASE_META[event.phase]?.hint ?? "Prati proceduru i reaguj na promenu u sceni."}</p>
+          </div>
+          <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-ink-faint">Misija sada</p>
+            <p className="mt-1.5 text-xs font-semibold leading-relaxed text-ink">{event.title}</p>
+          </div>
+        </aside>
+      </div>
     </section>
   );
 }
@@ -318,6 +376,7 @@ export function SimulationGame() {
   const [feedback, setFeedback] = useState<SimulationChoice | null>(null);
   const [resumable, setResumable] = useState<SavedRun | null>(null);
   const [showShiftLog, setShowShiftLog] = useState(false);
+  const [scenePulse, setScenePulse] = useState<ChoiceClassification | null>(null);
 
   const eventMap = useMemo(() => new Map(simulationEvents.map((event) => [event.id, event])), []);
   const event = state ? eventMap.get(state.currentEventId) : undefined;
@@ -360,6 +419,7 @@ export function SimulationGame() {
       onlyEventIds: setup.onlyEventIds,
     });
     setFeedback(null);
+    setScenePulse(null);
     setShowShiftLog(false);
     setResumable(null);
     setState(next);
@@ -369,9 +429,11 @@ export function SimulationGame() {
   /** Prvo se prikazuje ocena odluke; tok se pomera tek kada korisnik potvrdi. */
   function choose(choice: SimulationChoice) {
     if (!state || !event || feedback) return;
+    setScenePulse(choice.classification);
     if (!TRAINING_MODE[trainingMode].showFeedback) {
       const next = applyChoice(state, event, choice, simulationEvents);
       setState(next);
+      window.setTimeout(() => setScenePulse(null), 500);
       void persist(next);
       return;
     }
@@ -382,6 +444,7 @@ export function SimulationGame() {
     if (!state || !event || !feedback) return;
     const next = applyChoice(state, event, feedback, simulationEvents);
     setFeedback(null);
+    setScenePulse(null);
     setState(next);
     void persist(next);
   }
@@ -653,8 +716,8 @@ export function SimulationGame() {
   const FeedbackIcon = feedbackStyle?.icon ?? CheckCircle2;
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-2xl border border-border bg-surface p-4 shadow-card">
+    <div className="game-hud space-y-4">
+      <div className="rounded-2xl border border-brand/20 bg-surface p-4 shadow-card">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-20 items-center justify-center rounded-xl border border-brand/25 bg-brand/10">
@@ -693,8 +756,12 @@ export function SimulationGame() {
       </div>
 
       <div>
-        <div className="mb-4 grid gap-4 lg:grid-cols-[1.4fr_0.9fr]">
-          <PollingPlaceMap phase={event.phase} />
+        <GameScene event={event} role={state.role} eventNumber={state.history.length + 1} totalEvents={totalEvents} pulse={scenePulse} />
+        <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_0.7fr]">
+          <div className="rounded-2xl border border-border bg-surface-2/50 p-4 text-xs text-ink-dim">
+            <p className="flex items-center gap-2 font-bold uppercase tracking-wider text-brand"><ScanLine className="h-4 w-4" /> Sken procedure</p>
+            <p className="mt-2 leading-relaxed">Aktivna zona je označena na tabli. Odaberi radnju koja štiti postupak i ostavlja upotrebljiv trag u evidenciji.</p>
+          </div>
           <EvidenceTray items={evidenceItems} count={state.evidence} compact />
         </div>
         <motion.div
@@ -703,7 +770,7 @@ export function SimulationGame() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: "spring", stiffness: 140, damping: 20 }}
           className={cn(
-            "rounded-3xl border bg-surface p-5 shadow-card sm:p-8",
+            "mt-4 rounded-3xl border bg-surface p-5 shadow-card sm:p-8",
             event.riskBand === "annulment" || event.riskBand === "criminal" ? "border-rose-500/30" : "border-border",
           )}
         >
@@ -723,14 +790,15 @@ export function SimulationGame() {
               <ShieldAlert className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-wider text-brand">{event.title}</p>
+              <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand"><Gamepad2 className="h-4 w-4" /> Misija: {event.title}</p>
               <h2 className="mt-2 text-lg font-semibold leading-relaxed text-ink sm:text-xl">{event.description}</h2>
             </div>
           </div>
 
           {event.counting && <CountingPanel event={event} />}
 
-          <div className="mt-6 grid gap-2.5">
+          <p className="mt-6 text-xs font-bold uppercase tracking-[0.16em] text-ink-faint">Izaberi postupak</p>
+          <div className="mt-3 grid gap-2.5 lg:grid-cols-2">
             {choices.map((choice, index) => (
               <motion.button
                 key={choice.id}
@@ -742,18 +810,19 @@ export function SimulationGame() {
                 transition={{ delay: index * 0.06 }}
                 whileTap={feedback ? undefined : { scale: 0.99 }}
                 className={cn(
-                  "group flex items-start gap-3 rounded-2xl border p-4 text-left text-sm font-semibold transition-colors",
+                  "group relative flex min-h-28 items-start gap-3 overflow-hidden rounded-2xl border p-4 text-left text-sm font-semibold transition-all",
                   feedback?.id === choice.id
                     ? cn("bg-surface-2 text-ink", feedbackStyle?.ring)
                     : feedback
                       ? "border-border/50 bg-surface-2/40 text-ink-faint"
-                      : "border-border bg-surface-2 text-ink hover:border-brand",
+                      : "border-border bg-surface-2 text-ink hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_12px_28px_-18px_rgba(79,209,197,0.75)]",
                 )}
               >
-                <span className={cn("mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border", feedback?.id === choice.id ? "border-brand bg-brand text-brand-ink" : "border-border text-ink-faint")}>
-                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                <span className={cn("mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border", feedback?.id === choice.id ? "border-brand bg-brand text-brand-ink" : "border-brand/30 bg-brand/10 text-brand")}>
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </span>
-                <span><span className="block text-[10px] font-bold uppercase tracking-wider text-brand">Predložena radnja</span>{choice.label}</span>
+                <span><span className="block text-[10px] font-bold uppercase tracking-wider text-brand">Radnja</span>{choice.label}</span>
+                <span className="absolute bottom-3 right-3 text-[10px] font-bold uppercase tracking-wider text-ink-faint group-hover:text-brand">Odaberi →</span>
               </motion.button>
             ))}
           </div>

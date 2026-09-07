@@ -14,7 +14,9 @@ test("cross-module public flows and accessibility landmarks", async ({ page }) =
   await expect(page.getByRole("heading", { name: /Izborni dan:/i })).toBeVisible();
   await page.getByRole("button", { name: /Započni birački dan/i }).click();
   await expect(page.getByText(/Događaj 1 od/i)).toBeVisible();
-  await page.getByRole("button", { name: /Predložena radnja/i }).first().click();
+  await expect(page.getByRole("region", { name: /Interaktivna scena biračkog mesta/i })).toBeVisible();
+  await expect(page.getByText(/Živa smena/i)).toBeVisible();
+  await page.getByRole("button", { name: /Radnja/i }).first().click();
   await expect(page.getByRole("button", { name: /Nastavi dan/i })).toBeVisible();
   await page.getByRole("button", { name: /Nastavi dan/i }).click();
   await expect(page.getByText(/Događaj 2 od/i)).toBeVisible();
@@ -55,7 +57,7 @@ async function playSimulation(page: import("@playwright/test").Page, maxSteps: n
       await carryOn.click();
       continue;
     }
-    const choice = page.getByRole("button", { name: /Predložena radnja/i }).first();
+    const choice = page.getByRole("button", { name: /Radnja/i }).first();
     if (!(await choice.isVisible().catch(() => false))) break;
     await choice.click();
   }
