@@ -24,6 +24,8 @@ import {
   Volume2,
   VolumeX,
   ExternalLink,
+  Users,
+  ListOrdered,
 } from "lucide-react";
 import { ZmaiIcon } from "@/components/icons/zmai-icon";
 import { createGameBridge } from "@/game/bridge/game-bridge";
@@ -506,6 +508,12 @@ export function GameSimulatorShell({
           ? "border-amber-500/40 bg-amber-500/10 text-amber-100"
           : "border-rose-500/40 bg-rose-500/10 text-rose-100"
     : "";
+  const votersInFlow = context.activeVoterCount;
+  const stationPressure = context.queueLength >= 3 || votersInFlow >= 5
+    ? { label: "Povišen pritisak", className: "border-rose-500/35 bg-rose-500/10 text-rose-300" }
+    : context.queueLength > 0 || votersInFlow > 0
+      ? { label: "Aktivan tok", className: "border-amber-500/35 bg-amber-500/10 text-amber-300" }
+      : { label: "Bez reda", className: "border-emerald-500/35 bg-emerald-500/10 text-emerald-300" };
 
   const clockString = msToTimeString(context.simulationTimeMs);
 
@@ -602,6 +610,22 @@ export function GameSimulatorShell({
               {context.currentPhase === "closed" && "Zatvoreno biračko mesto"}
             </span>
           </div>
+
+          {(context.currentPhase === "voting" || context.currentPhase === "closing") && (
+            <div className="hidden lg:flex items-center gap-1.5" aria-label={`Operativno stanje: ${votersInFlow} birača u prostoru, ${context.queueLength} u redu, ${stationPressure.label}`}>
+              <span className="inline-flex items-center gap-1 rounded-lg border border-border/70 bg-surface-2 px-2 py-1 text-[10px] font-bold text-ink-dim" title="Birači trenutno u prostoru">
+                <Users className="h-3 w-3 text-sky-400" />
+                {votersInFlow} u prostoru
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-lg border border-border/70 bg-surface-2 px-2 py-1 text-[10px] font-bold text-ink-dim" title="Birači koji čekaju u redu">
+                <ListOrdered className="h-3 w-3 text-brand" />
+                red {context.queueLength}
+              </span>
+              <span className={cn("rounded-lg border px-2 py-1 text-[10px] font-bold", stationPressure.className)}>
+                {stationPressure.label}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Kontrole vremena */}
