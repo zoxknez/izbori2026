@@ -53,6 +53,7 @@ import {
 import { cn } from "@/lib/utils";
 import { getWorldIncidentPresentation } from "@/game/world/world-incident-presentation";
 import { SIMULATION_MODE_PROFILES } from "@/game/config/simulation-mode-profile";
+import { buildDebriefTimeline } from "@/lib/domain/simulator/debrief-timeline";
 
 interface GameSimulatorShellProps {
   initialRole?: SimulationRole;
@@ -1133,9 +1134,26 @@ export function GameSimulatorShell({
                 context.evidenceNotebook,
               );
               const debrief = computeDebrief(context.domainState);
+              const timeline = buildDebriefTimeline(context.actionLog, context.evidenceNotebook, context.missedIncidents);
 
               return (
                 <div className="mt-4 flex flex-col gap-4">
+                  <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                    <h3 className="text-xs font-bold uppercase tracking-wide text-ink">Hronologija smene</h3>
+                    {timeline.length === 0 ? (
+                      <p className="mt-2 text-xs text-ink-dim">Još nema zabeleženih događaja.</p>
+                    ) : (
+                      <ol className="mt-3 space-y-2 border-l border-border pl-4">
+                        {timeline.slice(-12).map((entry) => (
+                          <li key={entry.id} className="relative text-xs">
+                            <span className={cn("absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full border-2 border-surface-2", entry.kind === "timeout" ? "bg-amber-400" : entry.kind === "evidence" ? "bg-emerald-400" : "bg-sky-400")} />
+                            <div className="flex items-center gap-2 font-bold text-ink"><span className="font-mono text-[10px] text-ink-dim">{entry.timestamp || "--:--"}</span><span>{entry.label}</span></div>
+                            {entry.detail && <p className="mt-0.5 text-ink-dim">{entry.detail}</p>}
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </div>
                   {/* Rizik poništavanja */}
                   {consequences.hasAnnulmentRisk ? (
                     <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">
@@ -1185,6 +1203,24 @@ export function GameSimulatorShell({
                     <h3 className="text-xs font-bold text-ink uppercase tracking-wide">
                       Ocena dokaznog lanca u beležnici:
                     </h3>
+                    <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                      {([
+                        ["Vreme", (record: (typeof context.evidenceNotebook)[number]) => record.completeness.time],
+                        ["Lokacija", (record: (typeof context.evidenceNotebook)[number]) => record.completeness.location],
+                        ["Činjenice", (record: (typeof context.evidenceNotebook)[number]) => record.completeness.facts],
+                        ["Svedoci", (record: (typeof context.evidenceNotebook)[number]) => record.completeness.witnesses],
+                      ] as const).map(([label, check]) => {
+                        const percentage = context.evidenceNotebook.length === 0
+                          ? 0
+                          : Math.round((context.evidenceNotebook.filter(check).length / context.evidenceNotebook.length) * 100);
+                        return (
+                          <div key={label} className="rounded-xl border border-border/70 bg-surface p-2.5">
+                            <div className="text-[10px] font-semibold text-ink-dim">{label}</div>
+                            <div className={cn("mt-1 text-sm font-black", percentage >= 80 ? "text-emerald-400" : percentage >= 50 ? "text-amber-400" : "text-rose-400")}>{percentage}%</div>
+                          </div>
+                        );
+                      })}
+                    </div>
                     <p className="mt-1 text-xs text-ink-dim">
                       {consequences.documentationWeakness
                         ? "⚠ Slab dokazni trag: Zabeležene primedbe nemaju potvrđene svedoke ili nedostaju činjenice za prigovor."
