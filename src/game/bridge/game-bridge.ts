@@ -16,7 +16,7 @@ export interface GameBridge {
  */
 export function createGameBridge(): GameBridge {
   const listeners: {
-    [K in GameBridgeEventName]?: Set<EventHandler<any>>;
+    [K in GameBridgeEventName]?: Set<EventHandler<GameBridgeEventMap[K]>>;
   } = {};
 
   return {

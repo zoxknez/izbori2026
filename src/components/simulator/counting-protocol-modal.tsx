@@ -7,7 +7,6 @@ import {
   FileCheck2,
   Gavel,
   Eye,
-  Info,
   PenTool,
   ShieldAlert,
   ShieldCheck,

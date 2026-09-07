@@ -1,5 +1,5 @@
 import type { SimulationRole } from "./types";
-import type { WorldAction, WorldIncidentBinding } from "./live-types";
+import type { WorldAction } from "./live-types";
 
 export type RolePermission =
   // Birački odbor (Čl. 98 i 105 ZINP)

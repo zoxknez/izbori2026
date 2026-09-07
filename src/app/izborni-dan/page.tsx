@@ -1,7 +1,4 @@
 import {
-  Clock3,
-  Gavel,
-  ShieldCheck,
   Sparkles,
   Gamepad2,
   FileCheck2,
@@ -11,7 +8,6 @@ import {
 } from "lucide-react";
 import { SimulatorModeSelector } from "@/components/simulator/simulator-mode-selector";
 import { Container } from "@/components/ui/container";
-import { SIMULATOR_CHOICE_COUNT, SIMULATOR_EVENT_COUNT } from "@/lib/domain/simulator/seed-events";
 
 export const metadata = {
   title: "Izborni dan - 2D Simulator smene na biračkom mestu",

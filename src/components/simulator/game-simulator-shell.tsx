@@ -100,10 +100,6 @@ export function GameSimulatorShell({
       : undefined,
   );
   const context = state.context;
-  const activeSaveRef = useRef<GameSaveV2 | GameSaveV1 | null>(null);
-  const legalInterruptionsRef = useRef(context.legalInterruptions);
-  activeSaveRef.current = activeSave;
-  legalInterruptionsRef.current = context.legalInterruptions;
 
   // Provera postojanja sačuvane sesije na pokretanju
   useEffect(() => {

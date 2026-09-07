@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { CheckCircle2, FileText, Plus, ShieldAlert, X, Users, MapPin, Clock } from "lucide-react";
+import { useState } from "react";
+import { CheckCircle2, FileText, Plus, X, Users, Clock } from "lucide-react";
 import type { EvidenceRecord } from "@/lib/domain/simulator/live-types";
 import type { SimulationRole } from "@/lib/domain/simulator/types";
 import { cn } from "@/lib/utils";
@@ -48,16 +48,13 @@ export function EvidenceTray({
   onAddEvidence,
 }: EvidenceTrayProps) {
   const [isCreating, setIsCreating] = useState(false);
-  const [locationId, setLocationId] = useState(selectedLocationId);
+  const [selectedCustomLocationId, setSelectedCustomLocationId] = useState<string | null>(null);
+  const locationId = selectedCustomLocationId ?? selectedLocationId;
   const [factInput, setFactInput] = useState("");
   const [facts, setFacts] = useState<string[]>([]);
   const [assumptionInput, setAssumptionInput] = useState("");
   const [assumptions, setAssumptions] = useState<string[]>([]);
   const [selectedWitnesses, setSelectedWitnesses] = useState<string[]>([]);
-
-  useEffect(() => {
-    setLocationId(selectedLocationId);
-  }, [selectedLocationId]);
 
   if (!isOpen) return null;
 
@@ -110,6 +107,7 @@ export function EvidenceTray({
     setFacts([]);
     setAssumptions([]);
     setSelectedWitnesses([]);
+    setSelectedCustomLocationId(null);
     setIsCreating(false);
   };
 
@@ -189,7 +187,7 @@ export function EvidenceTray({
                   <label className="text-xs font-semibold text-ink">Lokacija zapažanja:</label>
                   <select
                     value={locationId}
-                    onChange={(e) => setLocationId(e.target.value)}
+                    onChange={(e) => setSelectedCustomLocationId(e.target.value)}
                     className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-xs font-medium text-ink focus:border-brand focus:outline-none"
                   >
                     {COMMON_LOCATIONS.map((loc) => (
@@ -315,7 +313,10 @@ export function EvidenceTray({
               <div className="mt-2 flex items-center justify-end gap-2 border-t border-border/80 pt-4">
                 <button
                   type="button"
-                  onClick={() => setIsCreating(false)}
+                  onClick={() => {
+                    setSelectedCustomLocationId(null);
+                    setIsCreating(false);
+                  }}
                   className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-ink-dim hover:bg-surface-2"
                 >
                   Otkaži

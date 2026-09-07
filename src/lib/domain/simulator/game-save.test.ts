@@ -44,7 +44,7 @@ describe("GameSaveV2, GameSaveV1 & Deterministic Replay", () => {
     expect(isValidGameSaveV1(null)).toBe(false);
     expect(isValidGameSaveV1({})).toBe(false);
     expect(isValidGameSaveV1({ ...valid, version: 2 })).toBe(false);
-    expect(isValidGameSaveV1({ ...valid, mode: "invalid_mode" as any })).toBe(false);
+    expect(isValidGameSaveV1({ ...valid, mode: "invalid_mode" as unknown as SimulationMode })).toBe(false);
   });
 
   it("proverava validnost GameSaveV2 formata i generisanje kanonskog hash-a", async () => {

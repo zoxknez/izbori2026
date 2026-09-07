@@ -24,9 +24,6 @@ export function ZmaiEmbed() {
 
   // Detekcija dužeg učitavanja (moguća CSP / frame-ancestors restrikcija)
   useEffect(() => {
-    setIsLoading(true);
-    setLoadTimedOut(false);
-
     const timer = setTimeout(() => {
       // Ako nakon 7 sekundi još uvek nije okinut onLoad, ponudi brzi fallback
       setLoadTimedOut(true);

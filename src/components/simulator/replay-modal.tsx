@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import {
   X,
-  Play,
   RotateCcw,
   ChevronLeft,
   ChevronRight,
@@ -83,10 +82,6 @@ export function ReplayModal({
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
-  const totalStepScore = currentStep
-    ? Object.values(currentStep.domainState.scores).reduce((a, b) => a + b, 0)
-    : 0;
 
   return (
     <div
