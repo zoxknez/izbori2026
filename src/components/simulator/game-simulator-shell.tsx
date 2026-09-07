@@ -453,35 +453,6 @@ export function GameSimulatorShell({
     setTimeout(() => setStatusNotification(null), 4000);
   };
 
-  const handleRecordEvidence = () => {
-    if (!selectedHotspot) return;
-    const roleConfig = ROLE_CONFIGS[context.domainState.role];
-    send({
-      type: "ADD_EVIDENCE",
-      record: {
-        id: `ev-${context.runId}-${context.deterministicCounter + 1}`,
-        simulationTimeMs: context.simulationTimeMs,
-        timestamp: clockString,
-        locationId: selectedHotspot.locationId,
-        observedFacts: [`Zapažanje na lokaciji: ${selectedHotspot.title}`],
-        assumptions: [],
-        witnesses: [roleConfig.shortLabel],
-        relatedRuleIds: [],
-        createdByRole: context.domainState.role,
-        source: "world_interaction",
-        completeness: {
-          time: true,
-          location: true,
-          facts: true,
-          witnesses: true,
-        },
-      },
-    });
-    setStatusNotification(`Zabeleženo u beležnicu dokaza (${selectedHotspot.title})`);
-    bridge.emit("AUDIO_CUE_REQUESTED", { cue: "evidence" });
-    setTimeout(() => setStatusNotification(null), 3000);
-  };
-
   const currentRoleConfig = ROLE_CONFIGS[context.domainState.role];
   const modeProfile = SIMULATION_MODE_PROFILES[context.mode];
 
@@ -897,7 +868,7 @@ export function GameSimulatorShell({
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                onClick={handleRecordEvidence}
+                onClick={() => setIsEvidenceTrayOpen(true)}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold text-ink hover:border-brand/60 hover:text-brand transition shadow-sm"
               >
                 <NotebookPen className="h-3.5 w-3.5 text-brand" />
@@ -998,6 +969,7 @@ export function GameSimulatorShell({
                   title: item.title,
                 });
                 send({ type: "SELECT_HOTSPOT", hotspotId: item.id });
+                bridge.emit("FOCUS_LOCATION", { locationId: item.loc });
               }}
               className={cn(
                 "rounded-lg border px-2.5 py-1.5 text-xs font-medium transition",
@@ -1156,7 +1128,12 @@ export function GameSimulatorShell({
         currentSimulationTimeMs={context.simulationTimeMs}
         currentRole={context.domainState.role}
         selectedLocationId={selectedHotspot?.locationId}
-        onAddEvidence={(record) => send({ type: "ADD_EVIDENCE", record })}
+        onAddEvidence={(record) => {
+          send({ type: "ADD_EVIDENCE", record });
+          setStatusNotification(`Zabeleženo u beležnicu dokaza (${record.timestamp})`);
+          bridge.emit("AUDIO_CUE_REQUESTED", { cue: "evidence" });
+          setTimeout(() => setStatusNotification(null), 3000);
+        }}
       />
 
       {/* 8. ZAVRŠNI DEBRIEF MODAL (ODLOŽENE POSLEDICE & EVALUACIJA) */}
