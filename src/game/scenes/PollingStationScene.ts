@@ -22,6 +22,7 @@ interface VoterVisual {
   container: Phaser.GameObjects.Container;
   sprite: Phaser.GameObjects.Sprite;
   label: Phaser.GameObjects.Text;
+  statusLabel: Phaser.GameObjects.Text;
 }
 
 interface IncidentVisual {
@@ -358,6 +359,8 @@ export class PollingStationScene extends Phaser.Scene {
       const entity = this.npcManager.getActiveVoter(move.voterId);
       if (!visual || !entity) continue;
 
+      this.updateVoterPresentation(entity);
+
       const targetPoint = this.getTargetPoint(move.to, move.boothIndex);
       const duration = calculateMoveDurationMs(
         { x: visual.container.x, y: visual.container.y },
@@ -622,7 +625,16 @@ export class PollingStationScene extends Phaser.Scene {
       padding: { x: 3, y: 1 },
     }).setOrigin(0.5);
 
-    container.add([sprite, label]);
+    const statusLabel = this.add.text(0, 17, this.getVoterStationLabel(entity.currentStation), {
+      fontSize: "8px",
+      color: "#cbd5e1",
+      fontFamily: "sans-serif",
+      fontStyle: "bold",
+      backgroundColor: "rgba(15, 23, 42, 0.68)",
+      padding: { x: 3, y: 1 },
+    }).setOrigin(0.5);
+
+    container.add([sprite, label, statusLabel]);
 
     // Subtle waiting/idle motion: visual feedback only, never simulation state.
     if (!this.reducedMotion) this.tweens.add({
@@ -644,7 +656,48 @@ export class PollingStationScene extends Phaser.Scene {
       });
     });
 
-    this.voterVisuals.set(entity.profile.id, { container, sprite, label });
+    this.voterVisuals.set(entity.profile.id, { container, sprite, label, statusLabel });
+    this.updateVoterPresentation(entity);
+  }
+
+  /** Visual-only state feedback for a voter. The authoritative workflow stays in NPCStationManager. */
+  private updateVoterPresentation(entity: ActiveVoterEntity) {
+    const visual = this.voterVisuals.get(entity.profile.id);
+    if (!visual) return;
+
+    const isWaiting = entity.currentStation === "queue";
+    const isVoting = entity.currentStation === "booth";
+    const isLeaving = entity.currentStation === "exiting";
+    visual.statusLabel.setText(this.getVoterStationLabel(entity.currentStation));
+    visual.statusLabel.setColor(isVoting ? "#a7f3d0" : isWaiting ? "#fde68a" : "#cbd5e1");
+    visual.sprite.setAlpha(isLeaving ? 0.72 : 1);
+    visual.container.setAlpha(isWaiting ? 0.88 : 1);
+
+    // Keep the identity tint, then add a small visual cue only while voting.
+    if (entity.profile.gender === "z") {
+      visual.sprite.setTint(isVoting ? 0xf9a8d4 : 0xf472b6);
+    } else if (entity.profile.ageCategory === "senior") {
+      visual.sprite.setTint(isVoting ? 0xc4b5fd : 0xa78bfa);
+    } else if (isVoting) {
+      visual.sprite.setTint(0x86efac);
+    } else {
+      visual.sprite.clearTint();
+    }
+  }
+
+  private getVoterStationLabel(station: ActiveVoterEntity["currentStation"]) {
+    const labels: Record<ActiveVoterEntity["currentStation"], string> = {
+      queue: "Čeka u redu",
+      uv: "UV provera",
+      identification: "Identifikacija",
+      voter_roll: "Birački spisak",
+      spray: "Sprej",
+      receive_ballot: "Preuzima listić",
+      booth: "Glasa privatno",
+      ballot_box: "Prilazi kutiji",
+      exiting: "Izlazi",
+    };
+    return labels[station];
   }
 
   private getTargetPoint(station: string, boothIndex?: number): Point2D {
