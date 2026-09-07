@@ -18,6 +18,7 @@ const staticRoutes = [
   "/izborni-dan",
   "/posle-glasanja",
   "/uloge",
+  "/zmai",
   "/offline",
 ];
 

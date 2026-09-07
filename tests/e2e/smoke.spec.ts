@@ -13,6 +13,7 @@ const routes = [
   "/izborni-dan",
   "/posle-glasanja",
   "/uloge",
+  "/zmai",
 ];
 
 test.describe("public application smoke", () => {
@@ -34,10 +35,19 @@ test.describe("public application smoke", () => {
     await expect(page.getByRole("button", { name: /Sačuvaj na uređaj/i })).toBeVisible();
   });
 
-  test("glavni meni prikazuje trening i simulator izbornog dana", async ({ page }) => {
+  test("glavni meni prikazuje trening, simulator i ZmAI asistenta", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator('aside a[href="/trening/kviz"]')).toBeVisible();
     await expect(page.locator('aside a[href="/izborni-dan"]')).toBeVisible();
+    await expect(page.locator('aside a[href="/zmai"]')).toBeVisible();
+  });
+
+  test("zmai stranica prikazuje ZmAI iframe i opciju za otvaranje u novom tabu", async ({ page }) => {
+    await page.goto("/zmai");
+    await expect(page.locator("h1")).toContainText(/ZmAI/i);
+    const iframe = page.locator("iframe");
+    await expect(iframe).toHaveAttribute("src", "https://zmai.crta.rs");
+    await expect(page.getByRole("link", { name: /Otvori u novom tabu/i })).toBeVisible();
   });
 
   test("offline dataset endpoint vraća aktivni snapshot", async ({ page }) => {

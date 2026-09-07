@@ -1,6 +1,7 @@
 export const NAV_CTA = { href: "/vidim-problem", label: "Vidim problem sada" } as const;
 
 export const NAV_LINKS = [
+  { href: "/zmai", label: "ZmAI" },
   { href: "/pravila", label: "Baza nepravilnosti" },
   { href: "/kontrolor", label: "Kontrolor" },
   { href: "/validator", label: "Validator zapisnika" },

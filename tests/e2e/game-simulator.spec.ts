@@ -47,6 +47,12 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     await expect(page.getByRole("button", { name: "1x" })).toBeVisible();
     await expect(page.getByRole("button", { name: "2x" })).toBeVisible();
 
+    // Proveravamo "Pitaj ZmAI" dugme koje vodi na /zmai u novom tabu
+    const askZmaiBtn = page.getByTestId("ask-zmai-button");
+    await expect(askZmaiBtn).toBeVisible();
+    await expect(askZmaiBtn).toHaveAttribute("href", "/zmai");
+    await expect(askZmaiBtn).toHaveAttribute("target", "_blank");
+
     // Proveravamo A11y DOM fallback panel i klikćemo na UV stanicu
     const uvButton = page.getByRole("button", { name: "UV lampa" });
     await expect(uvButton).toBeVisible();

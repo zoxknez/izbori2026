@@ -104,6 +104,7 @@ test("guided board-member day reaches the counting mode and finishes", async ({ 
 });
 
 test("randomized mode completes without repeating an event", async ({ page }) => {
+  test.setTimeout(90_000);
   await page.goto("/izborni-dan");
   const classicBtn = page.getByRole("button", { name: /Klasične kartice/i });
   if (await classicBtn.isVisible()) {

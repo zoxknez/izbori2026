@@ -1,7 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ShieldCheck, Lock } from "lucide-react";
 
 export function SiteFooter() {
+  const pathname = usePathname();
+  if (pathname === "/zmai") return null;
+
   return (
     <footer className="mt-20 border-t border-border bg-surface/50 pb-24 sm:pb-12 text-xs">
       <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">

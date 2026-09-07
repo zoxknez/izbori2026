@@ -18,6 +18,7 @@ import {
   Clock,
   X,
   Lock,
+  Bot,
 } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
 import { cn } from "@/lib/utils";
@@ -34,6 +35,12 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
   {
     group: "Operativni alati za teren",
     items: [
+      {
+        href: "/zmai",
+        label: "ZmAI asistent",
+        badge: "CRTA AI",
+        icon: Bot,
+      },
       {
         href: "/kontrolor",
         label: "Kontrolor na BM",

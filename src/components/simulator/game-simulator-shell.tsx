@@ -23,6 +23,8 @@ import {
   History,
   Volume2,
   VolumeX,
+  Bot,
+  ExternalLink,
 } from "lucide-react";
 import { createGameBridge } from "@/game/bridge/game-bridge";
 import {
@@ -607,6 +609,21 @@ export function GameSimulatorShell({
 
         {/* Status uloge, brojanje, evidencija i debrief */}
         <div className="flex flex-wrap items-center gap-2">
+          {/* Pitaj ZmAI dugme - otvara /zmai u novom tabu */}
+          <a
+            href="/zmai"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="ask-zmai-button"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-sky-500/40 bg-sky-500/10 px-3 py-1.5 text-xs font-bold text-sky-400 hover:bg-sky-500/20 hover:border-sky-500/60 transition-all shadow-sm"
+            title="Pitaj ZmAI (CRTA AI asistenta) za savet ili proveru propisa (otvara se u novom tabu)"
+          >
+            <Bot className="h-3.5 w-3.5 text-sky-400 animate-pulse" />
+            <span className="hidden sm:inline">Pitaj ZmAI</span>
+            <span className="sm:hidden">ZmAI</span>
+            <ExternalLink className="h-2.5 w-2.5 opacity-70" />
+          </a>
+
           {/* Dugme za pregled i promenu uloge sa bojama specifičnim za svaku ulogu */}
           <button
             type="button"

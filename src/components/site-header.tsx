@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShieldCheck, Menu, Zap } from "lucide-react";
+import { ShieldCheck, Menu, Zap, Bot } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +19,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/rokovi": "Izborni rokovi i pravni lekovi",
   "/izvori": "Zvanični pravni izvori i propisi",
   "/izborni-dan": "Izborni dan - simulacija",
+  "/zmai": "ZmAI - CRTA izborni asistent",
 };
 
 export function SiteHeader() {
@@ -88,6 +89,19 @@ export function SiteHeader() {
               )}
             >
               Prijavi incident
+            </Link>
+
+            <Link
+              href="/zmai"
+              className={cn(
+                "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-medium transition-colors",
+                pathname === "/zmai"
+                  ? "bg-sky-500/15 text-sky-400 font-bold border border-sky-500/30"
+                  : "text-sky-400 hover:bg-sky-500/10"
+              )}
+            >
+              <Bot className="h-3.5 w-3.5" />
+              <span>ZmAI</span>
             </Link>
           </div>
 
