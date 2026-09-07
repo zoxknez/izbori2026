@@ -31,7 +31,7 @@ const CHECKLIST_ITEMS: ChecklistItem[] = [
     id: "pre_1",
     phase: "pre",
     title: "Prisustvo i provera kvoruma",
-    desc: "Birački odbor mora biti na biračkom mestu jedan čas pre otvaranja (uobičajeno 06:00 za glasanje 07:00–20:00). Član i njegov zamenik mogu biti zajedno ili se smenjivati.",
+    desc: "Birački odbor mora biti na biračkom mestu jedan čas pre otvaranja (uobičajeno 06:00 za glasanje 07:00-20:00). Član i njegov zamenik mogu biti zajedno ili se smenjivati.",
   },
   {
     id: "pre_2",

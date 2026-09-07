@@ -34,7 +34,7 @@ const STATS = [
   {
     icon: FileCheck2,
     label: "Zapisnik & čl. 116",
-    desc: "Validacija kontrolnog lista i rubrike 1–7",
+    desc: "Validacija kontrolnog lista i rubrike 1-7",
   },
   {
     icon: Zap,
@@ -45,12 +45,12 @@ const STATS = [
 
 const TIMELINE_STEPS = [
   {
-    time: "06:00 – 07:00",
+    time: "06:00 - 07:00",
     title: "Priprema biračkog mesta",
     subtitle: "Uklanjanje izbornog materijala, provera prazne kutije i kontrolnog lista sa prvim biračem.",
   },
   {
-    time: "07:00 – 20:00",
+    time: "07:00 - 20:00",
     title: "Tok glasanja uživo",
     subtitle: "UV kontrola, provera isprava, birački spisak, nevidljivi sprej, paravani i ubacivanje listića.",
   },
@@ -109,7 +109,7 @@ export default function ElectionDayPage() {
           <div className="flex items-center gap-2 mb-3">
             <Compass className="h-4 w-4 text-brand" />
             <span className="text-xs font-bold uppercase tracking-wider text-ink">
-              Hronologija izbornog dana (06:00 – 20:00+)
+              Hronologija izbornog dana (06:00 - 20:00+)
             </span>
           </div>
 

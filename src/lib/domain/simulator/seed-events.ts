@@ -145,7 +145,7 @@ const authoredEvents: SimulationEvent[] = [
         id: "E04-b",
         label: "Odbor sam proveri kutiju i zatvori je pre nego što birač uđe",
         explanation:
-          "Provera bez prvog birača gubi svrhu — upravo njegovo prisustvo je javna garancija da je kutija bila prazna.",
+          "Provera bez prvog birača gubi svrhu - upravo njegovo prisustvo je javna garancija da je kutija bila prazna.",
         classification: "wrong",
         outcome: "serious",
         ruleIds: ["P05"],
@@ -587,7 +587,7 @@ const authoredEvents: SimulationEvent[] = [
         id: "E15-a",
         label: "Insistiraj na tri člana imenovana na predlog različitih ovlašćenih predlagača",
         explanation:
-          "Kod birača idu tri člana biračkog odbora imenovana na predlog različitih ovlašćenih predlagača — to je garancija nepristrasnosti postupka.",
+          "Kod birača idu tri člana biračkog odbora imenovana na predlog različitih ovlašćenih predlagača - to je garancija nepristrasnosti postupka.",
         classification: "correct",
         outcome: "prevented",
         ruleIds: ["V01", "V02", "V03"],
@@ -848,7 +848,7 @@ const authoredEvents: SimulationEvent[] = [
       },
       {
         id: "E21-c",
-        label: "To se dešava ispred, a ne unutar biračkog mesta — ne tiče te se",
+        label: "To se dešava ispred, a ne unutar biračkog mesta - ne tiče te se",
         explanation:
           "Radnja se odnosi na glasanje na ovom biračkom mestu; propuštanje evidencije gubi jedini trag o mogućem krivičnom delu.",
         classification: "critical_error",
@@ -1150,7 +1150,7 @@ const authoredEvents: SimulationEvent[] = [
     choices: [
       {
         id: "E29-a",
-        label: "Prvo utvrdi broj birača po potpisima, pa neupotrebljene listiće, pa proveri pečat — tek onda kutija",
+        label: "Prvo utvrdi broj birača po potpisima, pa neupotrebljene listiće, pa proveri pečat - tek onda kutija",
         explanation:
           "Redosled je propisan: broj birača koji su glasali, neupotrebljeni listići i stanje kutije utvrđuju se pre otvaranja.",
         classification: "correct",
@@ -1215,7 +1215,7 @@ const authoredEvents: SimulationEvent[] = [
     choices: [
       {
         id: "E31-a",
-        label: "U kutiji je 8 listića više nego birača — unesi tačne brojeve i obavesti komisiju",
+        label: "U kutiji je 8 listića više nego birača - unesi tačne brojeve i obavesti komisiju",
         explanation:
           "Kada je broj listića u kutiji veći od broja birača koji su glasali, nadležna izborna komisija poništava glasanje na tom biračkom mestu po službenoj dužnosti.",
         classification: "correct",
@@ -1377,7 +1377,7 @@ const authoredEvents: SimulationEvent[] = [
         id: "E35-b",
         label: "Potpiši, kolege su korektne i sigurno će uneti tačne brojeve",
         explanation:
-          "Nikada ne potpisuj zapisnik čiji relevantni podaci nisu uneti i provereni — kasnija izmena se pripisuje potpisnicima.",
+          "Nikada ne potpisuj zapisnik čiji relevantni podaci nisu uneti i provereni - kasnija izmena se pripisuje potpisnicima.",
         classification: "critical_error",
         outcome: "serious",
         ruleIds: ["ZP01", "FR01"],
@@ -1397,7 +1397,7 @@ const authoredEvents: SimulationEvent[] = [
       {
         id: "E36-a",
         label: "Istakni treći primerak na biračkom mestu na javni uvid",
-        explanation: "Treći primerak zapisnika ističe se na biračkom mestu na javni uvid — to je osnov javne kontrole rezultata.",
+        explanation: "Treći primerak zapisnika ističe se na biračkom mestu na javni uvid - to je osnov javne kontrole rezultata.",
         classification: "correct",
         outcome: "routine",
         ruleIds: ["ZP03"],
@@ -1956,7 +1956,7 @@ const authoredEvents: SimulationEvent[] = [
         id: "B03-c",
         label: "Odustani i idi kući, ionako ti niko neće verovati",
         explanation:
-          "Birač u roku od 72 časa od zatvaranja biračkog mesta može tražiti poništavanje glasanja ako mu je povređeno biračko pravo — ali samo ako postoji trag o događaju.",
+          "Birač u roku od 72 časa od zatvaranja biračkog mesta može tražiti poništavanje glasanja ako mu je povređeno biračko pravo - ali samo ako postoji trag o događaju.",
         classification: "critical_error",
         outcome: "serious",
         ruleIds: ["I07"],

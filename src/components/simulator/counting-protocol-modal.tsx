@@ -182,7 +182,7 @@ export function CountingProtocolModal({
                 : "border-transparent text-ink-dim hover:text-ink",
             )}
           >
-            1. Rubrike i Pravila (A–D)
+            1. Rubrike i Pravila (A-D)
           </button>
           <button
             type="button"
@@ -224,31 +224,31 @@ export function CountingProtocolModal({
 
                 <div className="rounded-2xl border border-border bg-surface-2/60 p-3">
                   <span className="text-[10px] font-bold text-ink-dim uppercase">Rubrika 2 (U)</span>
-                  <div className="mt-1 text-base font-bold text-ink">{session.unusedBallots ?? "—"}</div>
+                  <div className="mt-1 text-base font-bold text-ink">{session.unusedBallots ?? "-"}</div>
                   <span className="text-[10px] text-ink-dim">Neupotrebljeni listići</span>
                 </div>
 
                 <div className="rounded-2xl border border-border bg-surface-2/60 p-3">
                   <span className="text-[10px] font-bold text-ink-dim uppercase">Rubrika 3 (G)</span>
-                  <div className="mt-1 text-base font-bold text-ink">{session.votersTurnout ?? "—"}</div>
+                  <div className="mt-1 text-base font-bold text-ink">{session.votersTurnout ?? "-"}</div>
                   <span className="text-[10px] text-ink-dim">Glasalo birača (u spisku)</span>
                 </div>
 
                 <div className="rounded-2xl border border-border bg-surface-2/60 p-3">
                   <span className="text-[10px] font-bold text-ink-dim uppercase">Rubrika 4 (B)</span>
-                  <div className="mt-1 text-base font-bold text-ink">{session.ballotsInBox ?? "—"}</div>
+                  <div className="mt-1 text-base font-bold text-ink">{session.ballotsInBox ?? "-"}</div>
                   <span className="text-[10px] text-ink-dim">Listići u kutiji</span>
                 </div>
 
                 <div className="rounded-2xl border border-border bg-surface-2/60 p-3">
                   <span className="text-[10px] font-bold text-ink-dim uppercase">Rubrika 5 (N)</span>
-                  <div className="mt-1 text-base font-bold text-ink">{session.invalidBallots ?? "—"}</div>
+                  <div className="mt-1 text-base font-bold text-ink">{session.invalidBallots ?? "-"}</div>
                   <span className="text-[10px] text-ink-dim">Nevažeći listići</span>
                 </div>
 
                 <div className="rounded-2xl border border-border bg-surface-2/60 p-3">
                   <span className="text-[10px] font-bold text-ink-dim uppercase">Rubrika 6 (V)</span>
-                  <div className="mt-1 text-base font-bold text-ink">{session.validBallots ?? "—"}</div>
+                  <div className="mt-1 text-base font-bold text-ink">{session.validBallots ?? "-"}</div>
                   <span className="text-[10px] text-ink-dim">Važeći listići</span>
                 </div>
 

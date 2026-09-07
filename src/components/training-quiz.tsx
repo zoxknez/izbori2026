@@ -90,7 +90,7 @@ export function TrainingQuiz({ questions }: { questions: TrainingQuestion[] }) {
     };
   }, [askedIds.length, finished]);
 
-  // Sekvencijalna pitanja startuju u fiksnom, ali ne tačnom redosledu — izvedeno, bez efekta.
+  // Sekvencijalna pitanja startuju u fiksnom, ali ne tačnom redosledu - izvedeno, bez efekta.
   const sequenceOrder = useMemo(() => {
     if (current?.type !== "sequence") return [];
     return draft.order.length > 0 ? draft.order : [...current.choices.map((choice) => choice.id)].reverse();
@@ -426,7 +426,7 @@ export function TrainingQuiz({ questions }: { questions: TrainingQuestion[] }) {
               {current.type === "numeric" ? (
                 <p className="mt-2">
                   Tačan odgovor: <strong className="text-ink">{current.numeric?.answer}</strong>
-                  {current.numeric?.hint ? ` — ${current.numeric.hint}` : ""}
+                  {current.numeric?.hint ? ` - ${current.numeric.hint}` : ""}
                 </p>
               ) : current.type === "sequence" ? (
                 <p className="mt-2">

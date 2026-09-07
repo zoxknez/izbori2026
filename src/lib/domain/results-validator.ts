@@ -125,7 +125,7 @@ export function validateRecordForensics(input: RecordForensicsInput, counting: C
   ].filter((item): item is string => Boolean(item));
   if (indeterminateFindings.length) return { status: "result_undetermined", title: "Rezultat se ne može utvrditi", article: "Čl. 115. ZINP", findings: indeterminateFindings };
 
-  if (counting.isCalculationFail) return { status: "heavy_error", title: "Teška greška — potreban je uvid u materijal", article: "Čl. 110. ZINP", findings: ["Postoji gruba logičko-računska greška koju treba proveriti uvidom u izborni materijal."] };
+  if (counting.isCalculationFail) return { status: "heavy_error", title: "Teška greška - potreban je uvid u materijal", article: "Čl. 110. ZINP", findings: ["Postoji gruba logičko-računska greška koju treba proveriti uvidom u izborni materijal."] };
 
   return { status: "correct", title: "Nema utvrđene greške u unetim proverama", article: "Edukativna kontrola", findings: ["Za konačnu ocenu i dalje su potrebni stvarni zapisnik, materijal i nadležna komisija."] };
 }

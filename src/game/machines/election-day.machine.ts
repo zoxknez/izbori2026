@@ -902,12 +902,12 @@ export function evaluateDelayedConsequences(
 
   if (state.flags.includes("kontrolni-list-neuredan")) {
     annulmentReasons.push(
-      "Kontrolni list u kutiji nije uredan i potpisan — zakonski osnov za poništavanje glasanja na biračkom mestu po službenoj dužnosti (čl. 116 ZINP).",
+      "Kontrolni list u kutiji nije uredan i potpisan - zakonski osnov za poništavanje glasanja na biračkom mestu po službenoj dužnosti (čl. 116 ZINP).",
     );
   }
   if (state.flags.includes("glasao-van-izvoda")) {
     annulmentReasons.push(
-      "Birač koji nije upisan u izvod je glasao — zakonski osnov za poništavanje glasanja na biračkom mestu po službenoj dužnosti.",
+      "Birač koji nije upisan u izvod je glasao - zakonski osnov za poništavanje glasanja na biračkom mestu po službenoj dužnosti.",
     );
   }
   if (state.flags.includes("paravan-neispravan")) {

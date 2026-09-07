@@ -304,7 +304,7 @@ function ScoreMeters({ state }: { state: SimulationState }) {
                 transition={{ type: "spring", stiffness: 140, damping: 22 }}
               />
             </div>
-            <p className="mt-1 text-[11px] font-bold text-ink">{percentage === null ? "—" : `${percentage}%`}</p>
+            <p className="mt-1 text-[11px] font-bold text-ink">{percentage === null ? "-" : `${percentage}%`}</p>
           </div>
         );
       })}
@@ -346,7 +346,7 @@ function CountingPanel({ event }: { event: SimulationEvent }) {
         {rows.map(([label, value]) => (
           <div key={label} className="rounded-xl border border-border/70 bg-surface px-3 py-2">
             <p className="text-[10px] uppercase tracking-wide text-ink-faint">{label}</p>
-            <p className="font-mono text-lg font-bold text-ink">{value ?? "—"}</p>
+            <p className="font-mono text-lg font-bold text-ink">{value ?? "-"}</p>
           </div>
         ))}
       </div>
@@ -393,7 +393,7 @@ export function SimulationGame() {
         const saved = await readOfflineValue<SavedRun>("simulationHistory", SAVE_KEY);
         if (!cancelled && saved?.state && !saved.state.finished) setResumable(saved);
       } catch {
-        /* IndexedDB nedostupan — simulacija i dalje radi, samo bez nastavka */
+        /* IndexedDB nedostupan - simulacija i dalje radi, samo bez nastavka */
       }
     })();
     return () => {
@@ -596,7 +596,7 @@ export function SimulationGame() {
             >
               <div className="flex items-center justify-between text-sm">
                 <span className="font-semibold text-ink">{SCORE_CATEGORY_LABELS[category.category]}</span>
-                <span className="font-mono font-bold text-ink">{category.max > 0 ? `${category.percentage}%` : "—"}</span>
+                <span className="font-mono font-bold text-ink">{category.max > 0 ? `${category.percentage}%` : "-"}</span>
               </div>
               <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface-2">
                 <motion.div

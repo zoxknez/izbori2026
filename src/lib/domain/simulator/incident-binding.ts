@@ -79,7 +79,7 @@ export const WORLD_INCIDENT_BINDINGS: Record<string, WorldIncidentBinding> = {
     timeout: {
       simulationSeconds: 45,
       choiceId: "E01-c",
-      label: "Vreme za reakciju je isteklo — plakat je ostao istaknut pred biračima.",
+      label: "Vreme za reakciju je isteklo - plakat je ostao istaknut pred biračima.",
     },
   },
 
@@ -783,7 +783,7 @@ export const WORLD_INCIDENT_BINDINGS: Record<string, WorldIncidentBinding> = {
     timeout: {
       simulationSeconds: 35,
       choiceId: "E12-c",
-      label: "Narušena tajnost glasanja — dvoje iza istog paravana bez reakcije.",
+      label: "Narušena tajnost glasanja - dvoje iza istog paravana bez reakcije.",
     },
   },
   E13: {
@@ -1222,7 +1222,7 @@ export const WORLD_INCIDENT_BINDINGS: Record<string, WorldIncidentBinding> = {
       },
       {
         worldActionId: "ignore_outside_pressure_board",
-        label: "To se dešava ispred, a ne unutar biračkog mesta — ne tiče te se",
+        label: "To se dešava ispred, a ne unutar biračkog mesta - ne tiče te se",
         choiceId: "E21-c",
         requiredRole: "clan_odbora",
       },
@@ -1567,7 +1567,7 @@ export const WORLD_INCIDENT_BINDINGS: Record<string, WorldIncidentBinding> = {
     actions: [
       {
         worldActionId: "follow_counting_sequence_board",
-        label: "Prvo utvrdi broj birača po potpisima, pa neupotrebljene listiće, pa proveri pečat — tek onda kutija",
+        label: "Prvo utvrdi broj birača po potpisima, pa neupotrebljene listiće, pa proveri pečat - tek onda kutija",
         choiceId: "E29-a",
         requiredRole: "clan_odbora",
       },

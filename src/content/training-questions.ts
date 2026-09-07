@@ -56,14 +56,14 @@ export const authoredTrainingQuestions: TrainingQuestion[] = [
     choices: [
       {
         id: "false",
-        label: "Netačno — pomoć je dozvoljena pod zakonskim uslovima",
+        label: "Netačno - pomoć je dozvoljena pod zakonskim uslovima",
         isCorrect: true,
         explanation:
           "Birač koji zbog slabovidosti ne može sam da popuni listić ima pravo da sam odredi pomagača, a pomagač popunjava listić po njegovom nalogu.",
       },
       {
         id: "true",
-        label: "Tačno — glasanje je strogo lično i pomoć nikada nije dozvoljena",
+        label: "Tačno - glasanje je strogo lično i pomoć nikada nije dozvoljena",
         isCorrect: false,
         explanation: "Institut pomagača postoji upravo za birače koji ne mogu sami da popune listić.",
         misconception: "HELPER_ALWAYS_ILLEGAL",
@@ -128,7 +128,7 @@ export const authoredTrainingQuestions: TrainingQuestion[] = [
       },
       {
         id: "irregular",
-        label: "Nepravilnost — svaka evidencija je paralelni spisak",
+        label: "Nepravilnost - svaka evidencija je paralelni spisak",
         isCorrect: false,
         explanation: "Zabranjeni su spiskovi sa imenima onih koji jesu ili nisu izašli, ne i zbirni broj.",
         misconception: "TALLY_MARKS_ALWAYS_ILLEGAL",
@@ -185,13 +185,13 @@ export const authoredTrainingQuestions: TrainingQuestion[] = [
     choices: [
       {
         id: "false",
-        label: "Netačno — dopisivanje nije dozvoljeno ni uz jednoglasnu odluku",
+        label: "Netačno - dopisivanje nije dozvoljeno ni uz jednoglasnu odluku",
         isCorrect: true,
         explanation: "Birački odbor ne sme dopisivati birače u izvod, čak ni kada smatra da je birač izostavljen greškom.",
       },
       {
         id: "true",
-        label: "Tačno — jednoglasna odluka odbora je dovoljna",
+        label: "Tačno - jednoglasna odluka odbora je dovoljna",
         isCorrect: false,
         explanation:
           "Jednoglasnost ne menja zabranu; glasanje lica koje nije u izvodu je razlog za poništavanje glasanja na biračkom mestu.",
@@ -213,13 +213,13 @@ export const authoredTrainingQuestions: TrainingQuestion[] = [
     choices: [
       {
         id: "false",
-        label: "Netačno — isprava se traži i kada je birač poznat",
+        label: "Netačno - isprava se traži i kada je birač poznat",
         isCorrect: true,
         explanation: "Lično poznavanje birača ne zamenjuje propisanu proveru identiteta.",
       },
       {
         id: "true",
-        label: "Tačno — poznanstvo je dovoljno",
+        label: "Tačno - poznanstvo je dovoljno",
         isCorrect: false,
         explanation: "Izdavanje listića bez provere isprave je proceduralna nepravilnost.",
         misconception: "KNOWN_VOTER_NEEDS_NO_ID",
@@ -240,13 +240,13 @@ export const authoredTrainingQuestions: TrainingQuestion[] = [
     choices: [
       {
         id: "false",
-        label: "Netačno — mesto se otvara, a dopuna se traži u toku dana",
+        label: "Netačno - mesto se otvara, a dopuna se traži u toku dana",
         isCorrect: true,
         explanation: "Zakon ovaj slučaj tretira drugačije od nedostatka izvoda, kutije ili kontrolnog lista.",
       },
       {
         id: "true",
-        label: "Tačno — bez punog broja listića nema otvaranja",
+        label: "Tačno - bez punog broja listića nema otvaranja",
         isCorrect: false,
         explanation: "Neotvaranje bi neosnovano uskratilo pravo glasa biračima koji su već u redu.",
         misconception: "FEWER_BALLOTS_BLOCKS_OPENING",
@@ -267,13 +267,13 @@ export const authoredTrainingQuestions: TrainingQuestion[] = [
     choices: [
       {
         id: "false",
-        label: "Netačno — ko je u 20:00 u redu, mora dobiti priliku da glasa",
+        label: "Netačno - ko je u 20:00 u redu, mora dobiti priliku da glasa",
         isCorrect: true,
         explanation: "Svi koji se u 20:00 nalaze na biračkom mestu ili neposredno ispred njega moraju dobiti mogućnost da glasaju.",
       },
       {
         id: "true",
-        label: "Tačno — posle 20:00 niko više ne glasa",
+        label: "Tačno - posle 20:00 niko više ne glasa",
         isCorrect: false,
         explanation: "Odbijanje birača koji su na vreme stigli je teška povreda biračkog prava.",
         misconception: "QUEUE_CLOSES_AT_20",
@@ -294,14 +294,14 @@ export const authoredTrainingQuestions: TrainingQuestion[] = [
     choices: [
       {
         id: "true",
-        label: "Tačno — posmatrač prati rad odbora do predaje materijala",
+        label: "Tačno - posmatrač prati rad odbora do predaje materijala",
         isCorrect: true,
         explanation:
           "Posmatrač prati izborne radnje od preuzimanja materijala, preko glasanja, do otvaranja kutije, brojanja i predaje materijala.",
       },
       {
         id: "false",
-        label: "Netačno — brojanje je zatvoreno za posmatrače",
+        label: "Netačno - brojanje je zatvoreno za posmatrače",
         isCorrect: false,
         explanation: "Sprečavanje posmatranja brojanja je ozbiljna nepravilnost i može biti prekršaj.",
         misconception: "OBSERVER_NOT_ALLOWED_AT_COUNT",
@@ -323,7 +323,7 @@ export const authoredTrainingQuestions: TrainingQuestion[] = [
     choices: [
       {
         id: "irregular",
-        label: "Nepravilnost — narušavanje reda, ali ne i dokaz kupovine glasa",
+        label: "Nepravilnost - narušavanje reda, ali ne i dokaz kupovine glasa",
         isCorrect: true,
         explanation:
           "Neovlašćeno fotografisanje na biračkom mestu je narušavanje reda; sama fotografija ne dokazuje kupovinu glasa.",
@@ -337,7 +337,7 @@ export const authoredTrainingQuestions: TrainingQuestion[] = [
       },
       {
         id: "allowed",
-        label: "Dozvoljeno — svako sme da fotografiše svoj listić",
+        label: "Dozvoljeno - svako sme da fotografiše svoj listić",
         isCorrect: false,
         explanation: "Tajnost glasanja je javni interes, a snimanje na biračkom mestu je ograničeno.",
       },
@@ -358,7 +358,7 @@ export const authoredTrainingQuestions: TrainingQuestion[] = [
     choices: [
       {
         id: "check",
-        label: "Proveri — sam prevoz nije dokaz, traže se dodatne činjenice",
+        label: "Proveri - sam prevoz nije dokaz, traže se dodatne činjenice",
         isCorrect: true,
         explanation:
           "Potrebno je da postoji stvarno nuđenje, obećanje ili davanje koristi u zamenu za određeno glasanje.",
@@ -386,14 +386,14 @@ export const authoredTrainingQuestions: TrainingQuestion[] = [
     choices: [
       {
         id: "false",
-        label: "Netačno — odluku donosi nadležna izborna komisija po službenoj dužnosti",
+        label: "Netačno - odluku donosi nadležna izborna komisija po službenoj dužnosti",
         isCorrect: true,
         explanation:
           "Odbor utvrđuje i evidentira činjenice; poništavanje glasanja na biračkom mestu je odluka nadležne izborne komisije.",
       },
       {
         id: "true",
-        label: "Tačno — odbor odmah proglašava glasanje poništenim",
+        label: "Tačno - odbor odmah proglašava glasanje poništenim",
         isCorrect: false,
         explanation: "Odbor nema ovlašćenje da sam poništi glasanje; on tačno unosi brojeve i obaveštava komisiju.",
         misconception: "BOARD_ANNULS_BY_ITSELF",
@@ -414,14 +414,14 @@ export const authoredTrainingQuestions: TrainingQuestion[] = [
     choices: [
       {
         id: "false",
-        label: "Netačno — primedba je često jedini pisani trag o spornom događaju",
+        label: "Netačno - primedba je često jedini pisani trag o spornom događaju",
         isCorrect: true,
         explanation:
           "Zapisnik izričito sadrži primedbe članova odbora; bez njih kasniji prigovor ostaje bez činjenične podloge.",
       },
       {
         id: "true",
-        label: "Tačno — komisija ionako gleda samo brojeve",
+        label: "Tačno - komisija ionako gleda samo brojeve",
         isCorrect: false,
         explanation: "Za zahtev za poništavanje traže se konkretne činjenice i dokazi, a primedba je upravo to.",
         misconception: "RECORD_OBJECTION_IS_OPTIONAL",
@@ -443,14 +443,14 @@ export const authoredTrainingQuestions: TrainingQuestion[] = [
     choices: [
       {
         id: "info",
-        label: "Informacija — sam upis nije dokaz da je neko glasao umesto nje",
+        label: "Informacija - sam upis nije dokaz da je neko glasao umesto nje",
         isCorrect: true,
         explanation:
           "Mnogo relevantnije pitanje je da li je evidentirano da je to lice glasalo; sam zapis u spisku nije dokaz zloupotrebe.",
       },
       {
         id: "criminal",
-        label: "Moguće krivično delo — glas je sigurno zloupotrebljen",
+        label: "Moguće krivično delo - glas je sigurno zloupotrebljen",
         isCorrect: false,
         explanation: "Bez potpisa ili evidencije o glasanju nema osnova za takav zaključak.",
         misconception: "DECEASED_IN_REGISTER_EQUALS_FRAUD",

@@ -54,7 +54,7 @@ export function availableChoices(event: SimulationEvent, state: SimulationState)
   );
 }
 
-/** Najbolji mogući skor po kategoriji za dati događaj — osnova za procentualni rezultat. */
+/** Najbolji mogući skor po kategoriji za dati događaj - osnova za procentualni rezultat. */
 export function bestPossibleScores(choices: SimulationChoice[]): Partial<Record<ScoreCategory, number>> {
   const best: Partial<Record<ScoreCategory, number>> = {};
   for (const choice of choices) {
@@ -232,7 +232,7 @@ export function computeDebrief(state: SimulationState): SimulationDebrief {
     narrative.push(`Kritičnih grešaka: ${criticalErrors.length}. Svaka od njih sama po sebi može ugroziti glasanje na biračkom mestu.`);
   }
   if (weakest && weakest.percentage < 70) {
-    narrative.push(`Najveći rizik: ${weakest.percentage}% u najslabijoj kategoriji — vredi ponoviti pravila iz tih događaja.`);
+    narrative.push(`Najveći rizik: ${weakest.percentage}% u najslabijoj kategoriji - vredi ponoviti pravila iz tih događaja.`);
   }
   if (state.evidence === 0) {
     narrative.push("Nijedna beleška nije sačuvana tokom dana, pa bi kasniji prigovor ostao bez činjenične podloge.");
