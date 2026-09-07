@@ -23,9 +23,9 @@ import {
   History,
   Volume2,
   VolumeX,
-  Bot,
   ExternalLink,
 } from "lucide-react";
+import { ZmaiIcon } from "@/components/icons/zmai-icon";
 import { createGameBridge } from "@/game/bridge/game-bridge";
 import {
   createElectionDayMachine,
@@ -624,7 +624,7 @@ export function GameSimulatorShell({
             className="inline-flex items-center gap-1.5 rounded-xl border border-sky-500/40 bg-sky-500/10 px-3 py-1.5 text-xs font-bold text-sky-400 hover:bg-sky-500/20 hover:border-sky-500/60 transition-all shadow-sm"
             title="Pitaj ZmAI (CRTA AI asistenta) za savet ili proveru propisa (otvara se u novom tabu)"
           >
-            <Bot className="h-3.5 w-3.5 text-sky-400 animate-pulse" />
+            <ZmaiIcon className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Pitaj ZmAI</span>
             <span className="sm:hidden">ZmAI</span>
             <ExternalLink className="h-2.5 w-2.5 opacity-70" />

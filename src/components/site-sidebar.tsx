@@ -18,9 +18,9 @@ import {
   Clock,
   X,
   Lock,
-  Bot,
   Info,
 } from "lucide-react";
+import { ZmaiIcon } from "@/components/icons/zmai-icon";
 import { useSidebar } from "./sidebar-context";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +28,7 @@ interface NavItem {
   href: string;
   label: string;
   badge?: string;
-  icon: typeof ShieldCheck;
+  icon: React.ComponentType<{ className?: string }>;
   highlight?: boolean;
 }
 
@@ -40,7 +40,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
         href: "/zmai",
         label: "ZmAI asistent",
         badge: "CRTA AI",
-        icon: Bot,
+        icon: ZmaiIcon,
       },
       {
         href: "/kontrolor",

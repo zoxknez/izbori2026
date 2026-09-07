@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShieldCheck, Menu, Zap, Bot } from "lucide-react";
+import { ShieldCheck, Menu, Zap } from "lucide-react";
+import { ZmaiIcon } from "@/components/icons/zmai-icon";
 import { useSidebar } from "./sidebar-context";
 import { cn } from "@/lib/utils";
 
@@ -100,7 +101,7 @@ export function SiteHeader() {
                   : "text-sky-400 hover:bg-sky-500/10"
               )}
             >
-              <Bot className="h-3.5 w-3.5" />
+              <ZmaiIcon className="h-3.5 w-3.5" />
               <span>ZmAI</span>
             </Link>
           </div>

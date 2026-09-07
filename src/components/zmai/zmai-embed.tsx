@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
-  Bot,
   ExternalLink,
   RotateCcw,
   Sparkles,
@@ -11,6 +10,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ZmaiIcon } from "@/components/icons/zmai-icon";
 
 const ZMAI_ORIGIN = "https://zmai.crta.rs";
 
@@ -43,8 +43,8 @@ export function ZmaiEmbed() {
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border/80 bg-surface/90 px-4 py-2.5 backdrop-blur sm:px-6">
         {/* Leva strana: Naslov i bedž sa jasnom atribucijom */}
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-500/10 text-sky-400 shadow-sm shrink-0">
-            <Bot className="h-5 w-5 animate-pulse" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-500/10 text-ink shadow-sm shrink-0">
+            <ZmaiIcon className="h-5 w-5" />
           </div>
 
           <div>
@@ -170,8 +170,8 @@ export function ZmaiEmbed() {
         {/* Loading Skeleton dok se zmai.crta.rs učitava */}
         {isLoading && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-canvas/95 p-6 backdrop-blur-sm">
-            <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-sky-500/40 bg-sky-500/10 text-sky-400 shadow-xl">
-              <Bot className="h-8 w-8 animate-bounce" />
+            <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-sky-500/40 bg-sky-500/10 text-ink shadow-xl">
+              <ZmaiIcon className="h-8 w-8 animate-bounce" />
               <div className="absolute -inset-1 rounded-2xl bg-sky-500/20 blur-md -z-10 animate-pulse" />
             </div>
 
