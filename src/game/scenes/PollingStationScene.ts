@@ -445,6 +445,10 @@ export class PollingStationScene extends Phaser.Scene {
     const { x, y } = presentation.visual.anchor;
     const color = presentation.attention.awareness === "high" ? 0xf59e0b : presentation.attention.awareness === "medium" ? 0x38bdf8 : 0xa78bfa;
     const container = this.add.container(x, y).setDepth(30);
+    // The presentation catalog selects the world object; the attention ring
+    // is only a cue around it. This keeps incidents spatial and legible even
+    // when no external art asset exists for a particular authored event.
+    const worldObject = this.createIncidentWorldObject(presentation.visual.kind, presentation.visual.assetKey);
     const ring = this.add.graphics();
     ring.lineStyle(2, color, 0.85);
     ring.strokeCircle(0, 0, 28);
@@ -452,7 +456,7 @@ export class PollingStationScene extends Phaser.Scene {
       fontSize: "10px", color: "#f8fafc", fontFamily: "sans-serif", fontStyle: "bold",
       backgroundColor: "rgba(15, 23, 42, 0.9)", padding: { x: 5, y: 3 },
     }).setOrigin(0.5);
-    container.add([ring, badge]);
+    container.add([worldObject, ring, badge]);
     if (presentation.attention.pulse) {
       if (!this.reducedMotion) this.tweens.add({ targets: ring, alpha: 0.35, scale: 1.18, duration: 1200, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
     }
@@ -464,6 +468,65 @@ export class PollingStationScene extends Phaser.Scene {
     }));
     container.on("pointerdown", () => this.audio.play("incident"));
     this.incidentVisuals.set(incidentId, { container, incidentId, presentation });
+  }
+
+  private createIncidentWorldObject(
+    kind: WorldIncidentPresentation["visual"]["kind"],
+    assetKey?: string,
+  ): Phaser.GameObjects.GameObject {
+    if (assetKey && this.textures.exists(assetKey)) {
+      return this.add.sprite(0, 0, assetKey).setScale(0.92);
+    }
+
+    const object = this.add.graphics();
+    object.lineStyle(2, 0xe2e8f0, 0.9);
+
+    switch (kind) {
+      case "prop":
+        object.fillStyle(0xdc2626, 0.95);
+        object.fillRoundedRect(-15, -20, 30, 40, 4);
+        object.strokeRoundedRect(-15, -20, 30, 40, 4);
+        object.fillStyle(0xfef08a, 1);
+        object.fillCircle(0, 8, 4);
+        object.lineStyle(1, 0xffffff, 0.9);
+        object.lineBetween(-9, -9, 9, -9);
+        object.lineBetween(-9, -3, 9, -3);
+        break;
+      case "npc_state":
+        object.fillStyle(assetKey === "phone" ? 0xf59e0b : 0x38bdf8, 1);
+        object.fillCircle(0, -9, 8);
+        object.fillRoundedRect(-11, 1, 22, 20, 6);
+        if (assetKey === "phone") {
+          object.fillStyle(0x111827, 1);
+          object.fillRoundedRect(7, -5, 9, 16, 2);
+        }
+        break;
+      case "queue_state":
+        object.fillStyle(0x60a5fa, 0.95);
+        object.fillCircle(-15, 5, 6);
+        object.fillCircle(0, 0, 7);
+        object.fillCircle(15, 5, 6);
+        object.lineStyle(2, 0x93c5fd, 0.8);
+        object.lineBetween(-9, 5, -6, 4);
+        object.lineBetween(6, 4, 9, 5);
+        break;
+      case "station_state":
+        object.fillStyle(0x0f766e, 0.95);
+        object.fillRoundedRect(-20, -14, 40, 28, 6);
+        object.strokeRoundedRect(-20, -14, 40, 28, 6);
+        object.fillStyle(0x99f6e4, 0.95);
+        object.fillCircle(0, 0, 6);
+        break;
+      case "overlay_marker":
+        object.fillStyle(0xa78bfa, 0.95);
+        object.fillCircle(0, 0, 13);
+        object.lineStyle(3, 0xf5f3ff, 0.95);
+        object.lineBetween(-6, 0, 6, 0);
+        object.lineBetween(0, -6, 0, 6);
+        break;
+    }
+
+    return object;
   }
 
   private createEvidenceMarker(record: EvidenceRecord) {
