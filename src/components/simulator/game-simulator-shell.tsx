@@ -404,6 +404,10 @@ export function GameSimulatorShell({
     const handleVisibilityChange = () => {
       if (document.hidden) {
         send({ type: "SYSTEM_PAUSE" });
+        // Capture the latest deterministic world before the tab is suspended.
+        // The snapshot also invalidates the autosave effect's world reference,
+        // so the next persisted save uses the same world version it renders.
+        bridge.emit("REQUEST_WORLD_SNAPSHOT", {});
       } else {
         send({ type: "SYSTEM_RESUME" });
       }
@@ -412,7 +416,7 @@ export function GameSimulatorShell({
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [send]);
+  }, [bridge, send]);
 
   // P0-8: Aktivni incident na selektovanom mestu
   const activeIncident = useMemo(() => {
