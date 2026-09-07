@@ -11,11 +11,13 @@ test("cross-module public flows and accessibility landmarks", async ({ page }) =
   await expect(page.locator("h1")).toHaveCount(1);
 
   await page.goto("/simulator/biracki-dan");
-  await expect(page.getByRole("heading", { name: /Vežbaj reakciju/i })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Randomizovani", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Randomizovani", exact: true }).click();
-  await page.getByRole("button", { name: /Zaustavi radnju/i }).click();
-  await expect(page.getByText(/Događaj 2 od 30/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Odigraj birački dan/i })).toBeVisible();
+  await page.getByRole("button", { name: /Započni birački dan/i }).click();
+  await expect(page.getByText(/Događaj 1 od/i)).toBeVisible();
+  await page.locator("button").filter({ hasText: /^A/ }).first().click();
+  await expect(page.getByRole("button", { name: /Nastavi dan/i })).toBeVisible();
+  await page.getByRole("button", { name: /Nastavi dan/i }).click();
+  await expect(page.getByText(/Događaj 2 od/i)).toBeVisible();
 });
 
 test("public routes have one h1, main landmark and no missing image alt", async ({ page }) => {
@@ -45,21 +47,44 @@ test("incident draft survives an online/offline transition without reload", asyn
   await expect(description).toHaveValue("Testni opis incidenta koji mora ostati sačuvan.");
 });
 
-test("guided simulator completes the full 30-event path", async ({ page }) => {
-  await page.goto("/simulator/biracki-dan");
-  for (let index = 0; index < 30; index += 1) {
-    await page.getByRole("button", { name: /Zaustavi radnju/i }).click();
+async function playSimulation(page: import("@playwright/test").Page, maxSteps: number) {
+  for (let index = 0; index < maxSteps; index += 1) {
+    if (await page.getByText(/Birački dan završen/i).isVisible().catch(() => false)) return true;
+    const carryOn = page.getByRole("button", { name: /Nastavi dan/i });
+    if (await carryOn.isVisible().catch(() => false)) {
+      await carryOn.click();
+      continue;
+    }
+    const choice = page.locator("button:not([disabled])").filter({ hasText: /^[A-D]/ }).first();
+    if (!(await choice.isVisible().catch(() => false))) break;
+    await choice.click();
   }
-  await expect(page.getByText(/Birački dan završen/i)).toBeVisible();
+  return page.getByText(/Birački dan završen/i).isVisible();
+}
+
+test("voter path plays the whole day and shows the category debrief", async ({ page }) => {
+  await page.goto("/simulator/biracki-dan");
+  await page.getByRole("button", { name: /^Birač/ }).click();
+  await page.getByRole("button", { name: /Započni birački dan/i }).click();
+  expect(await playSimulation(page, 40)).toBe(true);
+  await expect(page.getByText(/Procedura/i).first()).toBeVisible();
+  await expect(page.getByText(/Pravna reakcija/i).first()).toBeVisible();
+  await expect(page.getByRole("button", { name: /Nova simulacija/i })).toBeVisible();
 });
 
-test("randomized simulator completes without repeating an event", async ({ page }) => {
+test("guided board-member day reaches the counting mode and finishes", async ({ page }) => {
+  test.setTimeout(180_000);
   await page.goto("/simulator/biracki-dan");
-  await page.getByRole("button", { name: "Randomizovani", exact: true }).click();
-  for (let index = 0; index < 30; index += 1) {
-    await page.getByRole("button", { name: /Zaustavi radnju/i }).click();
-  }
-  await expect(page.getByText(/Birački dan završen/i)).toBeVisible();
+  await page.getByRole("button", { name: /Započni birački dan/i }).click();
+  expect(await playSimulation(page, 200)).toBe(true);
+});
+
+test("randomized mode completes without repeating an event", async ({ page }) => {
+  await page.goto("/simulator/biracki-dan");
+  await page.getByRole("button", { name: /^Birač/ }).click();
+  await page.getByRole("button", { name: /Nasumični dan/i }).click();
+  await page.getByRole("button", { name: /Započni birački dan/i }).click();
+  expect(await playSimulation(page, 40)).toBe(true);
 });
 
 test("public shell stays within the browser navigation budget", async ({ page }) => {
@@ -71,20 +96,45 @@ test("public shell stays within the browser navigation budget", async ({ page })
   expect(domContentLoaded).toBeLessThan(5000);
 });
 
+async function answerOneQuestion(page: import("@playwright/test").Page) {
+  const numeric = page.getByPlaceholder("Unesi broj");
+  if (await numeric.isVisible().catch(() => false)) {
+    await numeric.fill("1");
+  } else {
+    const choice = page.locator('button[class*="text-left"]:not([disabled])').first();
+    if (await choice.isVisible().catch(() => false)) await choice.click();
+  }
+  const submit = page.getByRole("button", { name: /Potvrdi odgovor/i });
+  if (await submit.isEnabled().catch(() => false)) await submit.click();
+  await page.getByRole("button", { name: /Sledeće pitanje|Završi/i }).click();
+}
+
 test("training practice and exam persist answers and show breakdown", async ({ page }) => {
+  test.setTimeout(120_000);
   await page.goto("/trening/kviz");
   await expect(page.getByText(/Pitanje 1 od 12/i)).toBeVisible();
+  for (let index = 0; index < 12; index += 1) await answerOneQuestion(page);
+  await expect(page.getByText(/Sesija završena/i)).toBeVisible();
+
+  await page.getByRole("button", { name: /Nova sesija/i }).click();
+  await page.getByRole("button", { name: /Ispit · 20/i }).click();
+  for (let index = 0; index < 20; index += 1) await answerOneQuestion(page);
+  await expect(page.getByText(/Ispit završen/i)).toBeVisible();
+  await expect(page.getByText(/Uspešnost:/i)).toBeVisible();
+});
+
+test("wrong answer registers a misconception and reports it at the end", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto("/trening/kviz");
+  await expect(page.getByText(/otvorenih zabluda: 0/i)).toBeVisible();
   for (let index = 0; index < 12; index += 1) {
-    await page.locator('button[class*="rounded-2xl"][class*="text-left"]').first().click();
+    const wrong = page.locator('button[class*="text-left"]:not([disabled])').last();
+    const numeric = page.getByPlaceholder("Unesi broj");
+    if (await numeric.isVisible().catch(() => false)) await numeric.fill("999999");
+    else if (await wrong.isVisible().catch(() => false)) await wrong.click();
+    const submit = page.getByRole("button", { name: /Potvrdi odgovor/i });
+    if (await submit.isEnabled().catch(() => false)) await submit.click();
     await page.getByRole("button", { name: /Sledeće pitanje|Završi/i }).click();
   }
   await expect(page.getByText(/Sesija završena/i)).toBeVisible();
-  await page.getByRole("button", { name: /Nova sesija/i }).click();
-  await page.getByRole("button", { name: /Ispit · 20/i }).click();
-  for (let index = 0; index < 20; index += 1) {
-    await page.locator('button[class*="rounded-2xl"][class*="text-left"]').first().click();
-    await page.getByRole("button", { name: /Sledeće pitanje|Završi/i }).click();
-  }
-  await expect(page.getByText(/Ispit završen/i)).toBeVisible();
-  await expect(page.getByText(/Uspešnost:/i)).toBeVisible();
 });

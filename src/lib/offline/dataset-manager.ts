@@ -1,5 +1,48 @@
-import { activateDataset } from "./indexed-db";
+import { activateDataset, readDatasetMeta } from "./indexed-db";
 import { validateDatasetFile, type DatasetFile, type DatasetSnapshot } from "./dataset-validator";
+
+export type DatasetUpdatePriority = "normal" | "important" | "critical";
+
+export interface DatasetUpdateInfo {
+  hasUpdate: boolean;
+  version: string;
+  activeVersion?: string;
+  updatePriority: DatasetUpdatePriority;
+  legalReviewDate?: string;
+}
+
+/**
+ * Poredi lokalno aktivnu verziju sa serverskom „current“ verzijom.
+ * Namerno ne preuzima ništa: samo javlja da li i koliko hitno postoji nova verzija pravila.
+ */
+export async function checkForDatasetUpdate(): Promise<DatasetUpdateInfo | null> {
+  try {
+    const response = await fetch("/api/offline-dataset/current", { cache: "no-store" });
+    if (!response.ok) return null;
+    const body = (await response.json()) as {
+      version?: unknown;
+      updatePriority?: unknown;
+      legalReviewDate?: unknown;
+    };
+    if (typeof body.version !== "string") return null;
+
+    const activeVersion = await readDatasetMeta("activeDatasetVersion");
+    const priority: DatasetUpdatePriority =
+      body.updatePriority === "critical" || body.updatePriority === "important" ? body.updatePriority : "normal";
+
+    return {
+      // Prvi put korisnik nema lokalni dataset: tada nema šta da se „ažurira“.
+      hasUpdate: Boolean(activeVersion) && activeVersion !== body.version,
+      version: body.version,
+      activeVersion,
+      updatePriority: priority,
+      legalReviewDate: typeof body.legalReviewDate === "string" ? body.legalReviewDate : undefined,
+    };
+  } catch {
+    // Bez mreže se tiho nastavlja sa lokalnim datasetom.
+    return null;
+  }
+}
 
 export async function downloadAndActivateDataset(version = "current"): Promise<DatasetSnapshot> {
   const response = await fetch(`/api/offline-dataset/${encodeURIComponent(version)}`, { cache: "no-store" });

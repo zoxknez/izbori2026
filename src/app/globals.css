@@ -30,6 +30,8 @@
 html {
   color-scheme: dark;
   scroll-behavior: smooth;
+  /* Sticky header ne sme da prekrije element na koji se skroluje. */
+  scroll-padding-top: 6rem;
   -webkit-text-size-adjust: 100%;
 }
 

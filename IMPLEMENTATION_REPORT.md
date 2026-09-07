@@ -175,3 +175,69 @@ podzakonskim aktima ostaje kanonski ulaz za nove izmene; supersession izvora mor
 workflow i novi validirani publish.
 
 
+## Nadogradnja simulatora i treninga (7. septembar 2026)
+
+Povod: dubinska analiza je pokazala da su Faza 3 i Faza 4 imale ispravan engine, ali šablonski
+sadržaj — 30 „događaja" sa identičnim tekstom odluka, pitanja generisana iz četiri fiksne matrice,
+nijedna stvarna posledica i nijedan misconception mehanizam.
+
+### Simulator biračkog dana
+
+- Sadržaj je prepisan kao autorski tok: **55 događaja i 136 odluka**, svaki sa satnicom
+  (06:15–22:45), sopstvenim tekstom situacije i posebnim obrazloženjem po odluci.
+- Raspodela rizika je sada realna: 33% rutina, 24% proceduralna nepravilnost, 27% ozbiljno,
+  9% moguće krivično delo, 7% osnov za poništavanje. Ranije je rutina bila 14%, što je učilo
+  korisnika da je svaka situacija krađa.
+- Odluke su klasifikovane u pet nivoa (`correct` 56, `acceptable` 7, `suboptimal` 21, `wrong` 32,
+  `critical_error` 20) umesto ranijeg binarnog modela.
+- Uvedene su **stvarne posledice**: odluka o spornom potpisu u 14:13 postavlja flag koji određuje
+  koji se događaj zapisnika uveče uopšte pojavljuje (`E33` naspram `E34`), a jutarnje kašnjenje
+  otvara večernje pitanje o produženju glasanja.
+- Uloge su odvojeni tokovi: član odbora 49 događaja, posmatrač 48, birač 6 događaja pisanih iz
+  perspektive prava glasa. Uz to su dodati izbor vrste izbora i tri režima (vođeni, nasumični,
+  teški sa duplim kaznama).
+- Skor se meri po **šest kategorija** (procedura, tajnost, prava birača, dokumentovanje, brojanje,
+  pravna reakcija) sa maksimumom izvedenim iz stvarno dostupnih odluka, pa procenat ima značenje.
+- Debrief daje narativni rezime, listu kritičnih grešaka, pravila za ponavljanje i dugme
+  „Ponovi samo moje greške" koje pokreće skraćeni tok samo kroz promašene događaje.
+- Counting Mode u 21:10 prikazuje brojeve biračkog mesta i pušta ih kroz isti `validateCounting()`
+  koji koristi javni `/validator` — bez druge implementacije matematike.
+- Stanje se čuva u IndexedDB posle svake odluke, sa ponudom „Nastavi dan" pri povratku.
+
+### Trening
+
+- Uvedena je **banka autorskih pitanja** (27 pitanja) koja ima prednost nad generisanim; generator
+  i dalje popunjava coverage prag (ukupno 193 pitanja za 66 pravila).
+- Tipovi pitanja prošireni sa dva na šest u upotrebi: `sequence` (sa dugmadima gore/dole radi
+  pristupačnosti), `multi_choice`, `true_false`, `numeric`, `classification`, `scenario`.
+- Implementiran je **misconception engine**: 12 imenovanih zabluda, pogrešan odgovor obeležava
+  zabludu, selektor je zatim cilja drugačije formulisanim pitanjem, a zabluda se smatra
+  ispravljenom tek posle dva uzastopna tačna odgovora. Stanje se čuva u IndexedDB.
+- Povratna informacija posle odgovora imenuje zabludu kada je prepoznata i objašnjava zašto
+  pogrešan odgovor deluje logično.
+
+### PWA i ispravke
+
+- Service worker: dodato brisanje zastarelih keševa pri aktivaciji, prošireni precache
+  (`/vidim-problem`, `/kontrolor`, `/prijavi`, `/izvori`, `/rokovi`, manifest), eksplicitno
+  isključenje admin i auth ruta iz keša, i fallback na keš kada mreža padne usred dataset zahteva.
+- Dodata je provera nove verzije pravnog dataseta sa **banerom za kritičnu izmenu**
+  (`updatePriority`), koji se ne prikazuje korisniku koji još nije preuzeo nijedan dataset.
+- `scroll-padding-top` rešava stvarni problem: sticky header je prekrivao element na koji se
+  skroluje, pa je klik na dugme ispod njega bio presretnut.
+- Hover animacije više ne pomeraju geometriju dugmadi (pomeranje pod kursorom je otežavalo klik
+  i blokiralo automatizovane provere); ostaju ulazne animacije i tap feedback.
+
+### Provere
+
+- Unit: **55 testova** (ranije 36), uključujući nove pakete za simulator (uloge, posledice,
+  debrief, teški režim, retry režim) i trening (tipovi odgovora, misconception životni ciklus).
+- E2E: **25 prolazi, 1 preskočen** (admin publish bez fixture kredencijala), sa novim tokovima za
+  put birača, ceo dan člana odbora, nasumični režim i registrovanje zablude.
+- `npm run build` prolazi sa svim gate-ovima; aktivni dataset je obnovljen kao
+  `2026.09.07-simulator-training-upgrade` (66 pravila, 193 trening reference, 136 simulation
+  referenci, 3 stabla odluka).
+
+Ograničenje koje ostaje: autorska pitanja i simulacioni tekstovi su pisani prema postojećim
+pravilima iz baze i ne uvode nove pravne tvrdnje, ali pravna redakcija formulacija i dalje traži
+potpis pravnog reviewera pre nego što se tretiraju kao proverene.
