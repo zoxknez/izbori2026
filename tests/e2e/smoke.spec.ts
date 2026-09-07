@@ -32,6 +32,12 @@ test.describe("public application smoke", () => {
     await expect(page.getByRole("button", { name: /Sačuvaj na uređaj/i })).toBeVisible();
   });
 
+  test("glavni meni prikazuje trening i simulator izbornog dana", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator('aside a[href="/trening/kviz"]')).toBeVisible();
+    await expect(page.locator('aside a[href="/izborni-dan"]')).toBeVisible();
+  });
+
   test("offline dataset endpoint vraća aktivni snapshot", async ({ page }) => {
     const response = await page.request.get("/api/offline-dataset/current");
     expect(response.ok()).toBeTruthy();

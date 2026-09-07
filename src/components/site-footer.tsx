@@ -89,6 +89,16 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/trening/kviz" className="hover:text-brand transition-colors">
+                  Trening / Kviz
+                </Link>
+              </li>
+              <li>
+                <Link href="/izborni-dan" className="hover:text-brand transition-colors">
+                  Izborni dan - simulator
+                </Link>
+              </li>
+              <li>
                 <Link href="/mit-ili-cinjenica" className="hover:text-brand transition-colors">
                   Mit ili činjenica (Kviz)
                 </Link>

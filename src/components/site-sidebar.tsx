@@ -12,6 +12,7 @@ import {
   BookOpen,
   Gavel,
   HelpCircle,
+  MapPinned,
   Clock,
   X,
   Lock,
@@ -70,6 +71,18 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
         label: "Krivična dela (KZ)",
         badge: "Zatvor",
         icon: Gavel,
+      },
+      {
+        href: "/trening/kviz",
+        label: "Trening / Kviz",
+        badge: "Obuka",
+        icon: ClipboardList,
+      },
+      {
+        href: "/izborni-dan",
+        label: "Izborni dan",
+        badge: "Simulator",
+        icon: MapPinned,
       },
       {
         href: "/mit-ili-cinjenica",
