@@ -952,7 +952,7 @@ export function GameSimulatorShell({
                   : "Klikni na stanicu (UV lampa, spisak, sprej, paravan, kutija) ili birača u prostoru za detaljan pregled i radnje."}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-[11px] text-ink-faint hidden lg:flex">
+            <div className="hidden lg:flex items-center gap-2 text-[11px] text-ink-faint">
               <span>🖱️ Pan: drag</span>
               <span>•</span>
               <span>🔍 Zoom: točkić</span>
