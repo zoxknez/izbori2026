@@ -48,7 +48,7 @@ import { initializeCountingSession } from "@/lib/domain/simulator/counting-sessi
 import { WORLD_INCIDENT_BINDINGS } from "@/lib/domain/simulator/incident-binding";
 import { computeDebrief } from "@/lib/domain/simulator/engine";
 import { msToTimeString } from "@/game/clock/simulation-clock";
-import { CLASSIFICATION_LABELS, type SimulationRole } from "@/lib/domain/simulator/types";
+import { CLASSIFICATION_LABELS, SCORE_CATEGORY_LABELS, type SimulationRole } from "@/lib/domain/simulator/types";
 import {
   ROLE_CONFIGS,
   filterActionsForRole,
@@ -1406,6 +1406,49 @@ export function GameSimulatorShell({
                       <br />
                       Zabeleženih dokaza: {context.evidenceNotebook.length}
                     </div>
+                  </div>
+
+                  <div className="grid gap-3 lg:grid-cols-[1.2fr_1fr]">
+                    <section className="rounded-2xl border border-border bg-surface-2 p-4">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-xs font-bold uppercase tracking-wide text-ink">Profil učinka</h3>
+                        {debrief.weakest && <span className="text-[10px] font-semibold text-amber-400">Fokus: {SCORE_CATEGORY_LABELS[debrief.weakest.category]}</span>}
+                      </div>
+                      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                        {debrief.categories.filter((category) => category.max > 0).map((category) => (
+                          <div key={category.category} className="rounded-xl border border-border/70 bg-surface p-2.5">
+                            <div className="truncate text-[10px] font-semibold text-ink-dim">{SCORE_CATEGORY_LABELS[category.category]}</div>
+                            <div className={cn("mt-1 text-sm font-black", category.percentage >= 80 ? "text-emerald-400" : category.percentage >= 55 ? "text-amber-400" : "text-rose-400")}>
+                              {category.percentage}%
+                            </div>
+                            <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-2">
+                              <div className={cn("h-full rounded-full", category.percentage >= 80 ? "bg-emerald-400" : category.percentage >= 55 ? "bg-amber-400" : "bg-rose-400")} style={{ width: `${category.percentage}%` }} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+
+                    <section className="rounded-2xl border border-border bg-surface-2 p-4">
+                      <h3 className="text-xs font-bold uppercase tracking-wide text-ink">Sledeći trening</h3>
+                      {debrief.rulesToReview.length === 0 ? (
+                        <p className="mt-3 text-xs text-emerald-400">✓ Nema pravila koja zahtevaju dodatno ponavljanje iz donetih odluka.</p>
+                      ) : (
+                        <>
+                          <p className="mt-2 text-xs text-ink-dim">Ponovi ove izvore pre sledeće smene:</p>
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {debrief.rulesToReview.slice(0, 8).map((ruleId) => (
+                              <span key={ruleId} className="rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1 font-mono text-[10px] font-bold text-amber-300">{ruleId}</span>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                      {debrief.handledWell.length > 0 && (
+                        <p className="mt-3 border-t border-border/70 pt-3 text-xs text-emerald-300">
+                          Dobro urađeno: {debrief.handledWell[0].choiceLabel}
+                        </p>
+                      )}
+                    </section>
                   </div>
 
                   <div className="flex justify-end pt-2">
