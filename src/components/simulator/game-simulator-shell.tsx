@@ -526,7 +526,11 @@ export function GameSimulatorShell({
             <span className="rounded-md bg-surface-2 px-2 py-0.5 font-medium text-ink-dim border border-border/60">
               {context.currentPhase === "pre_opening" && "Priprema pre otvaranja (06:00-07:00)"}
               {context.currentPhase === "voting" && "Glasanje u toku (07:00-20:00)"}
+              {context.currentPhase === "closing" && "Zatvaranje i pražnjenje reda (20:00+)"}
               {context.currentPhase === "counting" && "Prebrojavanje i Zapisnik (20:00+)"}
+              {context.currentPhase === "protocol" && "Overa Zapisnika biračkog odbora"}
+              {context.currentPhase === "handover" && "Primopredaja izbornog materijala"}
+              {context.currentPhase === "debrief" && "Završni debrief smene"}
               {context.currentPhase === "closed" && "Zatvoreno biračko mesto"}
             </span>
           </div>
