@@ -48,7 +48,7 @@ import { initializeCountingSession } from "@/lib/domain/simulator/counting-sessi
 import { WORLD_INCIDENT_BINDINGS } from "@/lib/domain/simulator/incident-binding";
 import { computeDebrief } from "@/lib/domain/simulator/engine";
 import { msToTimeString } from "@/game/clock/simulation-clock";
-import type { SimulationRole } from "@/lib/domain/simulator/types";
+import { CLASSIFICATION_LABELS, type SimulationRole } from "@/lib/domain/simulator/types";
 import {
   ROLE_CONFIGS,
   filterActionsForRole,
@@ -495,6 +495,17 @@ export function GameSimulatorShell({
     if (!activeBinding) return [];
     return filterActionsForRole(activeBinding.actions, context.domainState.role);
   }, [activeBinding, context.domainState.role]);
+
+  const latestDecision = context.domainState.history.at(-1);
+  const latestDecisionTone = latestDecision
+    ? latestDecision.classification === "correct"
+      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-200"
+      : latestDecision.classification === "acceptable"
+        ? "border-sky-500/40 bg-sky-500/10 text-sky-100"
+        : latestDecision.classification === "suboptimal"
+          ? "border-amber-500/40 bg-amber-500/10 text-amber-100"
+          : "border-rose-500/40 bg-rose-500/10 text-rose-100"
+    : "";
 
   const clockString = msToTimeString(context.simulationTimeMs);
 
@@ -1030,6 +1041,38 @@ export function GameSimulatorShell({
           </div>
         )}
       </div>
+
+      {/* 4b. Neposredni rezultat poslednje odluke: učenje ostaje u samom gameplay toku. */}
+      {latestDecision && (
+        <section
+          data-testid="decision-outcome-card"
+          aria-live="polite"
+          className={cn("rounded-2xl border p-4 shadow-sm", latestDecisionTone)}
+        >
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] opacity-80">Ishod poslednje odluke</p>
+              <h3 className="mt-1 text-sm font-extrabold">
+                {CLASSIFICATION_LABELS[latestDecision.classification]} · {latestDecision.choiceLabel}
+              </h3>
+              <p className="mt-1.5 max-w-3xl text-xs leading-relaxed opacity-95">{latestDecision.explanation}</p>
+            </div>
+            <span className="w-fit rounded-full border border-current/25 bg-black/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide">
+              {latestDecision.outcome}
+            </span>
+          </div>
+          {latestDecision.ruleIds.length > 0 && (
+            <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-current/15 pt-3">
+              <span className="text-[10px] font-bold uppercase tracking-wide opacity-75">Relevantna pravila</span>
+              {latestDecision.ruleIds.map((ruleId) => (
+                <span key={ruleId} className="rounded-md border border-current/20 bg-surface/30 px-1.5 py-0.5 font-mono text-[10px] font-bold">
+                  {ruleId}
+                </span>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* 5. A11Y DOM FALLBACK PANEL (Tastaturna alternativa canvasu) */}
       <div className="rounded-2xl border border-dashed border-border/70 bg-surface-2/40 p-4">
