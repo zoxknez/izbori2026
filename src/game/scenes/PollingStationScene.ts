@@ -118,8 +118,8 @@ export class PollingStationScene extends Phaser.Scene {
       for (const [instanceId, visual] of this.incidentVisuals) {
         if (!incoming.has(instanceId)) {
           if (visual.presentation.resolvedVisual.remove) {
-            visual.container.destroy();
             this.incidentVisuals.delete(instanceId);
+            this.animateResolvedIncident(visual);
           } else {
             visual.container.setAlpha(0.35);
             if (!visual.resolvedLabel) {
@@ -478,6 +478,36 @@ export class PollingStationScene extends Phaser.Scene {
     }));
     container.on("pointerdown", () => this.audio.play("incident"));
     this.incidentVisuals.set(incidentId, { container, incidentId, presentation });
+  }
+
+  /** Presentation-only resolution beat: legal state was already resolved by XState. */
+  private animateResolvedIncident(visual: IncidentVisual) {
+    visual.container.disableInteractive();
+    const confirmation = this.add.text(0, 0, "✓", {
+      fontSize: "28px",
+      color: "#a7f3d0",
+      fontFamily: "sans-serif",
+      fontStyle: "bold",
+      stroke: "#064e3b",
+      strokeThickness: 4,
+    }).setOrigin(0.5);
+    visual.container.add(confirmation);
+    this.audio.play("evidence");
+
+    if (this.reducedMotion) {
+      visual.container.destroy();
+      return;
+    }
+
+    this.tweens.add({
+      targets: visual.container,
+      scaleX: 1.24,
+      scaleY: 1.24,
+      alpha: 0,
+      duration: 460,
+      ease: "Quad.easeOut",
+      onComplete: () => visual.container.destroy(),
+    });
   }
 
   private createIncidentWorldObject(
