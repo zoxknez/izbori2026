@@ -24,73 +24,163 @@ const DynamicGameSimulatorShell = dynamic(
 );
 
 export function SimulatorModeSelector() {
-  const [mode, setMode] = useState<"classic" | "game_2d">("classic");
+  // 2D režim je primarni (preporučeni) doživljaj
+  const [mode, setMode] = useState<"classic" | "game_2d">("game_2d");
   const [selectedRole, setSelectedRole] = useState<SimulationRole>("clan_odbora");
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Prekidač režima prikaza */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface p-2 shadow-sm">
-        <div className="flex items-center gap-2 px-2 text-xs font-semibold text-ink-dim">
-          <span>Režim simulatora:</span>
-        </div>
+      {/* Glavni prekidač režima prikaza sa visokom vidljivošću */}
+      <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-b from-surface via-surface to-surface-2 p-3 sm:p-4 shadow-xl">
+        {/* Pozadinski suptilni sjaj */}
+        <div className="pointer-events-none absolute -top-24 left-1/4 h-48 w-96 -translate-x-1/2 rounded-full bg-brand/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 right-1/4 h-48 w-96 translate-x-1/2 rounded-full bg-sky-500/10 blur-3xl" />
 
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Režim prikaza */}
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => setMode("classic")}
-              className={cn(
-                "inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold transition",
-                mode === "classic"
-                  ? "bg-brand text-brand-contrast shadow-sm"
-                  : "text-ink-dim hover:bg-surface-2 hover:text-ink",
-              )}
-            >
-              <LayoutList className="h-4 w-4" />
-              <span>Klasične kartice</span>
-            </button>
+        <div className="relative flex flex-col gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-3">
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 rounded-full bg-brand animate-pulse" />
+              <span className="text-xs font-bold uppercase tracking-wider text-ink">
+                Režim rada simulatora
+              </span>
+              <span className="rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-bold text-brand ring-1 ring-brand/30">
+                Izbori 2026
+              </span>
+            </div>
 
+            {/* Brzi izbor uloge kada je aktivan 2D režim */}
+            {mode === "game_2d" && (
+              <div className="flex items-center gap-1.5 rounded-2xl bg-surface-2/80 p-1 border border-border/70">
+                <span className="px-2 text-[11px] font-semibold text-ink-dim hidden md:inline">
+                  Aktivna perspektiva:
+                </span>
+                {(["clan_odbora", "posmatrac", "birac"] as const).map((r) => {
+                  const cfg = ROLE_CONFIGS[r];
+                  const isSel = selectedRole === r;
+                  return (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => setSelectedRole(r)}
+                      className={cn(
+                        "rounded-xl px-2.5 py-1 text-xs font-semibold transition-all",
+                        isSel
+                          ? "bg-brand text-brand-ink font-bold shadow-sm"
+                          : "text-ink-dim hover:text-ink hover:bg-surface",
+                      )}
+                    >
+                      {cfg.shortLabel}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Dve istaknute opcije u obliku interaktivnih kartica */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {/* 1. Primarni 2D režim */}
             <button
               type="button"
               onClick={() => setMode("game_2d")}
               className={cn(
-                "inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold transition",
+                "group relative flex flex-col items-start gap-2.5 rounded-2xl p-4 text-left transition-all duration-200",
                 mode === "game_2d"
-                  ? "bg-brand text-brand-contrast shadow-sm"
-                  : "text-ink-dim hover:bg-surface-2 hover:text-ink",
+                  ? "border-2 border-brand bg-brand/10 shadow-lg shadow-brand/10 ring-2 ring-brand/30"
+                  : "border border-border/80 bg-surface-2/50 hover:border-border hover:bg-surface-2 hover:shadow-md",
               )}
             >
-              <Gamepad2 className="h-4 w-4" />
-              <span>2D Biračko mesto</span>
-            </button>
-          </div>
-
-          {/* Izbor početne uloge za 2D simulator */}
-          {mode === "game_2d" && (
-            <div className="flex items-center gap-1 border-t sm:border-t-0 sm:border-l border-border sm:pl-3 pt-2 sm:pt-0">
-              <span className="text-xs text-ink-dim font-medium mr-1">Uloga:</span>
-              {(["clan_odbora", "posmatrac", "birac"] as const).map((r) => {
-                const cfg = ROLE_CONFIGS[r];
-                return (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => setSelectedRole(r)}
+              <div className="flex w-full items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div
                     className={cn(
-                      "rounded-lg px-2.5 py-1 text-xs font-semibold transition",
-                      selectedRole === r
-                        ? "bg-surface-2 text-brand border border-brand/40 shadow-sm"
-                        : "text-ink-dim hover:text-ink hover:bg-surface-2/60",
+                      "flex h-9 w-9 items-center justify-center rounded-xl transition",
+                      mode === "game_2d"
+                        ? "bg-brand text-brand-ink shadow-sm"
+                        : "bg-surface text-ink-dim group-hover:text-ink",
                     )}
                   >
-                    {cfg.shortLabel}
-                  </button>
-                );
-              })}
-            </div>
-          )}
+                    <Gamepad2 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-ink">2D Biračko mesto</span>
+                      <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400 ring-1 ring-emerald-500/40">
+                        ★ PREPORUČENO
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-ink-dim font-mono">Phaser 4.2.1 • 60 FPS WebGL</span>
+                  </div>
+                </div>
+
+                <div
+                  className={cn(
+                    "flex h-5 w-5 items-center justify-center rounded-full border text-[10px] font-bold",
+                    mode === "game_2d"
+                      ? "border-brand bg-brand text-brand-ink"
+                      : "border-border text-transparent",
+                  )}
+                >
+                  ✓
+                </div>
+              </div>
+
+              <p className="text-xs leading-relaxed text-ink-dim">
+                Prostorna simulacija biračkog mesta uživo. Kretanje birača, 30 interaktivnih incidenata na stanicama, kontrola brzine toka i noćno brojanje glasova uz Zapisnik.
+              </p>
+            </button>
+
+            {/* 2. Klasični režim kartica */}
+            <button
+              type="button"
+              onClick={() => setMode("classic")}
+              className={cn(
+                "group relative flex flex-col items-start gap-2.5 rounded-2xl p-4 text-left transition-all duration-200",
+                mode === "classic"
+                  ? "border-2 border-brand bg-brand/10 shadow-lg shadow-brand/10 ring-2 ring-brand/30"
+                  : "border border-border/80 bg-surface-2/50 hover:border-border hover:bg-surface-2 hover:shadow-md",
+              )}
+            >
+              <div className="flex w-full items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className={cn(
+                      "flex h-9 w-9 items-center justify-center rounded-xl transition",
+                      mode === "classic"
+                        ? "bg-brand text-brand-ink shadow-sm"
+                        : "bg-surface text-ink-dim group-hover:text-ink",
+                    )}
+                  >
+                    <LayoutList className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-ink">Klasične kartice</span>
+                      <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-medium text-ink-dim">
+                        Tekstualni mod
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-ink-dim font-mono">Linearni tok situacija</span>
+                  </div>
+                </div>
+
+                <div
+                  className={cn(
+                    "flex h-5 w-5 items-center justify-center rounded-full border text-[10px] font-bold",
+                    mode === "classic"
+                      ? "border-brand bg-brand text-brand-ink"
+                      : "border-border text-transparent",
+                  )}
+                >
+                  ✓
+                </div>
+              </div>
+
+              <p className="text-xs leading-relaxed text-ink-dim">
+                Format sa karticama situacija i odlukama korak-po-korak. Idealan za fokusiran prolaz kroz pravne članove, bodovni pregled i teorijsku analizu pojedinačnih izbornih radnji.
+              </p>
+            </button>
+          </div>
         </div>
       </div>
 

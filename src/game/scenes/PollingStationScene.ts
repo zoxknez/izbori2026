@@ -48,74 +48,61 @@ export class PollingStationScene extends Phaser.Scene {
     // 1. Pod biračkog mesta
     this.add.tileSprite(width / 2, height / 2, width - 40, height - 40, "floor-tile");
 
-    // Okvir prostorije (zidovi)
+    // Okvir prostorije (zidovi sa osvetljenom linijom)
     const walls = this.add.graphics();
-    walls.lineStyle(4, 0x334155, 1);
-    walls.strokeRoundedRect(20, 20, width - 40, height - 40, 12);
+    walls.lineStyle(4, 0x475569, 1);
+    walls.strokeRoundedRect(20, 20, width - 40, height - 40, 14);
+    // Suptilna neonska konturna linija
+    walls.lineStyle(1.5, 0x38bdf8, 0.4);
+    walls.strokeRoundedRect(22, 22, width - 44, height - 44, 12);
 
-    // Oznake zona
-    this.add.text(40, 32, "ULAZ / HODNIK", {
-      fontSize: "11px",
-      color: "#64748b",
-      fontFamily: "sans-serif",
-      fontStyle: "bold",
-    });
-
-    this.add.text(width - 120, 32, "IZLAZ", {
-      fontSize: "11px",
-      color: "#64748b",
-      fontFamily: "sans-serif",
-      fontStyle: "bold",
-    });
-
-    this.add.text(width / 2 - 80, 32, "BIRAČKO MESTO BR. 14", {
-      fontSize: "12px",
-      color: "#94a3b8",
-      fontFamily: "sans-serif",
-      fontStyle: "bold",
-    });
+    // Oznake zona sa jasnim pill bedževima
+    this.createHeaderPill(85, 34, "🚪 ULAZ / HODNIK", "#38bdf8");
+    this.createHeaderPill(width - 70, 34, "🚶 IZLAZ", "#10b981");
+    this.createHeaderPill(width / 2, 34, "🏛️ BIRAČKO MESTO BR. 14", "#f1f5f9", 0.95);
 
     // 2. Stanica 0: Plakat u hodniku (E01)
-    const poster = this.add.sprite(50, 90, "poster");
+    const poster = this.add.sprite(50, 95, "poster");
     this.setupHotspot(poster, "hallway-poster", "entrance", "Plakat u hodniku");
+    this.createStationBadge(50, 122, "⚠️ Plakat", "#ef4444");
 
     // 3. Stanica 1: UV stanica
     const uvTable = this.add.sprite(150, 160, "table-desk");
-    this.add.text(150, 195, "UV provera", { fontSize: "10px", color: "#94a3b8" }).setOrigin(0.5);
     this.setupHotspot(uvTable, "uv-lamp-check", "uv-station", "UV Lampa");
+    this.createStationBadge(150, 200, "1. UV provera", "#38bdf8");
 
     // 4. Stanica 2 & 3: Birački spisak i listići
     const rollTable = this.add.sprite(320, 160, "table-desk");
-    this.add.text(320, 195, "Spisak i potpis", { fontSize: "10px", color: "#94a3b8" }).setOrigin(0.5);
     this.setupHotspot(rollTable, "voter-roll-table", "voter-roll-desk", "Birački spisak");
+    this.createStationBadge(320, 200, "2. Spisak i potpis", "#34d399");
 
     const ballotTable = this.add.sprite(490, 160, "table-desk");
-    this.add.text(490, 195, "Sprej i listići", { fontSize: "10px", color: "#94a3b8" }).setOrigin(0.5);
     this.setupHotspot(ballotTable, "ballot-table", "spray-station", "Izdavanje listića");
+    this.createStationBadge(490, 200, "3. Sprej i listići", "#fbbf24");
 
     // 5. Sto biračkog odbora sa rezervnim materijalom (E02)
     const boardTable = this.add.sprite(200, 480, "table-desk");
-    this.add.text(200, 515, "Sto odbora / Materijal", { fontSize: "10px", color: "#94a3b8" }).setOrigin(0.5);
     this.setupHotspot(boardTable, "material-ballot-stack", "board-table", "Materijal i listići");
+    this.createStationBadge(200, 520, "Sto biračkog odbora", "#818cf8");
 
     // 6. Stanica 4: Paravani za glasanje (E03)
     const booth1 = this.add.sprite(680, 150, "booth");
     const booth2 = this.add.sprite(760, 150, "booth");
     const booth3 = this.add.sprite(840, 150, "booth");
-    this.add.text(760, 195, "Paravani za glasanje", { fontSize: "10px", color: "#94a3b8" }).setOrigin(0.5);
     this.setupHotspot(booth1, "booth-angle", "voting-booths", "Paravan 1");
     this.setupHotspot(booth2, "booth-2", "voting-booths", "Paravan 2");
     this.setupHotspot(booth3, "booth-3", "voting-booths", "Paravan 3");
+    this.createStationBadge(760, 200, "4. Paravani za glasanje", "#38bdf8");
 
     // 7. Stanica 5: Glasačka kutija (E04, E05, E06)
     const box = this.add.sprite(760, 340, "ballot-box");
-    this.add.text(760, 380, "Glasačka kutija", { fontSize: "10px", color: "#38bdf8" }).setOrigin(0.5);
     this.setupHotspot(box, "empty-box", "ballot-box-station", "Glasačka kutija");
+    this.createStationBadge(760, 385, "5. Glasačka kutija", "#60a5fa", 1);
 
     // 8. Prostor za posmatrače
     const observerDesk = this.add.sprite(500, 480, "table-desk");
-    this.add.text(500, 515, "Posmatrači", { fontSize: "10px", color: "#94a3b8" }).setOrigin(0.5);
     this.setupHotspot(observerDesk, "observer-desk", "observer-area", "Sto posmatrača");
+    this.createStationBadge(500, 520, "Sto posmatrača", "#a78bfa");
 
     // Indikator selekcije
     this.selectedIndicator = this.add.graphics();
@@ -346,5 +333,45 @@ export class PollingStationScene extends Phaser.Scene {
       yoyo: true,
       ease: "Quad.easeOut",
     });
+  }
+
+  private createHeaderPill(x: number, y: number, text: number | string, color: string, alpha = 0.85) {
+    const txt = this.add
+      .text(x, y, String(text), {
+        fontSize: "11px",
+        color,
+        fontFamily: "sans-serif",
+        fontStyle: "bold",
+        backgroundColor: "rgba(15, 23, 42, 0.8)",
+        padding: { x: 8, y: 3 },
+      })
+      .setOrigin(0.5);
+
+    return txt;
+  }
+
+  private createStationBadge(x: number, y: number, label: string, color: string, _depth = 0) {
+    const badge = this.add
+      .text(x, y, label, {
+        fontSize: "10px",
+        color,
+        fontFamily: "sans-serif",
+        fontStyle: "bold",
+        backgroundColor: "rgba(15, 23, 42, 0.88)",
+        padding: { x: 6, y: 2 },
+      })
+      .setOrigin(0.5);
+
+    // Blago pulsiranje za bolju interaktivnu uočljivost
+    this.tweens.add({
+      targets: badge,
+      alpha: 0.75,
+      duration: 1800,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
+
+    return badge;
   }
 }

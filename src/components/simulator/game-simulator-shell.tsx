@@ -317,23 +317,23 @@ export function GameSimulatorShell({
         </div>
       )}
 
-      {/* 1. TOP HUD BAR */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/80 bg-surface px-4 py-3 shadow-sm">
-        {/* Sat i faza */}
+      {/* 1. TOP HUD BAR (Visoko kontrastna komandna tabla) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/90 bg-gradient-to-r from-surface via-surface-2/90 to-surface px-4 py-3 shadow-lg backdrop-blur">
+        {/* Sat i faza sa digitalnim izgledom */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 rounded-xl bg-surface-2 px-3 py-1.5 text-ink">
-            <Clock className="h-4 w-4 text-brand" />
+          <div className="flex items-center gap-2 rounded-xl border border-brand/40 bg-black/60 px-3.5 py-1.5 shadow-inner ring-1 ring-brand/30">
+            <Clock className="h-4 w-4 text-brand animate-pulse" />
             <span
-              className="font-mono text-base font-bold tracking-tight"
+              className="font-mono text-base font-extrabold tracking-wider text-brand"
               aria-live="off" // A11y invariant: sat se često menja, aria-live isključen
             >
               {clockString}
             </span>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1.5 text-xs text-ink-dim">
-            <span className="font-semibold text-ink">Faza:</span>
-            <span>
+          <div className="hidden sm:flex items-center gap-1.5 text-xs">
+            <span className="font-bold text-ink">Faza:</span>
+            <span className="rounded-md bg-surface-2 px-2 py-0.5 font-medium text-ink-dim border border-border/60">
               {context.currentPhase === "pre_opening" && "Priprema pre otvaranja (06:00-07:00)"}
               {context.currentPhase === "voting" && "Glasanje u toku (07:00-20:00)"}
               {context.currentPhase === "counting" && "Prebrojavanje i Zapisnik (20:00+)"}
@@ -348,15 +348,15 @@ export function GameSimulatorShell({
             type="button"
             onClick={() => send({ type: "TOGGLE_PAUSE" })}
             className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-lg border transition-colors",
+              "flex h-8 w-8 items-center justify-center rounded-xl border transition-all",
               context.paused
-                ? "border-amber-500/30 bg-amber-500/10 text-amber-500"
-                : "border-border bg-surface-2 text-ink hover:border-brand/40",
+                ? "border-amber-500/50 bg-amber-500/20 text-amber-400 ring-2 ring-amber-500/30"
+                : "border-border bg-surface-2 text-ink hover:border-brand/60 hover:text-brand",
             )}
             title={context.paused ? "Nastavi simulaciju" : "Pauziraj simulaciju"}
             aria-label={context.paused ? "Nastavi simulaciju" : "Pauziraj simulaciju"}
           >
-            {context.paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+            {context.paused ? <Play className="h-4 w-4 fill-amber-400" /> : <Pause className="h-4 w-4" />}
           </button>
 
           {([1, 2, 4] as const).map((spd) => (
@@ -365,10 +365,10 @@ export function GameSimulatorShell({
               type="button"
               onClick={() => send({ type: "SET_SPEED", speed: spd })}
               className={cn(
-                "h-8 rounded-lg px-2.5 text-xs font-semibold transition-colors",
+                "h-8 rounded-xl px-2.5 text-xs font-bold transition-all",
                 context.speed === spd && !context.paused
-                  ? "bg-brand text-brand-contrast shadow-sm"
-                  : "border border-border bg-surface-2 text-ink-dim hover:text-ink",
+                  ? "bg-brand text-brand-ink shadow-md ring-2 ring-brand/40"
+                  : "border border-border/80 bg-surface-2 text-ink-dim hover:text-ink hover:border-border",
               )}
             >
               {spd}x
@@ -377,8 +377,8 @@ export function GameSimulatorShell({
         </div>
 
         {/* Status uloge, brojanje, evidencija i debrief */}
-        <div className="flex items-center gap-2">
-          {/* Dugme za pregled i promenu uloge */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Dugme za pregled i promenu uloge sa bojama specifičnim za svaku ulogu */}
           <button
             type="button"
             data-testid="role-selector-button"
@@ -386,13 +386,21 @@ export function GameSimulatorShell({
               setPreviewRole(context.domainState.role);
               setIsRoleModalOpen(true);
             }}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1 text-xs font-medium text-ink transition hover:border-brand/40"
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all shadow-sm",
+              context.domainState.role === "clan_odbora" &&
+                "border-amber-500/40 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25",
+              context.domainState.role === "posmatrac" &&
+                "border-sky-500/40 bg-sky-500/15 text-sky-300 hover:bg-sky-500/25",
+              context.domainState.role === "birac" &&
+                "border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25",
+            )}
             title="Klikni za vodič kroz ulogu i izbor perspektive"
           >
-            {context.domainState.role === "clan_odbora" && <Gavel className="h-3.5 w-3.5 text-brand" />}
+            {context.domainState.role === "clan_odbora" && <Gavel className="h-3.5 w-3.5 text-amber-400" />}
             {context.domainState.role === "posmatrac" && <Eye className="h-3.5 w-3.5 text-sky-400" />}
             {context.domainState.role === "birac" && <Vote className="h-3.5 w-3.5 text-emerald-400" />}
-            <span className="font-semibold">{currentRoleConfig.shortLabel}</span>
+            <span>{currentRoleConfig.shortLabel}</span>
           </button>
 
           {/* Dugme za brojanje glasova / Zapisnik */}
@@ -401,7 +409,7 @@ export function GameSimulatorShell({
               type="button"
               data-testid="open-protocol-button"
               onClick={() => setIsCountingModalOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-sky-500/40 bg-sky-500/10 px-3 py-1 text-xs font-bold text-sky-400 transition hover:bg-sky-500/20 shadow-sm"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-sky-500/50 bg-sky-500/20 px-3 py-1.5 text-xs font-bold text-sky-300 transition hover:bg-sky-500/30 shadow-md"
             >
               <FileCheck2 className="h-3.5 w-3.5" />
               <span>Zapisnik BO {context.countingSession?.isProtocolSigned ? "(Overen)" : ""}</span>
@@ -411,7 +419,7 @@ export function GameSimulatorShell({
               type="button"
               data-testid="start-counting-button"
               onClick={handleStartCounting}
-              className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-400 transition hover:bg-amber-500/20"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/15 px-3 py-1.5 text-xs font-bold text-amber-300 transition hover:bg-amber-500/25 shadow-sm"
               title="Zatvori biračko mesto u 20:00 i pređi na prebrojavanje"
             >
               <FileCheck2 className="h-3.5 w-3.5" />
@@ -423,10 +431,10 @@ export function GameSimulatorShell({
             type="button"
             data-testid="replay-button"
             onClick={() => setIsReplayOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1 text-xs font-semibold text-ink transition hover:border-brand/40 hover:text-brand"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-surface-2 px-3 py-1.5 text-xs font-semibold text-ink transition hover:border-brand/40 hover:text-brand"
             title="Pregled toka i deterministički replay"
           >
-            <History className="h-3.5 w-3.5" />
+            <History className="h-3.5 w-3.5 text-sky-400" />
             <span>Replay ({context.actionLog.length})</span>
           </button>
 
@@ -434,17 +442,17 @@ export function GameSimulatorShell({
             type="button"
             data-testid="save-game-button"
             onClick={handleSaveGame}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1 text-xs font-semibold text-ink transition hover:border-brand/40 hover:text-brand"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-surface-2 px-3 py-1.5 text-xs font-semibold text-ink transition hover:border-brand/40 hover:text-brand"
             title="Sačuvaj trenutno stanje partije u memoriji uređaja"
           >
-            <Save className="h-3.5 w-3.5" />
+            <Save className="h-3.5 w-3.5 text-brand" />
             <span>{saveFeedback ? saveFeedback : "Sačuvaj"}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setIsEvidenceTrayOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand transition hover:bg-brand/20"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-brand/40 bg-brand/15 px-3 py-1.5 text-xs font-bold text-brand transition hover:bg-brand/25 shadow-sm"
           >
             <NotebookPen className="h-3.5 w-3.5" />
             <span>Dokazi: {context.evidenceNotebook.length}</span>
@@ -453,7 +461,7 @@ export function GameSimulatorShell({
           <button
             type="button"
             onClick={() => setIsDebriefOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1 text-xs font-semibold text-ink transition hover:border-brand/40 hover:text-brand"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-surface-2 px-3 py-1.5 text-xs font-semibold text-ink transition hover:border-brand/40 hover:text-brand"
           >
             <span>Završi smenu</span>
           </button>
@@ -513,18 +521,27 @@ export function GameSimulatorShell({
       </div>
 
       {/* 4. KONTEKSTUALNI ACTION PANEL ZA SELEKTOVANI HOTSPOT */}
-      <div className="rounded-2xl border border-border/80 bg-surface p-4 shadow-sm">
+      <div
+        className={cn(
+          "rounded-2xl border p-4 shadow-md transition-all",
+          selectedHotspot
+            ? "border-brand/60 bg-gradient-to-r from-surface via-surface-2/80 to-surface ring-1 ring-brand/30 shadow-brand/5"
+            : "border-border/80 bg-surface/80",
+        )}
+      >
         {selectedHotspot ? (
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-brand" />
-                <h3 className="text-sm font-bold text-ink">Selektovano: {selectedHotspot.title}</h3>
+                <span className="flex h-2.5 w-2.5 rounded-full bg-brand animate-ping" />
+                <h3 className="text-sm font-extrabold text-ink">
+                  Selektovano: <span className="text-brand">{selectedHotspot.title}</span>
+                </h3>
               </div>
-              <p className="mt-0.5 text-xs text-ink-dim">
-                Lokacija u prostoru: <code className="rounded bg-surface-2 px-1 py-0.5">{selectedHotspot.locationId}</code>
-                <span className="mx-2">•</span>
-                Uloga: <span className="font-semibold text-ink">{currentRoleConfig.shortLabel}</span>
+              <p className="mt-1 text-xs text-ink-dim">
+                Lokacija u prostoru: <code className="rounded bg-surface px-1.5 py-0.5 font-mono text-ink border border-border/60">{selectedHotspot.locationId}</code>
+                <span className="mx-2 text-border">•</span>
+                Aktivna uloga: <span className="font-bold text-ink">{currentRoleConfig.shortLabel}</span>
               </p>
             </div>
 
@@ -532,10 +549,10 @@ export function GameSimulatorShell({
               <button
                 type="button"
                 onClick={handleRecordEvidence}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface-2 px-3 py-2 text-xs font-medium text-ink hover:border-brand/40"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold text-ink hover:border-brand/60 hover:text-brand transition shadow-sm"
               >
                 <NotebookPen className="h-3.5 w-3.5 text-brand" />
-                <span>Upiši u beležnicu</span>
+                <span>Upiši u beležnicu dokaza</span>
               </button>
 
               {availableActions.map((act) => (
@@ -545,7 +562,7 @@ export function GameSimulatorShell({
                   onClick={() =>
                     handleActionClick(act.worldActionId, act.choiceId, activeBinding!.eventId, act.label)
                   }
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-3.5 py-2 text-xs font-bold text-brand-contrast shadow-sm transition hover:opacity-90"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-4 py-2 text-xs font-extrabold text-brand-ink shadow-md transition-all hover:bg-brand-strong hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <span>{act.label}</span>
                 </button>
@@ -556,7 +573,7 @@ export function GameSimulatorShell({
                   type="button"
                   data-testid="inspect-protocol-btn"
                   onClick={() => setIsCountingModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-sky-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-sky-500"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-sky-600 px-4 py-2 text-xs font-bold text-white shadow-md transition hover:bg-sky-500"
                 >
                   <FileCheck2 className="h-4 w-4" />
                   <span>Otvori Zapisnik o radu BO</span>
@@ -564,21 +581,28 @@ export function GameSimulatorShell({
               )}
 
               {availableActions.length === 0 && activeBinding && !selectedHotspot.hotspotId.startsWith("counting-") && (
-                <div className="flex items-center gap-2 text-xs text-ink-dim italic">
-                  <Info className="h-3.5 w-3.5 text-amber-400" />
-                  <span>Ova situacija ne zahteva radnju uloge &quot;{currentRoleConfig.shortLabel}&quot;.</span>
+                <div className="flex items-center gap-2 rounded-xl bg-surface px-3 py-2 text-xs text-ink-dim border border-border/70 italic">
+                  <Info className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                  <span>Ova situacija ne zahteva neposrednu radnju uloge &quot;{currentRoleConfig.shortLabel}&quot;.</span>
                 </div>
               )}
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-between text-xs text-ink-dim">
-            <span>
-              {context.currentPhase === "counting"
-                ? "📊 Izborno mesto je zatvoreno. Kliknite na sto za prebrojavanje ili Zapisnik za utvrđivanje rezultata."
-                : "💡 Klikni na stanicu, paravan ili materijal u prostoru biračkog mesta za pregled i akcije."}
-            </span>
-            <span className="hidden sm:inline">Uloga: {currentRoleConfig.label}</span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-ink-dim">
+            <div className="flex items-center gap-2">
+              <span className="text-base">💡</span>
+              <span className="font-medium">
+                {context.currentPhase === "counting"
+                  ? "Biračko mesto je zatvoreno u 20:00. Kliknite na sto za prebrojavanje ili Zapisnik za utvrđivanje rezultata."
+                  : "Klikni na stanicu (UV lampa, spisak, sprej, paravan, kutija) ili birača u prostoru za detaljan pregled i radnje."}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-[11px] text-ink-faint hidden lg:flex">
+              <span>🖱️ Pan: drag</span>
+              <span>•</span>
+              <span>🔍 Zoom: točkić</span>
+            </div>
           </div>
         )}
       </div>

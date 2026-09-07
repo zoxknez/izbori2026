@@ -51,67 +51,48 @@ export class CountingScene extends Phaser.Scene {
     const tableCenterY = height / 2 + 10;
     const table = this.add.sprite(tableCenterX, tableCenterY, "counting-table-surface");
 
-    this.add.text(tableCenterX, tableCenterY - 70, "STO ZA PREBROJAVANJE I UTVRĐIVANJE REZULTATA", {
+    // Osvetljenje iznad stola za brojanje (topli reflektor za radnu noćnu atmosferu)
+    const tableLight = this.add.graphics();
+    tableLight.fillStyle(0x38bdf8, 0.08);
+    tableLight.fillEllipse(tableCenterX, tableCenterY, 520, 220);
+
+    this.add.text(tableCenterX, tableCenterY - 72, "📋 STO ZA PREBROJAVANJE I UTVRĐIVANJE REZULTATA", {
       fontSize: "11px",
-      color: "#94a3b8",
+      color: "#f8fafc",
       fontFamily: "sans-serif",
       fontStyle: "bold",
+      backgroundColor: "rgba(15, 23, 42, 0.85)",
+      padding: { x: 10, y: 3 },
     }).setOrigin(0.5);
 
     // 3. Stanica 1: Neupotrebljeni listići (U)
     const unusedSprite = this.add.sprite(tableCenterX - 180, tableCenterY - 10, "stack-unused");
-    this.add.text(tableCenterX - 180, tableCenterY + 30, "1. Neupotrebljeni (U)", {
-      fontSize: "9px",
-      color: "#94a3b8",
-      align: "center",
-    }).setOrigin(0.5);
+    this.createCountingBadge(tableCenterX - 180, tableCenterY + 34, "1. Neupotrebljeni (U)", "#cbd5e1");
     this.setupHotspot(unusedSprite, "counting-unused", "counting-table", "1. Neupotrebljeni listići (U)");
 
     // 4. Stanica 2: Birački spisak (G)
     const rollSprite = this.add.sprite(tableCenterX - 100, tableCenterY - 10, "table-desk").setScale(0.55);
-    this.add.text(tableCenterX - 100, tableCenterY + 30, "2. Spisak birača (G)", {
-      fontSize: "9px",
-      color: "#94a3b8",
-      align: "center",
-    }).setOrigin(0.5);
+    this.createCountingBadge(tableCenterX - 100, tableCenterY + 34, "2. Spisak birača (G)", "#34d399");
     this.setupHotspot(rollSprite, "counting-voter-roll", "counting-table", "2. Birački spisak i potpisani birači (G)");
 
     // 5. Stanica 3: Kontrolni list u kutiji
     const controlSprite = this.add.sprite(tableCenterX - 20, tableCenterY - 10, "doc-control-sheet");
-    this.add.text(tableCenterX - 20, tableCenterY + 30, "3. Kontrolni list", {
-      fontSize: "9px",
-      color: "#f97316",
-      fontStyle: "bold",
-      align: "center",
-    }).setOrigin(0.5);
+    this.createCountingBadge(tableCenterX - 20, tableCenterY + 34, "3. Kontrolni list", "#fb923c");
     this.setupHotspot(controlSprite, "counting-control-sheet", "counting-table", "3. Kontrolni list u glasačkoj kutiji");
 
     // 6. Stanica 4: Listići u kutiji (B)
     const boxBallotsSprite = this.add.sprite(tableCenterX + 60, tableCenterY - 10, "ballot-box").setScale(0.8);
-    this.add.text(tableCenterX + 60, tableCenterY + 30, "4. Iz kutije (B)", {
-      fontSize: "9px",
-      color: "#38bdf8",
-      align: "center",
-    }).setOrigin(0.5);
+    this.createCountingBadge(tableCenterX + 60, tableCenterY + 34, "4. Iz kutije (B)", "#38bdf8");
     this.setupHotspot(boxBallotsSprite, "counting-box-ballots", "counting-table", "4. Listići u glasačkoj kutiji (B)");
 
     // 7. Stanica 5: Razvrstavanje (V i N)
     const sortedSprite = this.add.sprite(tableCenterX + 130, tableCenterY - 10, "stack-unused").setTint(0x10b981);
-    this.add.text(tableCenterX + 130, tableCenterY + 30, "5. Važeći/Nevažeći", {
-      fontSize: "9px",
-      color: "#10b981",
-      align: "center",
-    }).setOrigin(0.5);
+    this.createCountingBadge(tableCenterX + 130, tableCenterY + 34, "5. Važeći / Nevažeći", "#10b981");
     this.setupHotspot(sortedSprite, "counting-sorting", "counting-table", "5. Razvrstavanje: Važeći (V) i Nevažeći (N)");
 
     // 8. Stanica 6 & 7: Zapisnik o radu biračkog odbora
     const protocolSprite = this.add.sprite(tableCenterX + 195, tableCenterY - 10, "doc-protocol");
-    this.add.text(tableCenterX + 195, tableCenterY + 35, "6. Zapisnik BO", {
-      fontSize: "9px",
-      color: "#60a5fa",
-      fontStyle: "bold",
-      align: "center",
-    }).setOrigin(0.5);
+    this.createCountingBadge(tableCenterX + 195, tableCenterY + 38, "6. Zapisnik BO", "#60a5fa");
     this.setupHotspot(protocolSprite, "counting-protocol", "counting-table", "6. Zapisnik o radu biračkog odbora");
 
     // 9. Članovi biračkog odbora sede oko stola (ozbiljna radna atmosfera)
@@ -127,18 +108,22 @@ export class CountingScene extends Phaser.Scene {
       const avatar = this.add.sprite(seat.x, seat.y, "npc-avatar");
       avatar.setScale(0.85);
       this.add.text(seat.x, seat.y + 20, seat.label, {
-        fontSize: "8px",
-        color: "#64748b",
+        fontSize: "9px",
+        color: "#94a3b8",
+        fontFamily: "sans-serif",
+        fontStyle: "bold",
       }).setOrigin(0.5);
     }
 
     // 10. Posmatrači prate sa propisane udaljenosti (bez dodirivanja stola)
     const observerZone = this.add.graphics();
-    observerZone.lineStyle(1, 0x0284c7, 0.4);
-    observerZone.strokeRoundedRect(tableCenterX - 220, tableCenterY + 125, 440, 36, 6);
-    this.add.text(tableCenterX, tableCenterY + 130, "ZONA ZA POSMATRAČE (Prate bez dodirivanja materijala)", {
-      fontSize: "8px",
-      color: "#0284c7",
+    observerZone.lineStyle(1.5, 0x0284c7, 0.6);
+    observerZone.strokeRoundedRect(tableCenterX - 220, tableCenterY + 125, 440, 36, 8);
+    this.add.text(tableCenterX, tableCenterY + 130, "👁️ ZONA ZA POSMATRAČE (Nadzor bez fizičkog dodirivanja materijala)", {
+      fontSize: "9px",
+      color: "#38bdf8",
+      fontFamily: "sans-serif",
+      fontStyle: "bold",
     }).setOrigin(0.5);
 
     const observerAvatars = [tableCenterX - 100, tableCenterX, tableCenterX + 100];
@@ -199,5 +184,29 @@ export class CountingScene extends Phaser.Scene {
         title,
       });
     });
+  }
+
+  private createCountingBadge(x: number, y: number, label: string, color: string) {
+    const badge = this.add
+      .text(x, y, label, {
+        fontSize: "10px",
+        color,
+        fontFamily: "sans-serif",
+        fontStyle: "bold",
+        backgroundColor: "rgba(15, 23, 42, 0.88)",
+        padding: { x: 6, y: 2 },
+      })
+      .setOrigin(0.5);
+
+    this.tweens.add({
+      targets: badge,
+      alpha: 0.8,
+      duration: 1600,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
+
+    return badge;
   }
 }

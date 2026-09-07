@@ -1,61 +1,142 @@
-import { Clock3, Gavel, ShieldCheck, Sparkles } from "lucide-react";
+import {
+  Clock3,
+  Gavel,
+  ShieldCheck,
+  Sparkles,
+  Gamepad2,
+  FileCheck2,
+  Users,
+  Compass,
+  Zap,
+} from "lucide-react";
 import { SimulatorModeSelector } from "@/components/simulator/simulator-mode-selector";
 import { Container } from "@/components/ui/container";
 import { SIMULATOR_CHOICE_COUNT, SIMULATOR_EVENT_COUNT } from "@/lib/domain/simulator/seed-events";
 
 export const metadata = {
-  title: "Izborni dan - simulator smene",
+  title: "Izborni dan - 2D Simulator smene na biračkom mestu",
   description:
-    "Interaktivna smena na biračkom mestu: izaberi ulogu, donosi proceduralne odluke i na kraju proveri tok, evidenciju i pravila za ponavljanje.",
+    "Interaktivna smena na biračkom mestu u realnom vremenu: izaberi ulogu, donosi proceduralne odluke, uoči nepravilnosti u 2D prostoru i prebroj glasove uz Zapisnik BO.",
   alternates: { canonical: "/izborni-dan" },
 };
 
-const HIGHLIGHTS = [
+const STATS = [
   {
-    icon: Clock3,
-    title: "Smena, ne kviz",
-    body: `${SIMULATOR_EVENT_COUNT} situacija kroz hronološki tok dana, od pripreme biračkog mesta do zapisnika.`,
+    icon: Gamepad2,
+    label: "30 realnih situacija",
+    desc: "Od pripreme u 06:00 do noćnog brojanja",
   },
   {
-    icon: Gavel,
-    title: "Odluke ostavljaju trag",
-    body: `${SIMULATOR_CHOICE_COUNT} postupaka sa odloženim posledicama, vezanih za pravila iz baze.`,
+    icon: Users,
+    label: "3 perspektive",
+    desc: "Član biračkog odbora, Posmatrač, Birač",
   },
   {
-    icon: ShieldCheck,
-    title: "Praksa po ulozi",
-    body: "Član odbora, akreditovani posmatrač i birač dobijaju samo odluke koje mogu da donesu.",
+    icon: FileCheck2,
+    label: "Zapisnik & čl. 116",
+    desc: "Validacija kontrolnog lista i rubrike 1–7",
+  },
+  {
+    icon: Zap,
+    label: "Phaser 4 + XState 5",
+    desc: "Deterministički replay & offline spremnost",
+  },
+];
+
+const TIMELINE_STEPS = [
+  {
+    time: "06:00 – 07:00",
+    title: "Priprema biračkog mesta",
+    subtitle: "Uklanjanje izbornog materijala, provera prazne kutije i kontrolnog lista sa prvim biračem.",
+  },
+  {
+    time: "07:00 – 20:00",
+    title: "Tok glasanja uživo",
+    subtitle: "UV kontrola, provera isprava, birački spisak, nevidljivi sprej, paravani i ubacivanje listića.",
+  },
+  {
+    time: "20:00+",
+    title: "Prebrojavanje i Zapisnik BO",
+    subtitle: "Zatvaranje, kontrola neupotrebljenih listića, provera kutije, razvrstavanje i overa rezultata.",
   },
 ];
 
 export default function ElectionDayPage() {
   return (
-    <Container className="py-8 sm:py-12">
-      <div className="max-w-3xl">
-        <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1 text-xs font-semibold text-brand">
-          <Sparkles className="h-3.5 w-3.5" />
-          <span>Interaktivni simulator izbornog dana</span>
+    <Container className="py-6 sm:py-10">
+      {/* Hero sekcija sa bogatim vizuelnim elementima */}
+      <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-br from-surface via-surface to-surface-2 p-6 sm:p-10 shadow-2xl">
+        {/* Pozadinski sjaj */}
+        <div className="pointer-events-none absolute -top-32 -left-32 h-72 w-72 rounded-full bg-brand/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 -right-32 h-72 w-72 rounded-full bg-sky-500/15 blur-3xl" />
+
+        <div className="relative max-w-3xl">
+          <div className="inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/10 px-3.5 py-1 text-xs font-bold text-brand shadow-sm">
+            <Sparkles className="h-3.5 w-3.5 animate-pulse" />
+            <span>IZBORI 2026 • 2D SIMULACIJA BIRAČKOG MESTA UŽIVO</span>
+          </div>
+
+          <h1 className="mt-4 text-3xl font-black tracking-tight text-ink sm:text-5xl lg:text-6xl">
+            Izborni dan: <span className="text-brand">vežbaj smenu</span> u realnom vremenu
+          </h1>
+
+          <p className="mt-4 text-base leading-relaxed text-ink-dim sm:text-lg">
+            Doživi rad biračkog mesta kroz interaktivni 2D prostor. Izaberi ulogu, prati kretanje birača kroz stanice, uočavaj proceduralne nepravilnosti pod pritiskom vremena i prebroj glasove uz službenu forenziku Zapisnika biračkog odbora.
+          </p>
+
+          {/* Brzi bedževi / statistike */}
+          <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {STATS.map((s) => {
+              const Icon = s.icon;
+              return (
+                <div
+                  key={s.label}
+                  className="flex flex-col gap-1 rounded-2xl border border-border/70 bg-surface-2/60 p-3 backdrop-blur-sm"
+                >
+                  <div className="flex items-center gap-2 text-brand">
+                    <Icon className="h-4 w-4" />
+                    <span className="text-xs font-bold text-ink">{s.label}</span>
+                  </div>
+                  <span className="text-[11px] text-ink-dim leading-tight">{s.desc}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
-        <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-ink sm:text-5xl">Izborni dan: vežbaj smenu pre stvarnog biračkog mesta</h1>
-        <p className="mt-3 text-base leading-relaxed text-ink-dim sm:text-lg">
-          Izaberi svoju ulogu, prati raspored biračkog mesta i odlučuj u situacijama koje se menjaju tokom dana. Simulator ne zamenjuje službeno uputstvo - pomaže da ga primeniš pod pritiskom vremena.
-        </p>
+
+        {/* Hronološki mini tok izbornog dana */}
+        <div className="relative mt-8 pt-6 border-t border-border/60">
+          <div className="flex items-center gap-2 mb-3">
+            <Compass className="h-4 w-4 text-brand" />
+            <span className="text-xs font-bold uppercase tracking-wider text-ink">
+              Hronologija izbornog dana (06:00 – 20:00+)
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {TIMELINE_STEPS.map((step, idx) => (
+              <div
+                key={step.time}
+                className="flex flex-col gap-1 rounded-2xl border border-border/60 bg-surface/80 p-3.5 shadow-sm"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-bold text-brand">{step.time}</span>
+                  <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-bold text-ink-dim">
+                    Korak {idx + 1}
+                  </span>
+                </div>
+                <h2 className="text-sm font-bold text-ink mt-0.5">{step.title}</h2>
+                <p className="text-xs text-ink-dim leading-relaxed">{step.subtitle}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
-        {HIGHLIGHTS.map((item) => {
-          const Icon = item.icon;
-          return (
-            <div key={item.title} className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-2 text-brand"><Icon className="h-4.5 w-4.5" /></div>
-              <h2 className="mt-3 text-sm font-bold text-ink">{item.title}</h2>
-              <p className="mt-1 text-xs leading-relaxed text-ink-dim">{item.body}</p>
-            </div>
-          );
-        })}
+      {/* Simulator Mode Selector i Glavni Simulator */}
+      <div className="mt-8">
+        <SimulatorModeSelector />
       </div>
-
-      <div className="mt-8"><SimulatorModeSelector /></div>
     </Container>
   );
 }
