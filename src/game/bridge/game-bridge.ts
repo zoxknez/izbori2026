@@ -9,19 +9,19 @@ export interface GameBridge {
   destroy(): void;
 }
 
+type StoredHandler = (data: unknown) => void;
+
 /**
  * Fabrika za kreiranje instance-scoped GameBridge-a.
  * Svaka nova sesija simulatora dobija sopstveni bridge, što sprečava curenje
  * memorije i dupliciranje listenera pri unmount-u ili Fast Refresh-u.
  */
 export function createGameBridge(): GameBridge {
-  const listeners: {
-    [K in GameBridgeEventName]?: Set<EventHandler<GameBridgeEventMap[K]>>;
-  } = {};
+  const listeners = new Map<GameBridgeEventName, Set<StoredHandler>>();
 
   return {
     emit<K extends GameBridgeEventName>(event: K, data: GameBridgeEventMap[K]): void {
-      const set = listeners[event];
+      const set = listeners.get(event);
       if (set) {
         set.forEach((handler) => {
           try {
@@ -37,12 +37,15 @@ export function createGameBridge(): GameBridge {
       event: K,
       handler: EventHandler<GameBridgeEventMap[K]>,
     ): () => void {
-      if (!listeners[event]) {
-        listeners[event] = new Set();
+      const storedHandler = handler as unknown as StoredHandler;
+      let set = listeners.get(event);
+      if (!set) {
+        set = new Set<StoredHandler>();
+        listeners.set(event, set);
       }
-      listeners[event]!.add(handler);
+      set.add(storedHandler);
       return () => {
-        listeners[event]?.delete(handler);
+        set.delete(storedHandler);
       };
     },
 
@@ -50,14 +53,13 @@ export function createGameBridge(): GameBridge {
       event: K,
       handler: EventHandler<GameBridgeEventMap[K]>,
     ): void {
-      listeners[event]?.delete(handler);
+      const storedHandler = handler as unknown as StoredHandler;
+      listeners.get(event)?.delete(storedHandler);
     },
 
     destroy(): void {
-      for (const key of Object.keys(listeners) as GameBridgeEventName[]) {
-        listeners[key]?.clear();
-        delete listeners[key];
-      }
+      listeners.forEach((set) => set.clear());
+      listeners.clear();
     },
   };
 }

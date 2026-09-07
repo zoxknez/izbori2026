@@ -15,6 +15,7 @@ import { createSimulationState, resolveChoice } from "@/lib/domain/simulator/eng
 import { simulationEvents } from "@/lib/domain/simulator/seed-events";
 import type { GameActionLogEntry } from "@/game/machines/election-day.machine";
 import { createInitialPollSchedule } from "@/game/machines/election-day.machine";
+import type { SimulationMode } from "@/lib/domain/simulator/types";
 
 describe("GameSaveV2, GameSaveV1 & Deterministic Replay", () => {
   beforeEach(() => {

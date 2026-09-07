@@ -19,6 +19,7 @@ import {
   X,
   Lock,
   Bot,
+  Info,
 } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
 import { cn } from "@/lib/utils";
@@ -250,12 +251,21 @@ export function SiteSidebar() {
 
       {/* Bottom info & Privacy notice */}
       <div className="border-t border-border/70 pt-4 mt-6">
-        <div className="flex items-center gap-2 rounded-xl bg-surface-2 p-2.5 text-[11px] text-ink-dim">
-          <Lock className="h-3.5 w-3.5 shrink-0 text-brand" />
-          <span className="leading-tight">
-            100% lokalno. Nijedan podatak se ne šalje na server.
-          </span>
-        </div>
+        {pathname === "/zmai" ? (
+          <div className="flex items-center gap-2 rounded-xl bg-sky-500/10 border border-sky-500/20 p-2.5 text-[11px] text-sky-300">
+            <Info className="h-3.5 w-3.5 shrink-0 text-sky-400" />
+            <span className="leading-tight">
+              ZmAI je eksterni servis organizacije CRTA. Poruke unesene u chat obrađuju se na zmai.crta.rs.
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 rounded-xl bg-surface-2 p-2.5 text-[11px] text-ink-dim">
+            <Lock className="h-3.5 w-3.5 shrink-0 text-brand" />
+            <span className="leading-tight">
+              100% lokalno. Nijedan podatak se ne šalje na server.
+            </span>
+          </div>
+        )}
         <div className="mt-2.5 flex items-center justify-between px-1 text-[10px] text-ink-faint">
           <span>Izborna Kontrola · v2.4</span>
           <Link href="/" className="hover:text-ink" onClick={close}>

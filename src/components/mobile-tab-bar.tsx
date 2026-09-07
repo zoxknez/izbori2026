@@ -17,6 +17,10 @@ export function MobileTabBar() {
     { href: "/validator", label: "Validator", icon: Calculator },
   ];
 
+  if (pathname === "/zmai") {
+    return null;
+  }
+
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/85 lg:hidden"

@@ -7,7 +7,6 @@ import {
   RotateCcw,
   Sparkles,
   Info,
-  CheckCircle2,
   AlertCircle,
   HelpCircle,
 } from "lucide-react";
@@ -39,7 +38,7 @@ export function ZmaiEmbed() {
   };
 
   return (
-    <div className="flex h-[calc(100dvh-7rem)] sm:h-[calc(100dvh-3.5rem)] w-full flex-col overflow-hidden bg-canvas">
+    <div className="flex h-[calc(100dvh-3.5rem)] w-full flex-col overflow-hidden bg-canvas">
       {/* 1. MINIMALNI KONTROLNI HEADER */}
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border/80 bg-surface/90 px-4 py-2.5 backdrop-blur sm:px-6">
         {/* Leva strana: Naslov i bedž sa jasnom atribucijom */}
@@ -77,8 +76,8 @@ export function ZmaiEmbed() {
               </>
             ) : (
               <>
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                <span>Uživo sa zmai.crta.rs</span>
+                <div className="h-2 w-2 rounded-full bg-sky-400" />
+                <span>ZmAI embed pokrenut</span>
               </>
             )}
           </div>
