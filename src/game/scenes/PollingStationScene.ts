@@ -12,11 +12,18 @@ import {
   type Point2D,
 } from "@/game/world/routes";
 import type { VoterProfile } from "@/game/machines/voter.machine";
+import type { WorldIncidentPresentation } from "@/game/world/world-incident-presentation";
 
 interface VoterVisual {
   container: Phaser.GameObjects.Container;
   sprite: Phaser.GameObjects.Sprite;
   label: Phaser.GameObjects.Text;
+}
+
+interface IncidentVisual {
+  container: Phaser.GameObjects.Container;
+  incidentId: string;
+  presentation: WorldIncidentPresentation;
 }
 
 export class PollingStationScene extends Phaser.Scene {
@@ -38,6 +45,8 @@ export class PollingStationScene extends Phaser.Scene {
   private isSimPaused: boolean = false;
   private simSpeed: number = 1;
   private acceptingNewVoters = false;
+  private incidentVisuals = new Map<string, IncidentVisual>();
+  private unsubIncidentPresentations?: () => void;
 
   constructor() {
     super({ key: "PollingStationScene" });
@@ -74,6 +83,25 @@ export class PollingStationScene extends Phaser.Scene {
     this.unsubSpeed = this.bridge?.on("SPEED_CHANGED", (data) => {
       this.simSpeed = data.speed;
       this.isSimPaused = data.paused;
+    });
+
+    this.unsubIncidentPresentations = this.bridge?.on("WORLD_INCIDENT_PRESENTATIONS_CHANGED", ({ incidents }) => {
+      const incoming = new Map(incidents.map((incident) => [incident.instanceId, incident]));
+      for (const [instanceId, visual] of this.incidentVisuals) {
+        if (!incoming.has(instanceId)) {
+          if (visual.presentation.resolvedVisual.remove) {
+            visual.container.destroy();
+            this.incidentVisuals.delete(instanceId);
+          } else {
+            visual.container.setAlpha(0.35);
+          }
+        }
+      }
+      for (const incident of incidents) {
+        const existing = this.incidentVisuals.get(incident.instanceId);
+        if (existing) continue;
+        this.createIncidentVisual(incident.instanceId, incident.presentation);
+      }
     });
 
     this.unsubSnapshot = this.bridge?.on("REQUEST_WORLD_SNAPSHOT", () => {
@@ -124,6 +152,7 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubSnapshot?.();
       this.unsubRestore?.();
       this.unsubPhase?.();
+      this.unsubIncidentPresentations?.();
     });
 
     this.events.on("destroy", () => {
@@ -132,6 +161,7 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubSnapshot?.();
       this.unsubRestore?.();
       this.unsubPhase?.();
+      this.unsubIncidentPresentations?.();
     });
 
     // 1. Pod biračkog mesta
@@ -306,6 +336,30 @@ export class PollingStationScene extends Phaser.Scene {
 
     const entity = this.npcManager.spawnVoter(nextProfile);
     this.createVoterVisual(entity);
+  }
+
+  private createIncidentVisual(incidentId: string, presentation: WorldIncidentPresentation) {
+    const { x, y } = presentation.visual.anchor;
+    const color = presentation.attention.awareness === "high" ? 0xf59e0b : presentation.attention.awareness === "medium" ? 0x38bdf8 : 0xa78bfa;
+    const container = this.add.container(x, y).setDepth(30);
+    const ring = this.add.graphics();
+    ring.lineStyle(2, color, 0.85);
+    ring.strokeCircle(0, 0, 28);
+    const badge = this.add.text(0, -40, `! ${presentation.attention.label}`, {
+      fontSize: "10px", color: "#f8fafc", fontFamily: "sans-serif", fontStyle: "bold",
+      backgroundColor: "rgba(15, 23, 42, 0.9)", padding: { x: 5, y: 3 },
+    }).setOrigin(0.5);
+    container.add([ring, badge]);
+    if (presentation.attention.pulse) {
+      this.tweens.add({ targets: ring, alpha: 0.35, scale: 1.18, duration: 1200, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
+    }
+    container.setInteractive(new Phaser.Geom.Circle(0, 0, 34), Phaser.Geom.Circle.Contains);
+    container.on("pointerdown", () => this.bridge?.emit("HOTSPOT_CLICKED", {
+      hotspotId: presentation.eventId === "E12" ? "booth-angle" : presentation.eventId === "E01" ? "hallway-poster" : presentation.eventId === "E04" ? "empty-box" : presentation.eventId === "E07" ? "uv-lamp-check" : "observer-desk",
+      locationId: presentation.locationId,
+      title: presentation.attention.label,
+    }));
+    this.incidentVisuals.set(incidentId, { container, incidentId, presentation });
   }
 
   private createVoterVisual(entity: ActiveVoterEntity, savedPosition?: Partial<Point2D>) {

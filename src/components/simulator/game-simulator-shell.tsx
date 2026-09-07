@@ -51,6 +51,7 @@ import {
   getRoleGuidance,
 } from "@/lib/domain/simulator/role-permissions";
 import { cn } from "@/lib/utils";
+import { getWorldIncidentPresentation } from "@/game/world/world-incident-presentation";
 
 interface GameSimulatorShellProps {
   initialRole?: SimulationRole;
@@ -310,6 +311,15 @@ export function GameSimulatorShell({
       acceptingNewVoters: context.currentPhase === "voting",
     });
   }, [bridge, context.currentPhase, context.simulationTimeMs, context.paused, context.systemPaused, context.speed]);
+
+  useEffect(() => {
+    bridge.emit("WORLD_INCIDENT_PRESENTATIONS_CHANGED", {
+      incidents: context.activeIncidents.map((incident) => ({
+        ...incident,
+        presentation: getWorldIncidentPresentation(incident),
+      })),
+    });
+  }, [bridge, context.activeIncidents]);
 
   useEffect(() => {
     const unsubWorldReady = bridge.on("WORLD_READY", () => {

@@ -4,6 +4,7 @@ import type {
   EvidenceRecord,
   GameActionLogEntry,
 } from "@/lib/domain/simulator/live-types";
+import type { WorldIncidentPresentation } from "@/game/world/world-incident-presentation";
 
 /**
  * Tipizirani događaji koje GameBridge razmenjuje između
@@ -39,6 +40,7 @@ export interface GameBridgeEventMap {
   SPEED_CHANGED: { speed: 1 | 2 | 4; paused: boolean };
   DOMAIN_STATE_CHANGED: { domainState: SimulationState };
   ACTIVE_INCIDENTS_CHANGED: { incidents: ActiveIncident[] };
+  WORLD_INCIDENT_PRESENTATIONS_CHANGED: { incidents: Array<ActiveIncident & { presentation: WorldIncidentPresentation }> };
   INCIDENT_EXPIRED: { incident: ActiveIncident };
   EVIDENCE_ADDED: { record: EvidenceRecord };
   ACTION_LOGGED: { entry: GameActionLogEntry };
