@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, FileText, Plus, ShieldAlert, X, Users, MapPin, Clock } from "lucide-react";
 import type { EvidenceRecord } from "@/lib/domain/simulator/live-types";
 import type { SimulationRole } from "@/lib/domain/simulator/types";
@@ -55,6 +55,10 @@ export function EvidenceTray({
   const [assumptions, setAssumptions] = useState<string[]>([]);
   const [selectedWitnesses, setSelectedWitnesses] = useState<string[]>([]);
 
+  useEffect(() => {
+    setLocationId(selectedLocationId);
+  }, [selectedLocationId]);
+
   if (!isOpen) return null;
 
   const handleAddFact = () => {
@@ -81,7 +85,9 @@ export function EvidenceTray({
     if (facts.length === 0 && assumptions.length === 0) return;
 
     const newRecord: EvidenceRecord = {
-      id: `ev-${Date.now()}`,
+      // Evidence IDs are part of the persisted replay surface. Keep them
+      // deterministic instead of coupling them to wall-clock time.
+      id: `ev-${currentSimulationTimeMs}-${evidenceList.length + 1}`,
       simulationTimeMs: currentSimulationTimeMs,
       timestamp: currentClock,
       locationId,

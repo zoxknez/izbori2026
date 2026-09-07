@@ -322,6 +322,10 @@ export function GameSimulatorShell({
   }, [bridge, context.activeIncidents]);
 
   useEffect(() => {
+    bridge.emit("EVIDENCE_MARKERS_CHANGED", { records: context.evidenceNotebook });
+  }, [bridge, context.evidenceNotebook]);
+
+  useEffect(() => {
     const unsubWorldReady = bridge.on("WORLD_READY", () => {
       send({ type: "WORLD_READY" });
       if (activeSaveRef.current?.version === 2) {

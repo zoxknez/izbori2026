@@ -44,6 +44,7 @@ export interface GameBridgeEventMap {
   WORLD_INCIDENT_PRESENTATIONS_CHANGED: { incidents: Array<ActiveIncident & { presentation: WorldIncidentPresentation }> };
   INCIDENT_EXPIRED: { incident: ActiveIncident };
   EVIDENCE_ADDED: { record: EvidenceRecord };
+  EVIDENCE_MARKERS_CHANGED: { records: EvidenceRecord[] };
   ACTION_LOGGED: { entry: GameActionLogEntry };
 
   // Komande interfejsa i scene:

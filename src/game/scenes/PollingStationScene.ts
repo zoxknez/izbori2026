@@ -13,6 +13,7 @@ import {
 } from "@/game/world/routes";
 import type { VoterProfile } from "@/game/machines/voter.machine";
 import type { WorldIncidentPresentation } from "@/game/world/world-incident-presentation";
+import type { EvidenceRecord } from "@/lib/domain/simulator/live-types";
 
 interface VoterVisual {
   container: Phaser.GameObjects.Container;
@@ -24,6 +25,11 @@ interface IncidentVisual {
   container: Phaser.GameObjects.Container;
   incidentId: string;
   presentation: WorldIncidentPresentation;
+}
+
+interface EvidenceMarkerVisual {
+  container: Phaser.GameObjects.Container;
+  recordId: string;
 }
 
 export class PollingStationScene extends Phaser.Scene {
@@ -48,6 +54,8 @@ export class PollingStationScene extends Phaser.Scene {
   private incidentVisuals = new Map<string, IncidentVisual>();
   private unsubIncidentPresentations?: () => void;
   private unsubFocusLocation?: () => void;
+  private unsubEvidenceMarkers?: () => void;
+  private evidenceMarkerVisuals = new Map<string, EvidenceMarkerVisual>();
 
   constructor() {
     super({ key: "PollingStationScene" });
@@ -108,6 +116,18 @@ export class PollingStationScene extends Phaser.Scene {
       const point = x !== undefined && y !== undefined ? { x, y } : this.getLocationFocusPoint(locationId);
       this.cameras.main.pan(point.x, point.y, 450, "Sine.easeInOut");
     });
+    this.unsubEvidenceMarkers = this.bridge?.on("EVIDENCE_MARKERS_CHANGED", ({ records }) => {
+      const incoming = new Map(records.map((record) => [record.id, record]));
+      for (const [recordId, marker] of this.evidenceMarkerVisuals) {
+        if (!incoming.has(recordId)) {
+          marker.container.destroy();
+          this.evidenceMarkerVisuals.delete(recordId);
+        }
+      }
+      for (const record of records) {
+        if (!this.evidenceMarkerVisuals.has(record.id)) this.createEvidenceMarker(record);
+      }
+    });
 
     this.unsubSnapshot = this.bridge?.on("REQUEST_WORLD_SNAPSHOT", () => {
       const activeVoters = this.npcManager.getAllActiveVoters().map((v) => {
@@ -159,6 +179,9 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubPhase?.();
       this.unsubIncidentPresentations?.();
       this.unsubFocusLocation?.();
+      this.unsubEvidenceMarkers?.();
+      for (const marker of this.evidenceMarkerVisuals.values()) marker.container.destroy();
+      this.evidenceMarkerVisuals.clear();
     });
 
     this.events.on("destroy", () => {
@@ -169,6 +192,9 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubPhase?.();
       this.unsubIncidentPresentations?.();
       this.unsubFocusLocation?.();
+      this.unsubEvidenceMarkers?.();
+      for (const marker of this.evidenceMarkerVisuals.values()) marker.container.destroy();
+      this.evidenceMarkerVisuals.clear();
     });
 
     // 1. Pod biračkog mesta
@@ -362,11 +388,33 @@ export class PollingStationScene extends Phaser.Scene {
     }
     container.setInteractive(new Phaser.Geom.Circle(0, 0, 34), Phaser.Geom.Circle.Contains);
     container.on("pointerdown", () => this.bridge?.emit("HOTSPOT_CLICKED", {
-      hotspotId: presentation.eventId === "E12" ? "booth-angle" : presentation.eventId === "E01" ? "hallway-poster" : presentation.eventId === "E04" ? "empty-box" : presentation.eventId === "E07" ? "uv-lamp-check" : "observer-desk",
+      hotspotId: presentation.hotspotTarget,
       locationId: presentation.locationId,
       title: presentation.attention.label,
     }));
     this.incidentVisuals.set(incidentId, { container, incidentId, presentation });
+  }
+
+  private createEvidenceMarker(record: EvidenceRecord) {
+    const point = this.getLocationFocusPoint(record.locationId);
+    const container = this.add.container(point.x + 18, point.y - 18).setDepth(40);
+    const pin = this.add.graphics();
+    pin.fillStyle(0x10b981, 0.95);
+    pin.fillCircle(0, 0, 9);
+    pin.lineStyle(2, 0xecfdf5, 0.95);
+    pin.strokeCircle(0, 0, 9);
+    const label = this.add.text(0, -22, "✓ dokaz", {
+      fontSize: "9px", color: "#d1fae5", fontFamily: "sans-serif", fontStyle: "bold",
+      backgroundColor: "rgba(6, 78, 59, 0.92)", padding: { x: 4, y: 2 },
+    }).setOrigin(0.5);
+    container.add([pin, label]);
+    container.setInteractive(new Phaser.Geom.Circle(0, 0, 14), Phaser.Geom.Circle.Contains);
+    container.on("pointerdown", () => this.bridge?.emit("HOTSPOT_CLICKED", {
+      hotspotId: `evidence-${record.id}`,
+      locationId: record.locationId,
+      title: `Dokaz zabeležen u ${record.timestamp}`,
+    }));
+    this.evidenceMarkerVisuals.set(record.id, { container, recordId: record.id });
   }
 
   private getLocationFocusPoint(locationId: string): Point2D {
