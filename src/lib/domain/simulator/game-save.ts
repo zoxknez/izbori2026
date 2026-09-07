@@ -61,6 +61,8 @@ export interface GameSaveV2 {
   boardProtocol?: BoardProtocol;
   observerRecord?: ObserverPresenceRecord;
   countingSession?: CountingSession;
+  activeIncidentIds?: string[];
+  missedIncidentIds?: string[];
   stateHash: string;
 }
 
@@ -212,6 +214,21 @@ export async function loadGameSession(): Promise<GameSaveV2 | GameSaveV1 | null>
   try {
     const rawV2 = await readOfflineValue<unknown>("simulationHistory", GAME_SAVE_STORAGE_KEY_V2);
     if (isValidGameSaveV2(rawV2)) {
+      const expectedHash = await computeCanonicalStateHash({
+        runId: rawV2.runId,
+        seed: rawV2.seed,
+        simulationTimeMs: rawV2.simulationTimeMs,
+        scores: rawV2.domainState.scores,
+        flags: rawV2.domainState.flags,
+        actionLogLength: rawV2.actionLog.length,
+        pollSchedule: rawV2.pollSchedule,
+        decisionHistory: rawV2.domainState.history,
+        activeIncidentIds: rawV2.activeIncidentIds,
+        missedIncidentIds: rawV2.missedIncidentIds,
+        boardProtocol: rawV2.boardProtocol,
+        rngState: rawV2.worldSimulation.rngState,
+      });
+      if (expectedHash !== rawV2.stateHash) return null;
       return rawV2;
     }
     const rawV1 = await readOfflineValue<unknown>("simulationHistory", GAME_SAVE_STORAGE_KEY_V1);

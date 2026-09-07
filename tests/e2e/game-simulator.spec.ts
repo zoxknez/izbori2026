@@ -165,7 +165,7 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     const replayModal = page.getByTestId("replay-modal");
     await expect(replayModal).toBeVisible();
     await expect(replayModal.getByText(/Replay & Revizija toka glasanja/i)).toBeVisible();
-    await expect(replayModal.getByText(/100% Deterministički paritet/i)).toBeVisible();
+    await expect(replayModal.getByText(/Domain replay paritet potvrđen/i)).toBeVisible();
 
     // Zatvaramo Replay modal
     await replayModal.getByRole("button", { name: "Zatvori" }).click();

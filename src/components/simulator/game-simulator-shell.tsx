@@ -171,6 +171,8 @@ export function GameSimulatorShell({
           boardProtocol: context.boardProtocol,
           observerRecord: context.observerRecord,
           countingSession: context.countingSession,
+          activeIncidentIds: context.activeIncidents.map((incident) => incident.instanceId),
+          missedIncidentIds: context.missedIncidents.map((incident) => incident.instanceId),
           stateHash: hash,
         };
 
@@ -244,6 +246,8 @@ export function GameSimulatorShell({
       boardProtocol: context.boardProtocol,
       observerRecord: context.observerRecord,
       countingSession: context.countingSession,
+      activeIncidentIds: context.activeIncidents.map((incident) => incident.instanceId),
+      missedIncidentIds: context.missedIncidents.map((incident) => incident.instanceId),
       stateHash: hash,
     };
     await saveGameSession(saveObj);
@@ -342,6 +346,11 @@ export function GameSimulatorShell({
       lastRealTime = now;
       send({ type: "TICK", deltaRealMs });
     }, 100);
+    const snapshotIntervalId = window.setInterval(() => {
+      bridge.emit("REQUEST_WORLD_SNAPSHOT", {});
+    }, 5000);
+    const handlePageHide = () => bridge.emit("REQUEST_WORLD_SNAPSHOT", {});
+    window.addEventListener("pagehide", handlePageHide);
 
     return () => {
       unsubWorldReady();
@@ -349,6 +358,8 @@ export function GameSimulatorShell({
       unsubClick();
       unsubNpcMetrics();
       clearInterval(intervalId);
+      clearInterval(snapshotIntervalId);
+      window.removeEventListener("pagehide", handlePageHide);
       bridge.destroy();
     };
   }, [bridge, send]);

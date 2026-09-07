@@ -126,6 +126,7 @@ describe("GameSaveV2, GameSaveV1 & Deterministic Replay", () => {
       flags: domainState.flags,
       actionLogLength: actionLog.length,
       pollSchedule,
+      rngState: 9999,
     });
 
     const saveObj: GameSaveV2 = {
