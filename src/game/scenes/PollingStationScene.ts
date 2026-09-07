@@ -67,6 +67,7 @@ export class PollingStationScene extends Phaser.Scene {
   private unsubAudioCue?: () => void;
   private reducedMotion = false;
   private roleLens?: Phaser.GameObjects.Text;
+  private phaseStatus?: Phaser.GameObjects.Text;
   private unsubRole?: () => void;
 
   constructor() {
@@ -98,8 +99,9 @@ export class PollingStationScene extends Phaser.Scene {
       }
     });
 
-    this.unsubPhase = this.bridge?.on("PHASE_CHANGED", ({ acceptingNewVoters }) => {
+    this.unsubPhase = this.bridge?.on("PHASE_CHANGED", ({ phase, acceptingNewVoters }) => {
       this.acceptingNewVoters = acceptingNewVoters;
+      this.updatePhasePresentation(phase);
     });
     this.unsubAudioSettings = this.bridge?.on("AUDIO_SETTINGS_CHANGED", (settings) => this.audio.setSettings(settings));
     this.unsubAudioCue = this.bridge?.on("AUDIO_CUE_REQUESTED", ({ cue }) => this.audio.play(cue));
@@ -258,6 +260,11 @@ export class PollingStationScene extends Phaser.Scene {
     this.createHeaderPill(85, 34, "🚪 ULAZ / HODNIK", "#38bdf8");
     this.createHeaderPill(width - 70, 34, "🚶 IZLAZ", "#10b981");
     this.createHeaderPill(width / 2, 34, "🏛️ BIRAČKO MESTO BR. 14", "#f1f5f9", 0.95);
+    this.phaseStatus = this.add.text(width - 190, height - 30, "FAZA · PRIPREMA", {
+      fontSize: "10px", color: "#bae6fd", fontFamily: "sans-serif", fontStyle: "bold",
+      backgroundColor: "rgba(15, 23, 42, 0.9)", padding: { x: 7, y: 3 },
+    }).setOrigin(1, 0.5).setDepth(60);
+    this.updatePhasePresentation("pre_opening");
     this.roleLens = this.add.text(28, height - 30, "PERSPEKTIVA · ČLAN BO", {
       fontSize: "10px", color: "#fbbf24", fontFamily: "sans-serif", fontStyle: "bold",
       backgroundColor: "rgba(15, 23, 42, 0.9)", padding: { x: 7, y: 3 },
@@ -572,6 +579,24 @@ export class PollingStationScene extends Phaser.Scene {
     };
     const next = details[role];
     this.roleLens.setText(next.label).setColor(next.color);
+  }
+
+  private updatePhasePresentation(
+    phase: "pre_opening" | "voting" | "closing" | "counting" | "protocol" | "handover" | "debrief" | "closed",
+  ) {
+    if (!this.phaseStatus) return;
+    const details: Record<typeof phase, { label: string; color: string }> = {
+      pre_opening: { label: "FAZA · PRIPREMA", color: "#bae6fd" },
+      voting: { label: "FAZA · GLASANJE", color: "#6ee7b7" },
+      closing: { label: "FAZA · ZATVARANJE · RED SE PRAZNI", color: "#fbbf24" },
+      counting: { label: "FAZA · PREBROJAVANJE", color: "#7dd3fc" },
+      protocol: { label: "FAZA · ZAPISNIK", color: "#c4b5fd" },
+      handover: { label: "FAZA · PRIMOPREDAJA", color: "#a7f3d0" },
+      debrief: { label: "FAZA · DEBRIEF", color: "#f0abfc" },
+      closed: { label: "FAZA · ZATVORENO", color: "#94a3b8" },
+    };
+    const next = details[phase];
+    this.phaseStatus.setText(next.label).setColor(next.color);
   }
 
   private createVoterVisual(entity: ActiveVoterEntity, savedPosition?: Partial<Point2D>) {
