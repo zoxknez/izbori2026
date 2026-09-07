@@ -29,9 +29,9 @@ describe("service worker lifecycle policy", () => {
     expect(worker).toContain('url.pathname.startsWith("/api/auth")');
   });
 
-  it("precache-uje ključne offline rute uključujući simulator i trening", () => {
+  it("precache-uje ključne offline rute uključujući izborni dan i trening", () => {
     const worker = readFileSync(resolve(process.cwd(), "public/sw.js"), "utf8");
-    for (const route of ["/vidim-problem", "/kontrolor", "/prijavi", "/izvori", "/trening/kviz", "/simulator/biracki-dan", "/offline"]) {
+    for (const route of ["/vidim-problem", "/kontrolor", "/prijavi", "/izvori", "/trening/kviz", "/izborni-dan", "/offline"]) {
       expect(worker).toContain(`"${route}"`);
     }
   });

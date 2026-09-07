@@ -18,6 +18,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/prijavi": "Generator hronologije i primedbe",
   "/rokovi": "Izborni rokovi i pravni lekovi",
   "/izvori": "Zvanični pravni izvori i propisi",
+  "/izborni-dan": "Izborni dan - simulacija",
 };
 
 export function SiteHeader() {

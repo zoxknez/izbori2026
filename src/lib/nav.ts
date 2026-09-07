@@ -5,7 +5,7 @@ export const NAV_LINKS = [
   { href: "/kontrolor", label: "Kontrolor" },
   { href: "/validator", label: "Validator zapisnika" },
   { href: "/trening/kviz", label: "Trening / Kviz" },
-  { href: "/simulator/biracki-dan", label: "Simulator biračkog dana" },
+  { href: "/izborni-dan", label: "Izborni dan - simulacija" },
   { href: "/van-birackog-mesta", label: "Glasanje van BM" },
   { href: "/krivicna-dela", label: "Krivična dela" },
   { href: "/mit-ili-cinjenica", label: "Mit ili činjenica" },

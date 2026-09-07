@@ -9,10 +9,13 @@ import {
   BookOpen,
   Calculator,
   CheckCircle2,
+  ClipboardList,
   ChevronRight,
   Clock,
+  DoorOpen,
   Eye,
   Gavel,
+  MapPinned,
   NotebookPen,
   RotateCcw,
   ShieldAlert,
@@ -65,16 +68,62 @@ const ROLE_DESCRIPTION: Record<SimulationRole, string> = {
   birac: "Kratak tok: doživljavaš dan kroz svoje pravo glasa i odluke koje čuvaju tvoj glas.",
 };
 
-const MODE_LABEL: Record<SimulationMode, { title: string; hint: string }> = {
-  guided: { title: "Vođeni dan", hint: "Hronološki tok, puna povratna informacija" },
-  randomized: { title: "Nasumični dan", hint: "Isti događaji, nepredvidiv redosled" },
-  hard: { title: "Teški režim", hint: "Duple kazne za pogrešne odluke" },
+type TrainingMode = "guided" | "realistic" | "stress" | "final";
+
+const TRAINING_MODE: Record<TrainingMode, { title: string; hint: string; engineMode: SimulationMode; showFeedback: boolean }> = {
+  guided: {
+    title: "Vođena obuka",
+    hint: "Hronološki tok sa objašnjenjem odmah nakon odluke.",
+    engineMode: "guided",
+    showFeedback: true,
+  },
+  realistic: {
+    title: "Realna smena",
+    hint: "Hronološki tok bez otkrivanja tačnosti dok smena ne bude završena.",
+    engineMode: "guided",
+    showFeedback: false,
+  },
+  stress: {
+    title: "Stres test",
+    hint: "Pogrešne odluke imaju dvostruki uticaj na rezultat.",
+    engineMode: "hard",
+    showFeedback: false,
+  },
+  final: {
+    title: "Završni trening",
+    hint: "Nepredvidiv redosled situacija, bez trenutnih rešenja.",
+    engineMode: "randomized",
+    showFeedback: false,
+  },
+};
+
+const STATIONS = [
+  { id: "ulaz", label: "Ulaz" },
+  { id: "uv", label: "UV" },
+  { id: "identitet", label: "Identitet" },
+  { id: "spisak", label: "Spisak" },
+  { id: "sprej", label: "Sprej" },
+  { id: "listic", label: "Listić" },
+  { id: "paravan", label: "Paravan" },
+  { id: "kutija", label: "Kutija" },
+] as const;
+
+const ACTIVE_STATIONS: Record<string, readonly string[]> = {
+  pre_otvaranja: ["ulaz", "kutija"],
+  identifikacija: ["uv", "identitet", "spisak", "sprej", "listic"],
+  glasanje: ["paravan", "kutija"],
+  van_birackog_mesta: ["ulaz", "spisak", "listic"],
+  zatvaranje: ["ulaz", "kutija"],
+  brojanje: ["kutija"],
+  zapisnik: ["spisak", "kutija"],
+  svaka: ["ulaz", "paravan", "kutija"],
 };
 
 const SAVE_KEY = "latest-run";
 
 interface SavedRun {
   state: SimulationState;
+  trainingMode?: TrainingMode;
   savedAt: string;
 }
 
@@ -104,6 +153,75 @@ function DayTimeline({ state, total }: { state: SimulationState; total: number }
         />
       </div>
     </div>
+  );
+}
+
+interface EvidenceItem {
+  id: string;
+  time: string;
+  title: string;
+  type: "beleška" | "primedba" | "provera";
+}
+
+function evidenceForRun(state: SimulationState, eventMap: Map<string, SimulationEvent>): EvidenceItem[] {
+  return state.history.flatMap((decision) => {
+    const event = eventMap.get(decision.eventId);
+    const choice = event?.choices.find((candidate) => candidate.id === decision.choiceId);
+    if (!choice || (choice.effects.evidenceDelta ?? 0) <= 0) return [];
+
+    const type: EvidenceItem["type"] = event?.phase === "zapisnik" ? "primedba" : decision.outcome === "prevented" ? "provera" : "beleška";
+    return [{ id: `${decision.eventId}:${decision.choiceId}`, time: decision.time, title: decision.eventTitle, type }];
+  });
+}
+
+function EvidenceTray({ items, count, compact = false }: { items: EvidenceItem[]; count: number; compact?: boolean }) {
+  return (
+    <section aria-label="Evidenciona fascikla" className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
+      <div className="flex items-center justify-between gap-3">
+        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink">
+          <ClipboardList className="h-4 w-4 text-brand" /> Evidenciona fascikla
+        </p>
+        <span className="rounded-full border border-brand/20 bg-brand/10 px-2 py-0.5 text-xs font-bold text-brand">{count}</span>
+      </div>
+      {items.length > 0 ? (
+        <ul className={cn("mt-3 space-y-2", compact && "max-h-28 overflow-y-auto pr-1")}>
+          {items.map((item) => (
+            <li key={item.id} className="flex gap-2 rounded-xl bg-surface-2 px-2.5 py-2 text-xs">
+              <span className="font-mono font-bold text-brand">{item.time}</span>
+              <span className="min-w-0 text-ink-dim"><strong className="font-semibold text-ink">{item.type}</strong> · {item.title}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-3 text-xs leading-relaxed text-ink-faint">Zabeleži trag kada je to dozvoljeno i važno za kasniji zapisnik ili prigovor.</p>
+      )}
+    </section>
+  );
+}
+
+function PollingPlaceMap({ phase }: { phase: string }) {
+  const active = new Set(ACTIVE_STATIONS[phase] ?? []);
+  return (
+    <section aria-label="Raspored biračkog mesta" className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
+      <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink">
+        <MapPinned className="h-4 w-4 text-brand" /> Raspored biračkog mesta
+      </p>
+      <p className="mt-1 text-xs text-ink-faint">Aktivna zona prati trenutnu radnju.</p>
+      <div className="mt-3 grid grid-cols-4 gap-1.5 sm:grid-cols-8">
+        {STATIONS.map((station, index) => {
+          const isActive = active.has(station.id);
+          return (
+            <div key={station.id} className="min-w-0">
+              <div className={cn("flex h-8 items-center justify-center rounded-lg border text-[10px] font-extrabold", isActive ? "border-brand bg-brand text-brand-ink" : "border-border bg-surface-2 text-ink-faint")}>
+                {index + 1}
+              </div>
+              <p className={cn("mt-1 truncate text-center text-[9px] font-semibold", isActive ? "text-brand" : "text-ink-faint")}>{station.label}</p>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-3 flex items-center gap-1.5 text-[11px] text-ink-faint"><DoorOpen className="h-3.5 w-3.5" /> Ulaz → UV → identitet → spisak → sprej → listić → paravan → kutija</div>
+    </section>
   );
 }
 
@@ -195,10 +313,11 @@ function CountingPanel({ event }: { event: SimulationEvent }) {
 export function SimulationGame() {
   const [role, setRole] = useState<SimulationRole>("clan_odbora");
   const [electionType, setElectionType] = useState<SimulationElectionType>("narodni_poslanici");
-  const [mode, setMode] = useState<SimulationMode>("guided");
+  const [trainingMode, setTrainingMode] = useState<TrainingMode>("guided");
   const [state, setState] = useState<SimulationState | null>(null);
   const [feedback, setFeedback] = useState<SimulationChoice | null>(null);
   const [resumable, setResumable] = useState<SavedRun | null>(null);
+  const [showShiftLog, setShowShiftLog] = useState(false);
 
   const eventMap = useMemo(() => new Map(simulationEvents.map((event) => [event.id, event])), []);
   const event = state ? eventMap.get(state.currentEventId) : undefined;
@@ -206,6 +325,7 @@ export function SimulationGame() {
   const totalEvents = state
     ? state.allowedEventIds?.length ?? eventsForRole(simulationEvents, state.role).length
     : eventsForRole(simulationEvents, role).length;
+  const evidenceItems = useMemo(() => (state ? evidenceForRun(state, eventMap) : []), [eventMap, state]);
 
   useEffect(() => {
     let cancelled = false;
@@ -224,22 +344,23 @@ export function SimulationGame() {
 
   const persist = useCallback(async (next: SimulationState) => {
     try {
-      await writeOfflineValue("simulationHistory", SAVE_KEY, { state: next, savedAt: new Date().toISOString() });
+      await writeOfflineValue("simulationHistory", SAVE_KEY, { state: next, trainingMode, savedAt: new Date().toISOString() });
       await setDraftInProgress("simulation", !next.finished);
     } catch {
       /* bez lokalnog skladišta simulacija ostaje samo u memoriji */
     }
-  }, []);
+  }, [trainingMode]);
 
   function start(setup: { role?: SimulationRole; mode?: SimulationMode; onlyEventIds?: string[] } = {}) {
     const next = createSimulationState(simulationEvents, {
       role: setup.role ?? role,
       electionType,
-      mode: setup.mode ?? mode,
+      mode: setup.mode ?? TRAINING_MODE[trainingMode].engineMode,
       randomSeed: Math.floor(Math.random() * 1_000_000),
       onlyEventIds: setup.onlyEventIds,
     });
     setFeedback(null);
+    setShowShiftLog(false);
     setResumable(null);
     setState(next);
     void persist(next);
@@ -248,6 +369,12 @@ export function SimulationGame() {
   /** Prvo se prikazuje ocena odluke; tok se pomera tek kada korisnik potvrdi. */
   function choose(choice: SimulationChoice) {
     if (!state || !event || feedback) return;
+    if (!TRAINING_MODE[trainingMode].showFeedback) {
+      const next = applyChoice(state, event, choice, simulationEvents);
+      setState(next);
+      void persist(next);
+      return;
+    }
     setFeedback(choice);
   }
 
@@ -279,6 +406,7 @@ export function SimulationGame() {
               type="button"
               onClick={() => {
                 setState(resumable.state);
+                setTrainingMode(resumable.trainingMode ?? (resumable.state.mode === "hard" ? "stress" : resumable.state.mode === "randomized" ? "final" : "guided"));
                 setResumable(null);
               }}
               className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-bold text-brand-ink"
@@ -340,18 +468,18 @@ export function SimulationGame() {
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-brand">Korak 3 · Režim</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              {(Object.keys(MODE_LABEL) as SimulationMode[]).map((candidate) => (
+              {(Object.keys(TRAINING_MODE) as TrainingMode[]).map((candidate) => (
                 <button
                   key={candidate}
                   type="button"
-                  onClick={() => setMode(candidate)}
-                  title={MODE_LABEL[candidate].hint}
+                  onClick={() => setTrainingMode(candidate)}
+                  title={TRAINING_MODE[candidate].hint}
                   className={cn(
                     "rounded-xl border px-3 py-2 text-xs font-semibold transition-colors",
-                    mode === candidate ? "border-brand bg-brand/10 text-brand" : "border-border bg-surface text-ink-dim hover:text-ink",
+                    trainingMode === candidate ? "border-brand bg-brand/10 text-brand" : "border-border bg-surface text-ink-dim hover:text-ink",
                   )}
                 >
-                  {MODE_LABEL[candidate].title}
+                  {TRAINING_MODE[candidate].title}
                 </button>
               ))}
             </div>
@@ -378,7 +506,7 @@ export function SimulationGame() {
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
         <div className="rounded-3xl border border-border bg-surface p-6 text-center shadow-card sm:p-10">
           <Award className="mx-auto h-10 w-10 text-brand" />
-          <p className="mt-3 text-xs font-bold uppercase tracking-wider text-brand">Birački dan završen</p>
+          <p className="mt-3 text-xs font-bold uppercase tracking-wider text-brand">Birački dan završen · izveštaj o smeni</p>
           <motion.p
             initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -391,6 +519,8 @@ export function SimulationGame() {
             {SIMULATION_ROLE_LABELS[state.role]} · {state.history.length} odluka · {debrief.evidence} sačuvanih beleški
           </p>
         </div>
+
+        <EvidenceTray items={evidenceItems} count={debrief.evidence} />
 
         <div className="grid gap-2 sm:grid-cols-2">
           {debrief.categories.map((category, index) => (
@@ -467,6 +597,28 @@ export function SimulationGame() {
           </div>
         )}
 
+        <div className="rounded-2xl border border-border bg-surface p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-bold text-ink">Tok cele smene</p>
+              <p className="mt-1 text-xs text-ink-faint">Vreme, odluka i posledica ostaju pregledni i nakon završetka.</p>
+            </div>
+            <button type="button" onClick={() => setShowShiftLog((visible) => !visible)} className="rounded-xl border border-border bg-surface-2 px-3 py-2 text-xs font-bold text-ink hover:border-brand/40">
+              {showShiftLog ? "Sakrij tok" : "Prikaži tok"}
+            </button>
+          </div>
+          {showShiftLog ? (
+            <ol className="mt-4 max-h-80 space-y-2 overflow-y-auto pr-1">
+              {state.history.map((decision) => (
+                <li key={`${decision.eventId}:${decision.choiceId}`} className="grid grid-cols-[3rem_1fr] gap-2 rounded-xl bg-surface-2 p-3 text-xs">
+                  <span className="font-mono font-bold text-brand">{decision.time}</span>
+                  <span><strong className="text-ink">{decision.eventTitle}</strong><span className="block mt-0.5 text-ink-dim">{decision.choiceLabel}</span></span>
+                </li>
+              ))}
+            </ol>
+          ) : null}
+        </div>
+
         <div className="flex flex-wrap gap-2">
           {debrief.mistakes.length > 0 && (
             <button
@@ -522,7 +674,7 @@ export function SimulationGame() {
                 {PHASE_META[event.phase]?.label ?? event.phase}
               </p>
               <p className="text-xs text-ink-dim">
-                {SIMULATION_ROLE_LABELS[state.role]} · {MODE_LABEL[state.mode].title}
+                {SIMULATION_ROLE_LABELS[state.role]} · {TRAINING_MODE[trainingMode].title}
               </p>
             </div>
           </div>
@@ -541,6 +693,10 @@ export function SimulationGame() {
       </div>
 
       <div>
+        <div className="mb-4 grid gap-4 lg:grid-cols-[1.4fr_0.9fr]">
+          <PollingPlaceMap phase={event.phase} />
+          <EvidenceTray items={evidenceItems} count={state.evidence} compact />
+        </div>
         <motion.div
           key={event.id}
           initial={{ opacity: 0, y: 16, scale: 0.99 }}
@@ -594,15 +750,10 @@ export function SimulationGame() {
                       : "border-border bg-surface-2 text-ink hover:border-brand",
                 )}
               >
-                <span
-                  className={cn(
-                    "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[10px] font-bold",
-                    feedback?.id === choice.id ? "border-brand bg-brand text-brand-ink" : "border-border text-ink-faint",
-                  )}
-                >
-                  {String.fromCharCode(65 + index)}
+                <span className={cn("mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border", feedback?.id === choice.id ? "border-brand bg-brand text-brand-ink" : "border-border text-ink-faint")}>
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                 </span>
-                {choice.label}
+                <span><span className="block text-[10px] font-bold uppercase tracking-wider text-brand">Predložena radnja</span>{choice.label}</span>
               </motion.button>
             ))}
           </div>

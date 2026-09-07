@@ -54,6 +54,14 @@ const QUICK_LINKS = [
     icon: HomeIcon,
   },
   {
+    href: "/izborni-dan",
+    label: "Izborni dan - simulacija",
+    desc: "Vežbaj celu smenu kroz ulogu, raspored biračkog mesta i evidenciju odluka",
+    icon: Vote,
+    badge: "Vežbaj",
+    badgeColor: "bg-brand/15 text-brand border-brand/25",
+  },
+  {
     href: "/kontrolor#tok-glasanja",
     label: "Tok glasanja",
     desc: "Propisana procedura: otvaranje, identifikacija, glasanje i brojanje",

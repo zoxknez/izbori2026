@@ -2,6 +2,6 @@
 export const serviceWorkerConfig = {
   register: false,
   reloadOnOnline: false,
-  shellCache: "izborna-shell-v2",
+  shellCache: "izborna-shell-v3",
   legalDataCache: "legal-data-v2",
 } as const;

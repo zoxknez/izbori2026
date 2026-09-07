@@ -2,7 +2,7 @@
  * Ručno pisan service worker: transparentne keš politike, bez bundler workaround-a.
  * Dva odvojena lifecycle-a: aplikacioni shell i pravni dataset.
  */
-const SHELL_CACHE = "izborna-shell-v2";
+const SHELL_CACHE = "izborna-shell-v3";
 const LEGAL_DATA_CACHE = "legal-data-v2";
 const ACTIVE_CACHES = [SHELL_CACHE, LEGAL_DATA_CACHE];
 
@@ -17,7 +17,7 @@ const SHELL = [
   "/izvori",
   "/prijavi",
   "/trening/kviz",
-  "/simulator/biracki-dan",
+  "/izborni-dan",
   "/manifest.webmanifest",
 ];
 

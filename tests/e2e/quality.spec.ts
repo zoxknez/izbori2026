@@ -10,18 +10,18 @@ test("cross-module public flows and accessibility landmarks", async ({ page }) =
   await expect(page.locator("main")).toBeVisible();
   await expect(page.locator("h1")).toHaveCount(1);
 
-  await page.goto("/simulator/biracki-dan");
-  await expect(page.getByRole("heading", { name: /Odigraj birački dan/i })).toBeVisible();
+  await page.goto("/izborni-dan");
+  await expect(page.getByRole("heading", { name: /Izborni dan:/i })).toBeVisible();
   await page.getByRole("button", { name: /Započni birački dan/i }).click();
   await expect(page.getByText(/Događaj 1 od/i)).toBeVisible();
-  await page.locator("button").filter({ hasText: /^A/ }).first().click();
+  await page.getByRole("button", { name: /Predložena radnja/i }).first().click();
   await expect(page.getByRole("button", { name: /Nastavi dan/i })).toBeVisible();
   await page.getByRole("button", { name: /Nastavi dan/i }).click();
   await expect(page.getByText(/Događaj 2 od/i)).toBeVisible();
 });
 
 test("public routes have one h1, main landmark and no missing image alt", async ({ page }) => {
-  for (const route of ["/", "/pravila", "/validator", "/trening/kviz", "/simulator/biracki-dan", "/offline"]) {
+  for (const route of ["/", "/pravila", "/validator", "/trening/kviz", "/izborni-dan", "/offline"]) {
     await page.goto(route);
     expect(await page.locator("h1").count(), `${route} h1 count`).toBe(1);
     expect(await page.locator("main").count(), `${route} main count`).toBeGreaterThan(0);
@@ -55,7 +55,7 @@ async function playSimulation(page: import("@playwright/test").Page, maxSteps: n
       await carryOn.click();
       continue;
     }
-    const choice = page.locator("button:not([disabled])").filter({ hasText: /^[A-D]/ }).first();
+    const choice = page.getByRole("button", { name: /Predložena radnja/i }).first();
     if (!(await choice.isVisible().catch(() => false))) break;
     await choice.click();
   }
@@ -63,7 +63,7 @@ async function playSimulation(page: import("@playwright/test").Page, maxSteps: n
 }
 
 test("voter path plays the whole day and shows the category debrief", async ({ page }) => {
-  await page.goto("/simulator/biracki-dan");
+  await page.goto("/izborni-dan");
   await page.getByRole("button", { name: /^Birač/ }).click();
   await page.getByRole("button", { name: /Započni birački dan/i }).click();
   expect(await playSimulation(page, 40)).toBe(true);
@@ -74,15 +74,15 @@ test("voter path plays the whole day and shows the category debrief", async ({ p
 
 test("guided board-member day reaches the counting mode and finishes", async ({ page }) => {
   test.setTimeout(180_000);
-  await page.goto("/simulator/biracki-dan");
+  await page.goto("/izborni-dan");
   await page.getByRole("button", { name: /Započni birački dan/i }).click();
   expect(await playSimulation(page, 200)).toBe(true);
 });
 
 test("randomized mode completes without repeating an event", async ({ page }) => {
-  await page.goto("/simulator/biracki-dan");
+  await page.goto("/izborni-dan");
   await page.getByRole("button", { name: /^Birač/ }).click();
-  await page.getByRole("button", { name: /Nasumični dan/i }).click();
+  await page.getByRole("button", { name: /Završni trening/i }).click();
   await page.getByRole("button", { name: /Započni birački dan/i }).click();
   expect(await playSimulation(page, 40)).toBe(true);
 });
