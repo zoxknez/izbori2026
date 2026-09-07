@@ -58,6 +58,7 @@ export class PollingStationScene extends Phaser.Scene {
   private incidentVisuals = new Map<string, IncidentVisual>();
   private unsubIncidentPresentations?: () => void;
   private unsubFocusLocation?: () => void;
+  private unsubResetCamera?: () => void;
   private unsubEvidenceMarkers?: () => void;
   private evidenceMarkerVisuals = new Map<string, EvidenceMarkerVisual>();
   private logicalMovements = new Map<string, LogicalMovement>();
@@ -142,6 +143,11 @@ export class PollingStationScene extends Phaser.Scene {
         this.cameras.main.pan(point.x, point.y, 450, "Sine.easeInOut");
       }
     });
+    this.unsubResetCamera = this.bridge?.on("RESET_CAMERA", () => {
+      if (this.reducedMotion) this.cameras.main.centerOn(this.scale.width / 2, this.scale.height / 2);
+      else this.cameras.main.pan(this.scale.width / 2, this.scale.height / 2, 350, "Sine.easeInOut");
+      this.cameras.main.setZoom(1);
+    });
     this.unsubEvidenceMarkers = this.bridge?.on("EVIDENCE_MARKERS_CHANGED", ({ records }) => {
       const incoming = new Map(records.map((record) => [record.id, record]));
       for (const [recordId, marker] of this.evidenceMarkerVisuals) {
@@ -209,6 +215,7 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubPhase?.();
       this.unsubIncidentPresentations?.();
       this.unsubFocusLocation?.();
+      this.unsubResetCamera?.();
       this.unsubEvidenceMarkers?.();
       this.unsubAudioSettings?.();
       this.unsubAudioCue?.();
@@ -226,6 +233,7 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubPhase?.();
       this.unsubIncidentPresentations?.();
       this.unsubFocusLocation?.();
+      this.unsubResetCamera?.();
       this.unsubEvidenceMarkers?.();
       this.unsubAudioSettings?.();
       this.unsubAudioCue?.();

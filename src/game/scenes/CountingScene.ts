@@ -17,6 +17,7 @@ export class CountingScene extends Phaser.Scene {
   private audio = new ProceduralAudio();
   private unsubAudioSettings?: () => void;
   private unsubAudioCue?: () => void;
+  private unsubResetCamera?: () => void;
   private reducedMotion = false;
 
   constructor() {
@@ -33,6 +34,10 @@ export class CountingScene extends Phaser.Scene {
     this.reducedMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
     this.unsubAudioSettings = this.bridge?.on("AUDIO_SETTINGS_CHANGED", (settings) => this.audio.setSettings(settings));
     this.unsubAudioCue = this.bridge?.on("AUDIO_CUE_REQUESTED", ({ cue }) => this.audio.play(cue));
+    this.unsubResetCamera = this.bridge?.on("RESET_CAMERA", () => {
+      this.cameras.main.centerOn(this.scale.width / 2, this.scale.height / 2);
+      this.cameras.main.setZoom(1);
+    });
 
     // 1. Noćna atmosfera prostorije (zatvoreno biračko mesto posle 20:00)
     this.add.tileSprite(width / 2, height / 2, width - 40, height - 40, "floor-tile").setTint(0x8899aa);
@@ -173,6 +178,7 @@ export class CountingScene extends Phaser.Scene {
     this.events.once("shutdown", () => {
       this.unsubAudioSettings?.();
       this.unsubAudioCue?.();
+      this.unsubResetCamera?.();
       this.audio.destroy();
     });
   }

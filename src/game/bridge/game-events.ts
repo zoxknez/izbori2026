@@ -18,6 +18,7 @@ export interface GameBridgeEventMap {
   HOTSPOT_CLICKED: { hotspotId: string; locationId: string; title: string };
   HOTSPOT_HOVERED: { hotspotId: string | null };
   FOCUS_LOCATION: { locationId: string; x?: number; y?: number };
+  RESET_CAMERA: Record<string, never>;
   WORLD_ACTION_REQUESTED: { worldActionId: string; choiceId: string; eventId?: string };
   NPC_METRICS_UPDATED: { activeVoterCount: number; queueLength: number };
   WORLD_STATE_SNAPSHOT: {

@@ -845,6 +845,16 @@ export function GameSimulatorShell({
       {/* 3. GLAVNI CANVAS (PHASER) */}
       <div className="relative">
         <GameCanvas key={context.runId} bridge={bridge} seed={context.seed} />
+        <button
+          type="button"
+          data-testid="reset-camera-button"
+          onClick={() => bridge.emit("RESET_CAMERA", {})}
+          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-xl border border-border/80 bg-surface/90 text-ink-dim shadow-lg backdrop-blur transition hover:border-brand/60 hover:text-brand"
+          aria-label="Resetuj prikaz kamere"
+          title="Resetuj prikaz kamere"
+        >
+          <RotateCcw className="h-4 w-4" />
+        </button>
 
         {/* Obaveštenje ako je selektovan objekat */}
         {statusNotification && (
