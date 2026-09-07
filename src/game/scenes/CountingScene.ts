@@ -1,0 +1,203 @@
+import * as Phaser from "phaser";
+import type { GameBridge } from "@/game/bridge/game-bridge";
+
+export interface CountingSceneData {
+  bridge?: GameBridge;
+  role?: string;
+  hasControlListError?: boolean;
+}
+
+export class CountingScene extends Phaser.Scene {
+  private bridge?: GameBridge;
+  private selectedIndicator?: Phaser.GameObjects.Graphics;
+
+  constructor() {
+    super({ key: "CountingScene" });
+  }
+
+  init(data: CountingSceneData) {
+    this.bridge = data.bridge;
+  }
+
+  create() {
+    const width = this.scale.width;
+    const height = this.scale.height;
+
+    // 1. Noćna atmosfera prostorije (zatvoreno biračko mesto posle 20:00)
+    this.add.tileSprite(width / 2, height / 2, width - 40, height - 40, "floor-tile").setTint(0x8899aa);
+
+    // Zidovi sa noćnim okvirom
+    const walls = this.add.graphics();
+    walls.lineStyle(4, 0x1e293b, 1);
+    walls.strokeRoundedRect(20, 20, width - 40, height - 40, 12);
+
+    // Oznaka faze u zaglavlju
+    this.add.text(40, 32, "BIRAČKO MESTO ZATVORENO U 20:00", {
+      fontSize: "12px",
+      color: "#f59e0b",
+      fontFamily: "sans-serif",
+      fontStyle: "bold",
+    });
+
+    this.add.text(width - 260, 32, "FAZA: PREBROJAVANJE GLASOVA", {
+      fontSize: "11px",
+      color: "#38bdf8",
+      fontFamily: "sans-serif",
+      fontStyle: "bold",
+    });
+
+    // 2. Centralni sto za prebrojavanje (Counting Table)
+    const tableCenterX = width / 2;
+    const tableCenterY = height / 2 + 10;
+    const table = this.add.sprite(tableCenterX, tableCenterY, "counting-table-surface");
+
+    this.add.text(tableCenterX, tableCenterY - 70, "STO ZA PREBROJAVANJE I UTVRĐIVANJE REZULTATA", {
+      fontSize: "11px",
+      color: "#94a3b8",
+      fontFamily: "sans-serif",
+      fontStyle: "bold",
+    }).setOrigin(0.5);
+
+    // 3. Stanica 1: Neupotrebljeni listići (U)
+    const unusedSprite = this.add.sprite(tableCenterX - 180, tableCenterY - 10, "stack-unused");
+    this.add.text(tableCenterX - 180, tableCenterY + 30, "1. Neupotrebljeni (U)", {
+      fontSize: "9px",
+      color: "#94a3b8",
+      align: "center",
+    }).setOrigin(0.5);
+    this.setupHotspot(unusedSprite, "counting-unused", "counting-table", "1. Neupotrebljeni listići (U)");
+
+    // 4. Stanica 2: Birački spisak (G)
+    const rollSprite = this.add.sprite(tableCenterX - 100, tableCenterY - 10, "table-desk").setScale(0.55);
+    this.add.text(tableCenterX - 100, tableCenterY + 30, "2. Spisak birača (G)", {
+      fontSize: "9px",
+      color: "#94a3b8",
+      align: "center",
+    }).setOrigin(0.5);
+    this.setupHotspot(rollSprite, "counting-voter-roll", "counting-table", "2. Birački spisak i potpisani birači (G)");
+
+    // 5. Stanica 3: Kontrolni list u kutiji
+    const controlSprite = this.add.sprite(tableCenterX - 20, tableCenterY - 10, "doc-control-sheet");
+    this.add.text(tableCenterX - 20, tableCenterY + 30, "3. Kontrolni list", {
+      fontSize: "9px",
+      color: "#f97316",
+      fontStyle: "bold",
+      align: "center",
+    }).setOrigin(0.5);
+    this.setupHotspot(controlSprite, "counting-control-sheet", "counting-table", "3. Kontrolni list u glasačkoj kutiji");
+
+    // 6. Stanica 4: Listići u kutiji (B)
+    const boxBallotsSprite = this.add.sprite(tableCenterX + 60, tableCenterY - 10, "ballot-box").setScale(0.8);
+    this.add.text(tableCenterX + 60, tableCenterY + 30, "4. Iz kutije (B)", {
+      fontSize: "9px",
+      color: "#38bdf8",
+      align: "center",
+    }).setOrigin(0.5);
+    this.setupHotspot(boxBallotsSprite, "counting-box-ballots", "counting-table", "4. Listići u glasačkoj kutiji (B)");
+
+    // 7. Stanica 5: Razvrstavanje (V i N)
+    const sortedSprite = this.add.sprite(tableCenterX + 130, tableCenterY - 10, "stack-unused").setTint(0x10b981);
+    this.add.text(tableCenterX + 130, tableCenterY + 30, "5. Važeći/Nevažeći", {
+      fontSize: "9px",
+      color: "#10b981",
+      align: "center",
+    }).setOrigin(0.5);
+    this.setupHotspot(sortedSprite, "counting-sorting", "counting-table", "5. Razvrstavanje: Važeći (V) i Nevažeći (N)");
+
+    // 8. Stanica 6 & 7: Zapisnik o radu biračkog odbora
+    const protocolSprite = this.add.sprite(tableCenterX + 195, tableCenterY - 10, "doc-protocol");
+    this.add.text(tableCenterX + 195, tableCenterY + 35, "6. Zapisnik BO", {
+      fontSize: "9px",
+      color: "#60a5fa",
+      fontStyle: "bold",
+      align: "center",
+    }).setOrigin(0.5);
+    this.setupHotspot(protocolSprite, "counting-protocol", "counting-table", "6. Zapisnik o radu biračkog odbora");
+
+    // 9. Članovi biračkog odbora sede oko stola (ozbiljna radna atmosfera)
+    const boardSeats = [
+      { x: tableCenterX - 140, y: tableCenterY - 105, label: "Član BO 1" },
+      { x: tableCenterX, y: tableCenterY - 105, label: "Predsednik BO" },
+      { x: tableCenterX + 140, y: tableCenterY - 105, label: "Član BO 2" },
+      { x: tableCenterX - 140, y: tableCenterY + 105, label: "Član BO 3" },
+      { x: tableCenterX + 140, y: tableCenterY + 105, label: "Član BO 4" },
+    ];
+
+    for (const seat of boardSeats) {
+      const avatar = this.add.sprite(seat.x, seat.y, "npc-avatar");
+      avatar.setScale(0.85);
+      this.add.text(seat.x, seat.y + 20, seat.label, {
+        fontSize: "8px",
+        color: "#64748b",
+      }).setOrigin(0.5);
+    }
+
+    // 10. Posmatrači prate sa propisane udaljenosti (bez dodirivanja stola)
+    const observerZone = this.add.graphics();
+    observerZone.lineStyle(1, 0x0284c7, 0.4);
+    observerZone.strokeRoundedRect(tableCenterX - 220, tableCenterY + 125, 440, 36, 6);
+    this.add.text(tableCenterX, tableCenterY + 130, "ZONA ZA POSMATRAČE (Prate bez dodirivanja materijala)", {
+      fontSize: "8px",
+      color: "#0284c7",
+    }).setOrigin(0.5);
+
+    const observerAvatars = [tableCenterX - 100, tableCenterX, tableCenterX + 100];
+    for (const ox of observerAvatars) {
+      const obs = this.add.sprite(ox, tableCenterY + 145, "npc-avatar");
+      obs.setScale(0.65).setTint(0x38bdf8);
+    }
+
+    // Indikator selekcije
+    this.selectedIndicator = this.add.graphics();
+
+    // Mobile pan podrška: prevlačenje kamere prevlačenjem/dodirom
+    this.input.on("pointermove", (p: Phaser.Input.Pointer) => {
+      if (p.isDown) {
+        this.cameras.main.scrollX -= (p.x - p.prevPosition.x) / this.cameras.main.zoom;
+        this.cameras.main.scrollY -= (p.y - p.prevPosition.y) / this.cameras.main.zoom;
+      }
+    });
+
+    // Točkić miša / pinch zoom (0.85x do 1.4x)
+    this.input.on("wheel", (_p: Phaser.Input.Pointer, _over: unknown[], _dx: number, dy: number) => {
+      const newZoom = Phaser.Math.Clamp(this.cameras.main.zoom - dy * 0.001, 0.85, 1.4);
+      this.cameras.main.setZoom(newZoom);
+    });
+
+    // Obaveštenje Bridge-u da je brojanje spremno
+    this.bridge?.emit("WORLD_READY", { width, height });
+  }
+
+  private setupHotspot(
+    target: Phaser.GameObjects.Sprite,
+    hotspotId: string,
+    locationId: string,
+    title: string,
+  ) {
+    target.setInteractive({ useHandCursor: true });
+
+    target.on("pointerover", () => {
+      target.setScale(target.scaleX * 1.08, target.scaleY * 1.08);
+      this.bridge?.emit("HOTSPOT_HOVERED", { hotspotId });
+    });
+
+    target.on("pointerout", () => {
+      target.setScale(target.scaleX / 1.08, target.scaleY / 1.08);
+      this.bridge?.emit("HOTSPOT_HOVERED", { hotspotId: null });
+    });
+
+    target.on("pointerdown", () => {
+      if (this.selectedIndicator) {
+        this.selectedIndicator.clear();
+        this.selectedIndicator.lineStyle(2, 0x38bdf8, 0.9);
+        this.selectedIndicator.strokeCircle(target.x, target.y, Math.max(target.width, target.height) * 0.7);
+      }
+
+      this.bridge?.emit("HOTSPOT_CLICKED", {
+        hotspotId,
+        locationId,
+        title,
+      });
+    });
+  }
+}

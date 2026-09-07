@@ -29,10 +29,27 @@ describe("service worker lifecycle policy", () => {
     expect(worker).toContain('url.pathname.startsWith("/api/auth")');
   });
 
-  it("precache-uje ključne offline rute uključujući izborni dan i trening", () => {
+  it("precache-uje ključne offline rute uključujući izborni dan, 2D simulator i trening", () => {
     const worker = readFileSync(resolve(process.cwd(), "public/sw.js"), "utf8");
-    for (const route of ["/vidim-problem", "/kontrolor", "/prijavi", "/izvori", "/trening/kviz", "/izborni-dan", "/offline"]) {
+    for (const route of [
+      "/vidim-problem",
+      "/kontrolor",
+      "/prijavi",
+      "/izvori",
+      "/trening/kviz",
+      "/izborni-dan",
+      "/simulator/biracki-dan",
+      "/offline",
+    ]) {
       expect(worker).toContain(`"${route}"`);
     }
+  });
+
+  it("kešira Next.js statičke skripte i game-assets za full offline simulaciju", () => {
+    const worker = readFileSync(resolve(process.cwd(), "public/sw.js"), "utf8");
+    expect(worker).toContain('url.pathname.startsWith("/_next/static/")');
+    expect(worker).toContain('url.pathname.startsWith("/game-assets/")');
+    expect(worker).toContain('request.destination === "script"');
+    expect(worker).toContain('request.destination === "style"');
   });
 });

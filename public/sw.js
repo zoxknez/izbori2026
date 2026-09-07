@@ -18,6 +18,7 @@ const SHELL = [
   "/prijavi",
   "/trening/kviz",
   "/izborni-dan",
+  "/simulator/biracki-dan",
   "/manifest.webmanifest",
 ];
 
@@ -69,6 +70,32 @@ self.addEventListener("fetch", (event) => {
           const cached = await cache.match(request);
           if (cached) return cached;
           throw error;
+        }
+      }),
+    );
+    return;
+  }
+
+  // Statički resursi (Next.js skripte, CSS, game assets, fontovi): Cache-first za pouzdan rad bez mreže
+  if (
+    url.pathname.startsWith("/_next/static/") ||
+    url.pathname.startsWith("/game-assets/") ||
+    request.destination === "style" ||
+    request.destination === "script" ||
+    request.destination === "font"
+  ) {
+    event.respondWith(
+      caches.open(SHELL_CACHE).then(async (cache) => {
+        const cached = await cache.match(request);
+        if (cached) return cached;
+        try {
+          const response = await fetch(request);
+          if (response.ok) {
+            await cache.put(request, response.clone());
+          }
+          return response;
+        } catch {
+          return cached || Response.error();
         }
       }),
     );

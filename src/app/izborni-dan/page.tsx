@@ -1,5 +1,5 @@
 import { Clock3, Gavel, ShieldCheck, Sparkles } from "lucide-react";
-import { SimulationGame } from "@/components/simulation-game";
+import { SimulatorModeSelector } from "@/components/simulator/simulator-mode-selector";
 import { Container } from "@/components/ui/container";
 import { SIMULATOR_CHOICE_COUNT, SIMULATOR_EVENT_COUNT } from "@/lib/domain/simulator/seed-events";
 
@@ -55,7 +55,7 @@ export default function ElectionDayPage() {
         })}
       </div>
 
-      <div className="mt-8"><SimulationGame /></div>
+      <div className="mt-8"><SimulatorModeSelector /></div>
     </Container>
   );
 }

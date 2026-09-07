@@ -137,11 +137,10 @@ function pickNextEvent(
   return [...pool].sort((a, b) => a.time.localeCompare(b.time) || a.id.localeCompare(b.id))[0];
 }
 
-export function applyChoice(
+export function resolveChoice(
   state: SimulationState,
   event: SimulationEvent,
   choice: SimulationChoice,
-  events: SimulationEvent[],
 ): SimulationState {
   if (!availableChoices(event, state).some((candidate) => candidate.id === choice.id)) {
     throw new Error(`Odluka ${choice.id} nije dostupna u događaju ${event.id}.`);
@@ -158,15 +157,9 @@ export function applyChoice(
     maxScores[category] += value;
   }
 
-  const visited = new Set(state.history.map((item) => item.eventId).concat(event.id));
-  const nextEvent = pickNextEvent({ ...updated, maxScores }, events, choice, visited);
-
   return {
     ...updated,
     maxScores,
-    currentEventId: nextEvent?.id ?? "END",
-    phase: nextEvent?.phase ?? updated.phase,
-    clock: nextEvent?.time ?? event.time,
     history: [
       ...state.history,
       {
@@ -181,8 +174,33 @@ export function applyChoice(
         explanation: choice.explanation,
       },
     ],
+  };
+}
+
+export function advanceToNextEvent(
+  state: SimulationState,
+  nextEvent?: SimulationEvent,
+  fallbackTime?: string,
+): SimulationState {
+  return {
+    ...state,
+    currentEventId: nextEvent?.id ?? "END",
+    phase: nextEvent?.phase ?? state.phase,
+    clock: nextEvent?.time ?? fallbackTime ?? state.clock,
     finished: !nextEvent,
   };
+}
+
+export function applyChoice(
+  state: SimulationState,
+  event: SimulationEvent,
+  choice: SimulationChoice,
+  events: SimulationEvent[],
+): SimulationState {
+  const resolved = resolveChoice(state, event, choice);
+  const visited = new Set(resolved.history.map((item) => item.eventId));
+  const nextEvent = pickNextEvent(resolved, events, choice, visited);
+  return advanceToNextEvent(resolved, nextEvent, event.time);
 }
 
 const WEAK_CLASSIFICATIONS: ChoiceClassification[] = ["suboptimal", "wrong", "critical_error"];
