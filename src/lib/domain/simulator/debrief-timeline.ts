@@ -24,7 +24,16 @@ export function buildDebriefTimeline(
   }));
 
   for (const record of evidence) {
-    if (entries.some((entry) => entry.kind === "evidence" && entry.detail?.includes(record.id))) continue;
+    // Evidence actions store the human-readable facts, not the notebook id.
+    // Match the corresponding action by its stable simulation timestamp and
+    // first fact so autosave/replay cannot render the same observation twice.
+    const hasLoggedEvidence = entries.some(
+      (entry) =>
+        entry.kind === "evidence" &&
+        entry.simulationTimeMs === record.simulationTimeMs &&
+        (record.observedFacts.length === 0 || entry.detail?.includes(record.observedFacts[0])),
+    );
+    if (hasLoggedEvidence) continue;
     entries.push({
       id: `evidence-${record.id}`,
       simulationTimeMs: record.simulationTimeMs,

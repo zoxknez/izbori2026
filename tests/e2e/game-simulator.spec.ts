@@ -32,6 +32,16 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     const canvas = container.locator("canvas");
     await expect(canvas).toBeVisible({ timeout: 15_000 });
 
+    // The game-facing controls must remain usable after Phaser mounts.
+    const resetCameraBtn = page.getByTestId("reset-camera-button");
+    await expect(resetCameraBtn).toBeVisible();
+    await resetCameraBtn.click();
+    const muteBtn = page.getByRole("button", { name: /Isključi zvuk/i });
+    await expect(muteBtn).toHaveAttribute("aria-pressed", "false");
+    await muteBtn.click();
+    await expect(page.getByRole("button", { name: /Uključi zvuk/i })).toHaveAttribute("aria-pressed", "true");
+    await page.getByLabel("Jačina zvuka").fill("0.35");
+
     // Proveravamo HUD kontrole: sat (06:xx), dugme za pauzu i 1x/2x/4x
     await expect(page.getByRole("button", { name: /Pauziraj simulaciju/i })).toBeVisible();
     await expect(page.getByRole("button", { name: "1x" })).toBeVisible();

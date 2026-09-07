@@ -11,4 +11,15 @@ describe("debrief timeline", () => {
     expect(timeline.map((entry) => entry.kind)).toEqual(["action", "evidence", "timeout"]);
     expect(timeline[2].label).toContain("E02");
   });
+
+  it("does not duplicate evidence already represented by the action log", () => {
+    const timeline = buildDebriefTimeline(
+      [{ id: "evidence-action", simulationTimeMs: 300, timestamp: "07:01", type: "evidence_recorded", details: "entrance: plakat" }],
+      [{ id: "e1", simulationTimeMs: 300, timestamp: "07:01", locationId: "entrance", observedFacts: ["plakat"], assumptions: [], witnesses: [], relatedRuleIds: [], createdByRole: "posmatrac", source: "manual", completeness: { time: true, location: true, facts: true, witnesses: false } }],
+      [],
+    );
+
+    expect(timeline).toHaveLength(1);
+    expect(timeline[0].id).toBe("evidence-action");
+  });
 });
