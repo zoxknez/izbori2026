@@ -1,5 +1,6 @@
 import * as Phaser from "phaser";
 import type { GameBridge } from "@/game/bridge/game-bridge";
+import { COUNTING_WORKFLOW_STEPS, nextCountingWorkflowStep } from "@/game/world/counting-workflow";
 
 export interface CountingSceneData {
   bridge?: GameBridge;
@@ -10,6 +11,8 @@ export interface CountingSceneData {
 export class CountingScene extends Phaser.Scene {
   private bridge?: GameBridge;
   private selectedIndicator?: Phaser.GameObjects.Graphics;
+  private workflowStep = 0;
+  private workflowStatus?: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: "CountingScene" });
@@ -63,6 +66,14 @@ export class CountingScene extends Phaser.Scene {
       fontStyle: "bold",
       backgroundColor: "rgba(15, 23, 42, 0.85)",
       padding: { x: 10, y: 3 },
+    }).setOrigin(0.5);
+    this.workflowStatus = this.add.text(tableCenterX, tableCenterY + 72, "Tok rada: 1/6 · Neupotrebljeni listići", {
+      fontSize: "10px",
+      color: "#bae6fd",
+      fontFamily: "sans-serif",
+      fontStyle: "bold",
+      backgroundColor: "rgba(15, 23, 42, 0.88)",
+      padding: { x: 8, y: 3 },
     }).setOrigin(0.5);
 
     // 3. Stanica 1: Neupotrebljeni listići (U)
@@ -183,7 +194,29 @@ export class CountingScene extends Phaser.Scene {
         locationId,
         title,
       });
+      this.handleWorkflowInteraction(hotspotId, target);
     });
+  }
+
+  private handleWorkflowInteraction(hotspotId: string, target: Phaser.GameObjects.Sprite) {
+    if (this.workflowStep >= COUNTING_WORKFLOW_STEPS.length) return;
+    const nextStep = nextCountingWorkflowStep(this.workflowStep, hotspotId);
+    if (nextStep === this.workflowStep) {
+      this.workflowStatus?.setColor("#fbbf24").setText(
+        `Tok rada: ${this.workflowStep + 1}/6 · prvo: ${COUNTING_WORKFLOW_STEPS[this.workflowStep].label}`,
+      );
+      this.tweens.add({ targets: target, x: target.x + 3, duration: 70, yoyo: true, repeat: 2 });
+      return;
+    }
+    this.workflowStep = nextStep;
+    if (this.workflowStep === COUNTING_WORKFLOW_STEPS.length) {
+      this.workflowStatus?.setColor("#6ee7b7").setText("Tok rada: završen · podaci se proveravaju kroz zapisnik");
+    } else {
+      this.workflowStatus?.setColor("#bae6fd").setText(
+        `Tok rada: ${this.workflowStep + 1}/6 · ${COUNTING_WORKFLOW_STEPS[this.workflowStep].label}`,
+      );
+    }
+    this.tweens.add({ targets: target, scaleX: target.scaleX * 1.12, scaleY: target.scaleY * 1.12, duration: 140, yoyo: true });
   }
 
   private createCountingBadge(x: number, y: number, label: string, color: string) {

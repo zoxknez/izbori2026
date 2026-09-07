@@ -52,6 +52,7 @@ import {
 } from "@/lib/domain/simulator/role-permissions";
 import { cn } from "@/lib/utils";
 import { getWorldIncidentPresentation } from "@/game/world/world-incident-presentation";
+import { SIMULATION_MODE_PROFILES } from "@/game/config/simulation-mode-profile";
 
 interface GameSimulatorShellProps {
   initialRole?: SimulationRole;
@@ -463,6 +464,7 @@ export function GameSimulatorShell({
   };
 
   const currentRoleConfig = ROLE_CONFIGS[context.domainState.role];
+  const modeProfile = SIMULATION_MODE_PROFILES[context.mode];
 
   return (
     <div className="flex flex-col gap-4">
@@ -757,6 +759,9 @@ export function GameSimulatorShell({
             <span className="text-xs font-bold text-amber-500">
               Uočena situacija na biračkom mestu ({context.activeIncidents.length}):
             </span>
+            <span className="hidden rounded-md border border-amber-500/25 bg-surface/60 px-2 py-1 text-[10px] font-semibold text-amber-300 sm:inline">
+              {context.mode === "guided" ? "Vođeni fokus" : context.mode === "realistic" ? "Realni pritisak" : "Stres: više problema"}
+            </span>
             <div className="flex flex-wrap gap-1.5">
               {context.activeIncidents.map((incident) => (
                 <button
@@ -774,6 +779,12 @@ export function GameSimulatorShell({
               ))}
             </div>
           </div>
+
+          {modeProfile.showWorldHints && (
+            <p className="text-[11px] font-medium text-amber-300/90">
+              Savet: prvo pogledaj zonu sa aktivnim indikatorom, zatim izaberi ulogu odgovarajuću radnju.
+            </p>
+          )}
 
           <button
             type="button"

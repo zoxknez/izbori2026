@@ -32,6 +32,7 @@ import {
 } from "@/game/clock/simulation-clock";
 import { SeededRNG } from "@/game/random/seeded-rng";
 import { WORLD_INCIDENT_BINDINGS } from "@/lib/domain/simulator/incident-binding";
+import { SIMULATION_MODE_PROFILES } from "@/game/config/simulation-mode-profile";
 import {
   initializeCountingSession,
   type CountingSession,
@@ -789,9 +790,10 @@ function processTickLogic(
         !remainingIncidents.some((i) => i.eventId === binding.eventId) &&
         !updatedDomain.history.some((h) => h.eventId === binding.eventId)
       ) {
+        const profile = SIMULATION_MODE_PROFILES[context.mode];
+        if (remainingIncidents.length >= profile.maxConcurrentIncidents) continue;
         const baseSeconds = binding.timeout?.simulationSeconds ?? 60;
-        const scale = context.mode === "stress" ? 0.6 : 1.0;
-        const durationMs = Math.round(baseSeconds * scale) * 1000;
+        const durationMs = Math.round(baseSeconds * profile.incidentTimeoutMultiplier) * 1000;
         nextCount++;
         remainingIncidents.push({
           instanceId: `${bindingId}-${nextCount}`,
