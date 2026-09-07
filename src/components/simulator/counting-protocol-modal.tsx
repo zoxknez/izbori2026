@@ -21,6 +21,7 @@ import {
 } from "@/lib/domain/simulator/counting-session";
 import { ROLE_CONFIGS } from "@/lib/domain/simulator/role-permissions";
 import { cn } from "@/lib/utils";
+import type { BoardProtocol, ObserverPresenceRecord } from "@/game/machines/election-day.machine";
 
 interface CountingProtocolModalProps {
   isOpen: boolean;
@@ -28,6 +29,10 @@ interface CountingProtocolModalProps {
   session: CountingSession;
   currentRole: SimulationRole;
   onUpdateSession: (updated: CountingSession) => void;
+  boardProtocol: BoardProtocol;
+  observerRecord: ObserverPresenceRecord;
+  onAddBoardRemark: (text: string) => void;
+  onAddObserverRemark: (text: string) => void;
 }
 
 export function CountingProtocolModal({
@@ -36,6 +41,10 @@ export function CountingProtocolModal({
   session,
   currentRole,
   onUpdateSession,
+  boardProtocol,
+  observerRecord,
+  onAddBoardRemark,
+  onAddObserverRemark,
 }: CountingProtocolModalProps) {
   const [activeTab, setActiveTab] = useState<"numbers" | "forensics" | "objections">("numbers");
   const [objectionText, setObjectionText] = useState("");
@@ -48,6 +57,7 @@ export function CountingProtocolModal({
   if (!isOpen) return null;
 
   const roleConfig = ROLE_CONFIGS[currentRole];
+  const remarks = currentRole === "posmatrac" ? observerRecord.remarks : boardProtocol.boardMemberRemarks;
 
   const BOARD_MEMBERS_AVAILABLE = [
     `Član BO (${roleConfig.shortLabel})`,
@@ -68,7 +78,7 @@ export function CountingProtocolModal({
       signedByMembers: updatedMembers,
     };
     onUpdateSession(updated);
-    setStatusMessage(`Potpisano: ${memberName} (${updatedMembers.length}/3 minimalno potrebnih potpisa po čl. 104 i 115 ZINP).`);
+    setStatusMessage(`Potpisano: ${memberName}. Članovi BO ili zamenici potpisuju zapisnik (čl. 105); najmanje tri potpisa su uslov za utvrđivanje rezultata pri dostavljanju (čl. 115).`);
     setTimeout(() => setStatusMessage(null), 4000);
   };
 
@@ -76,21 +86,10 @@ export function CountingProtocolModal({
     e.preventDefault();
     if (!objectionText.trim()) return;
 
-    const newObjection = {
-      id: `obj-${Date.now()}`,
-      role: currentRole,
-      authorLabel: roleConfig.label,
-      text: objectionText.trim(),
-      timestamp: new Date().toLocaleTimeString("sr-RS", { hour: "2-digit", minute: "2-digit" }),
-    };
-
-    const updated: CountingSession = {
-      ...session,
-      objections: [...session.objections, newObjection],
-    };
-    onUpdateSession(updated);
+    if (currentRole === "clan_odbora") onAddBoardRemark(objectionText.trim());
+    if (currentRole === "posmatrac") onAddObserverRemark(objectionText.trim());
     setObjectionText("");
-    setStatusMessage("Primedba je uneta u zvanični Zapisnik o radu biračkog odbora.");
+    setStatusMessage(currentRole === "clan_odbora" ? "Primedba je uneta u zapisnik biračkog odbora." : "Primedba je uneta u poseban zapisnik o prisustvu posmatrača.");
     setTimeout(() => setStatusMessage(null), 4000);
   };
 
@@ -395,19 +394,19 @@ export function CountingProtocolModal({
               {/* Lista postojećih primedbi */}
               <div className="rounded-2xl border border-border bg-surface-2/50 p-4">
                 <h4 className="text-xs font-bold uppercase tracking-wide text-ink-dim">
-                  Unose se primedbe posmatrača i članova odbora:
+                  {currentRole === "posmatrac" ? "Zapisnik o prisustvu posmatrača - primedbe:" : "Zapisnik o radu biračkog odbora - primedbe članova BO:"}
                 </h4>
-                {session.objections.length === 0 ? (
+                {remarks.length === 0 ? (
                   <p className="mt-2 text-xs text-ink-dim italic">
-                    Nema unetih primedbi na Zapisnik o radu biračkog odbora.
+                    Nema unetih primedbi u ovom zapisniku.
                   </p>
                 ) : (
                   <div className="mt-2 flex flex-col gap-2">
-                    {session.objections.map((obj) => (
-                      <div key={obj.id} className="rounded-xl border border-border bg-surface p-3 text-xs">
+                    {remarks.map((obj, index) => (
+                      <div key={`${obj.timestampMs}-${index}`} className="rounded-xl border border-border bg-surface p-3 text-xs">
                         <div className="flex items-center justify-between font-bold text-ink">
-                          <span>{obj.authorLabel}</span>
-                          <span className="text-[10px] text-ink-dim">{obj.timestamp}</span>
+                          <span>{"member" in obj ? obj.member : obj.organization}</span>
+                          <span className="text-[10px] text-ink-dim">{obj.timestampMs}</span>
                         </div>
                         <p className="mt-1 text-ink-dim">{obj.text}</p>
                       </div>
@@ -416,10 +415,9 @@ export function CountingProtocolModal({
                 )}
               </div>
 
-              {/* Forma za unošenje primedbe posmatrača / birača */}
-              <form onSubmit={handleAddObjection} className="flex flex-col gap-2">
+              {currentRole !== "birac" && <form onSubmit={handleAddObjection} className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-ink">
-                  Podnesi zvaničnu primedbu ({roleConfig.shortLabel}):
+                  {currentRole === "posmatrac" ? "Upiši primedbu u zapisnik posmatrača:" : "Upiši primedbu člana BO u zapisnik:"}
                 </label>
                 <textarea
                   value={objectionText}
@@ -437,25 +435,26 @@ export function CountingProtocolModal({
                     <span>Upiši primedbu u zapisnik</span>
                   </button>
                 </div>
-              </form>
+              </form>}
+              {currentRole === "birac" && <p className="text-xs text-ink-dim">Birač ne upisuje primedbe ni u zapisnik biračkog odbora ni u zapisnik posmatrača.</p>}
             </div>
           )}
         </div>
 
-        {/* 5. Footer sa akcijom diskretnog potpisivanja po čl. 104 i 115 ZINP */}
+        {/* 5. Potpisivanje članova BO: čl. 105 i prag iz čl. 115 */}
         <div className="mt-4 flex flex-col gap-3 border-t border-border/80 pt-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               {session.isProtocolSigned ? (
                 <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400">
                   <CheckCircle2 className="h-4 w-4" />
-                  <span>Zapisnik je pravovaljano potpisan ({session.signedByMembers.length} potpisa, kvorum $\ge 3$)</span>
+                  <span>Evidentirano je najmanje tri potpisa ({session.signedByMembers.length}); to omogućava utvrđivanje rezultata pri dostavljanju po čl. 115.</span>
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400">
                   <AlertTriangle className="h-4 w-4" />
                   <span>
-                    Potpisi: {session.signedByMembers.length}/3 (minimalno 3 člana po čl. 104 i 115 ZINP)
+                    Potpisi: {session.signedByMembers.length}/3. Zapisnik potpisuju članovi BO ili zamenici (čl. 105); manje od tri potpisa pri dostavljanju sprečava utvrđivanje rezultata (čl. 115).
                   </span>
                 </span>
               )}

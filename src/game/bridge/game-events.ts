@@ -23,6 +23,8 @@ export interface GameBridgeEventMap {
     queueOrder: string[];
     nextSpawnAtMs: number;
     nextEntityId: number;
+    voterPool?: unknown[];
+    completedVoterIds?: string[];
   };
 
   // Iz XState / Domain layer-a ka Phaseru i Reactu:
@@ -54,6 +56,8 @@ export interface GameBridgeEventMap {
     queueOrder?: string[];
     nextSpawnAtMs?: number;
     nextEntityId?: number;
+    voterPool?: unknown[];
+    completedVoterIds?: string[];
   };
 }
 

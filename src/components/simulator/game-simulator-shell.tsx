@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useActor } from "@xstate/react";
 import {
   Clock,
@@ -38,6 +38,7 @@ import {
   computeCanonicalStateHash,
   type GameSaveV1,
   type GameSaveV2,
+  type WorldSimulationSaveState,
 } from "@/lib/domain/simulator/game-save";
 import { initializeCountingSession } from "@/lib/domain/simulator/counting-session";
 import { WORLD_INCIDENT_BINDINGS } from "@/lib/domain/simulator/incident-binding";
@@ -70,6 +71,8 @@ export function GameSimulatorShell({
   const [resumableSave, setResumableSave] = useState<GameSaveV2 | GameSaveV1 | null>(null);
   const [isReplayOpen, setIsReplayOpen] = useState(false);
   const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
+  const [worldSnapshot, setWorldSnapshot] = useState<WorldSimulationSaveState | null>(null);
+  const worldSnapshotRef = useRef<WorldSimulationSaveState | null>(null);
 
   // 2. XState 5 Machine instanca (rehidrira se iz sačuvane sesije ukoliko postoji)
   const machine = useMemo(
@@ -90,6 +93,10 @@ export function GameSimulatorShell({
       : undefined,
   );
   const context = state.context;
+  const activeSaveRef = useRef<GameSaveV2 | GameSaveV1 | null>(null);
+  const legalInterruptionsRef = useRef(context.legalInterruptions);
+  activeSaveRef.current = activeSave;
+  legalInterruptionsRef.current = context.legalInterruptions;
 
   // Provera postojanja sačuvane sesije na pokretanju
   useEffect(() => {
@@ -149,8 +156,8 @@ export function GameSimulatorShell({
           currentPhase: context.currentPhase,
           machineSnapshot: snapshot,
           domainState: context.domainState,
-          worldSimulation: {
-            rngState: context.deterministicCounter,
+          worldSimulation: worldSnapshotRef.current ?? worldSnapshot ?? {
+            rngState: context.seed,
             deterministicCounter: context.deterministicCounter,
             nextEntityId: context.activeVoterCount,
             activeVoters: [],
@@ -189,10 +196,12 @@ export function GameSimulatorShell({
     context.countingSession,
     context.boardProtocol,
     context.observerRecord,
+    worldSnapshot,
     actorRef,
   ]);
 
   const handleSaveGame = async () => {
+    bridge.emit("REQUEST_WORLD_SNAPSHOT", {});
     const snapshot = actorRef?.getPersistedSnapshot?.();
     const hash = await computeCanonicalStateHash({
       runId: context.runId,
@@ -220,8 +229,8 @@ export function GameSimulatorShell({
       currentPhase: context.currentPhase,
       machineSnapshot: snapshot,
       domainState: context.domainState,
-      worldSimulation: {
-        rngState: context.deterministicCounter,
+      worldSimulation: worldSnapshotRef.current ?? worldSnapshot ?? {
+        rngState: context.seed,
         deterministicCounter: context.deterministicCounter,
         nextEntityId: context.activeVoterCount,
         activeVoters: [],
@@ -288,11 +297,24 @@ export function GameSimulatorShell({
       paused: context.paused || context.systemPaused,
       speed: context.speed,
     });
+    bridge.emit("PHASE_CHANGED", {
+      phase: context.currentPhase === "voting" ? "voting" : "counting",
+    });
   }, [bridge, context.simulationTimeMs, context.paused, context.systemPaused, context.speed]);
 
   useEffect(() => {
     const unsubWorldReady = bridge.on("WORLD_READY", () => {
       send({ type: "WORLD_READY" });
+      if (activeSaveRef.current?.version === 2) {
+        bridge.emit("RESTORE_WORLD_STATE", activeSaveRef.current.worldSimulation);
+      }
+      bridge.emit("REQUEST_WORLD_SNAPSHOT", {});
+    });
+
+    const unsubWorldSnapshot = bridge.on("WORLD_STATE_SNAPSHOT", (data) => {
+      const next = { ...data, legalInterruptions: legalInterruptionsRef.current };
+      worldSnapshotRef.current = next;
+      setWorldSnapshot(next);
     });
 
     const unsubClick = bridge.on("HOTSPOT_CLICKED", (data) => {
@@ -322,6 +344,7 @@ export function GameSimulatorShell({
 
     return () => {
       unsubWorldReady();
+      unsubWorldSnapshot();
       unsubClick();
       unsubNpcMetrics();
       clearInterval(intervalId);
@@ -526,6 +549,7 @@ export function GameSimulatorShell({
               data-testid="fast-forward-to-closing-button"
               onClick={() => {
                 if (context.currentPhase === "pre_opening") {
+                  send({ type: "ADVANCE_SIMULATION_TO", targetMs: context.pollSchedule.actualOpenTimeMs });
                   send({ type: "START_VOTING" });
                 }
                 send({
@@ -575,6 +599,7 @@ export function GameSimulatorShell({
               type="button"
               data-testid="start-voting-button"
               onClick={() => send({ type: "START_VOTING" })}
+              disabled={context.simulationTimeMs < context.pollSchedule.actualOpenTimeMs}
               className="inline-flex items-center gap-1.5 rounded-xl border border-brand/40 bg-brand/15 px-3 py-1.5 text-xs font-bold text-brand hover:bg-brand/25 shadow-sm"
               title="Zvanično otvori biračko mesto u 07:00 (čl. 91 ZINP)"
             >
@@ -727,7 +752,7 @@ export function GameSimulatorShell({
 
       {/* 3. GLAVNI CANVAS (PHASER) */}
       <div className="relative">
-        <GameCanvas bridge={bridge} seed={context.seed} />
+        <GameCanvas key={context.runId} bridge={bridge} seed={context.seed} />
 
         {/* Obaveštenje ako je selektovan objekat */}
         {statusNotification && (
@@ -1148,6 +1173,13 @@ export function GameSimulatorShell({
         session={context.countingSession ?? initializeCountingSession(context.domainState)}
         currentRole={context.domainState.role}
         onUpdateSession={(updated) => send({ type: "UPDATE_COUNTING_SESSION", session: updated })}
+        boardProtocol={context.boardProtocol}
+        observerRecord={context.observerRecord}
+        onAddBoardRemark={(text) => send({ type: "ADD_BOARD_REMARK", member: "Član biračkog odbora", text })}
+        onAddObserverRemark={(text) => {
+          const observer = context.observerRecord.observers[0];
+          if (observer) send({ type: "ADD_OBSERVER_REMARK", observerId: observer.id, organization: observer.organization, text });
+        }}
       />
 
       {/* 10. DETERMINISTIČKI REPLAY I REVIZIJA ODLUKA */}

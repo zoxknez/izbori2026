@@ -34,8 +34,10 @@ export class PollingStationScene extends Phaser.Scene {
   private unsubSpeed?: () => void;
   private unsubSnapshot?: () => void;
   private unsubRestore?: () => void;
+  private unsubPhase?: () => void;
   private isSimPaused: boolean = false;
   private simSpeed: number = 1;
+  private acceptingNewVoters = false;
 
   constructor() {
     super({ key: "PollingStationScene" });
@@ -65,6 +67,10 @@ export class PollingStationScene extends Phaser.Scene {
       }
     });
 
+    this.unsubPhase = this.bridge?.on("PHASE_CHANGED", ({ phase }) => {
+      this.acceptingNewVoters = phase === "voting";
+    });
+
     this.unsubSpeed = this.bridge?.on("SPEED_CHANGED", (data) => {
       this.simSpeed = data.speed;
       this.isSimPaused = data.paused;
@@ -74,11 +80,8 @@ export class PollingStationScene extends Phaser.Scene {
       const activeVoters = this.npcManager.getAllActiveVoters().map((v) => {
         const visual = this.voterVisuals.get(v.profile.id);
         return {
-          id: v.profile.id,
-          name: v.profile.name,
-          gender: v.profile.gender,
-          ageCategory: v.profile.ageCategory,
-          walkSpeed: v.profile.walkSpeed,
+          profile: v.profile,
+          actorSnapshot: v.actor.getPersistedSnapshot(),
           currentStation: v.currentStation,
           timeAtStationMs: v.timeAtStationMs,
           assignedBoothIndex: v.assignedBoothIndex,
@@ -93,13 +96,22 @@ export class PollingStationScene extends Phaser.Scene {
         activeVoters,
         queueOrder: this.npcManager.getQueueOrder(),
         nextSpawnAtMs: this.nextSpawnTimeMs,
-        nextEntityId: this.npcManager.getAllActiveVoters().length,
+        nextEntityId: this.npcManager.getAllActiveVoters().length + this.npcManager.getCompletedVoterIds().length,
+        voterPool: this.voterPool,
+        completedVoterIds: this.npcManager.getCompletedVoterIds(),
       });
     });
 
     this.unsubRestore = this.bridge?.on("RESTORE_WORLD_STATE", (data) => {
       if (data.rngState !== undefined) {
         this.rng.setState(data.rngState);
+      }
+      if (data.activeVoters) {
+        this.npcManager.restoreVoters(data.activeVoters as Parameters<NPCStationManager["restoreVoters"]>[0], data.queueOrder ?? [], data.completedVoterIds ?? []);
+        this.voterPool = (data.voterPool ?? []) as VoterProfile[];
+        for (const visual of this.voterVisuals.values()) visual.container.destroy();
+        this.voterVisuals.clear();
+        for (const entity of this.npcManager.getAllActiveVoters()) this.createVoterVisual(entity);
       }
     });
 
@@ -108,6 +120,7 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubSpeed?.();
       this.unsubSnapshot?.();
       this.unsubRestore?.();
+      this.unsubPhase?.();
     });
 
     this.events.on("destroy", () => {
@@ -115,6 +128,7 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubSpeed?.();
       this.unsubSnapshot?.();
       this.unsubRestore?.();
+      this.unsubPhase?.();
     });
 
     // 1. Pod biračkog mesta
@@ -179,9 +193,6 @@ export class PollingStationScene extends Phaser.Scene {
     // Indikator selekcije
     this.selectedIndicator = this.add.graphics();
 
-    // Spawnovanje prvog birača odmah radi trenutnog prikaza
-    this.spawnNextVoter();
-
     // Mobile pan podrška: prevlačenje kamere prevlačenjem/dodirom
     this.input.on("pointermove", (p: Phaser.Input.Pointer) => {
       if (p.isDown) {
@@ -206,8 +217,8 @@ export class PollingStationScene extends Phaser.Scene {
   }
 
   private stepSimulation(effectiveDelta: number) {
-    // Spawnovanje novih birača sa pauzama (samo pre zatvaranja u 20:00 po čl. 99 ZINP)
-    if (this.elapsedTimeMs < 72_000_000 && this.elapsedTimeMs >= this.nextSpawnTimeMs && this.voterPool.length > 0) {
+    // Novi birači ulaze samo dok XState kaže da je glasanje otvoreno.
+    if (this.acceptingNewVoters && this.elapsedTimeMs >= this.nextSpawnTimeMs && this.voterPool.length > 0) {
       // Maksimalno 6 birača u isto vreme u prostoriji (performanse i vizuelna preglednost)
       if (this.npcManager.getAllActiveVoters().length < 6) {
         this.spawnNextVoter();

@@ -105,9 +105,10 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     await countingModal.getByRole("button", { name: /Kontrolni list i Forenzika/i }).click();
     await expect(countingModal.getByText(/Status kontrolnog lista u kutiji/i)).toBeVisible();
 
-    // Proveravamo tab 3 (Primedbe) i upisujemo primedbu posmatrača
+    // Posmatrač upisuje primedbu u svoj poseban zapisnik, ne u zapisnik BO.
     await countingModal.getByRole("button", { name: /Primedbe i Potpisi/i }).click();
-    await expect(countingModal.getByText(/Podnesi zvaničnu primedbu/i)).toBeVisible();
+    await expect(countingModal.getByText(/Zapisnik o prisustvu posmatrača/i)).toBeVisible();
+    await expect(countingModal.getByText(/Upiši primedbu u zapisnik posmatrača/i)).toBeVisible();
     await countingModal.locator("textarea").fill("Primedba posmatrača: uredan tok prebrojavanja.");
     await countingModal.getByRole("button", { name: /Upiši primedbu u zapisnik/i }).click();
     await expect(countingModal.getByText(/Primedba posmatrača: uredan tok prebrojavanja./i)).toBeVisible();
@@ -128,7 +129,7 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     }
     await expect(roleBtn).toContainText(/Član BO/i);
 
-    // Ponovo otvaramo zapisnik i potpisujemo ga kao Član BO + obezbeđujemo kvorum od najmanje 3 člana (čl. 104 i 115 ZINP)
+    // Ponovo otvaramo zapisnik i evidentiramo tri potpisa člana BO (prag iz čl. 115).
     const openProtocolBtn = page.getByTestId("open-protocol-button");
     await expect(openProtocolBtn).toBeVisible();
     await openProtocolBtn.click();
@@ -137,7 +138,7 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     await expect(signBtn).toBeVisible();
     await signBtn.click();
 
-    // Dodajemo još 2 potpisa članova odbora za pravovaljanost
+    // Dodajemo još 2 potpisa kako bi bio dostignut prag iz čl. 115.
     const signMember1 = countingModal.getByTestId("sign-member-1");
     if (await signMember1.isVisible()) {
       await signMember1.click();
@@ -147,7 +148,7 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
       await signMember2.click();
     }
 
-    await expect(countingModal.getByText(/Zapisnik je pravovaljano potpisan/i)).toBeVisible();
+    await expect(countingModal.getByText(/Evidentirano je najmanje tri potpisa/i)).toBeVisible();
     await countingModal.getByRole("button", { name: "Zatvori" }).click();
 
     // Milestone 7: Testiranje čuvanja stanja (Save) i determinističkog Replay pregleda

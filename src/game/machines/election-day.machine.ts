@@ -293,6 +293,8 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
         on: {
           START_VOTING: {
             target: "voting",
+            guard: ({ context }) =>
+              context.simulationTimeMs >= context.pollSchedule.actualOpenTimeMs,
             actions: assign(({ context }) => ({
               currentPhase: "voting" as const,
               actionLog: [
@@ -420,6 +422,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
             }),
           },
           SIGN_PROTOCOL: {
+            guard: ({ context }) => context.domainState.role === "clan_odbora",
             actions: assign(({ context, event }) => {
               const signer = event.memberName ?? `Član BO (${context.domainState.role})`;
               const updatedMembers = Array.from(
@@ -461,6 +464,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
             }),
           },
           UPDATE_COUNTING_SESSION: {
+            guard: ({ context }) => context.domainState.role === "clan_odbora",
             actions: assign(({ event }) => ({
               countingSession: event.session,
             })),
@@ -479,6 +483,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
       protocol: {
         on: {
           SIGN_PROTOCOL: {
+            guard: ({ context }) => context.domainState.role === "clan_odbora",
             actions: assign(({ context, event }) => {
               const signer = event.memberName ?? `Član BO (${context.domainState.role})`;
               const updatedMembers = Array.from(
@@ -517,6 +522,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
             }),
           },
           ADD_BOARD_REMARK: {
+            guard: ({ context }) => context.domainState.role === "clan_odbora",
             actions: assign(({ context, event }) => ({
               boardProtocol: {
                 ...context.boardProtocol,
@@ -533,6 +539,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
             })),
           },
           ADD_OBSERVER_REMARK: {
+            guard: ({ context }) => context.domainState.role === "posmatrac",
             actions: assign(({ context, event }) => ({
               observerRecord: {
                 ...context.observerRecord,
@@ -599,6 +606,34 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
         actions: assign(({ event }) => ({
           activeVoterCount: event.activeVoterCount,
           queueLength: event.queueLength,
+        })),
+      },
+      ADD_BOARD_REMARK: {
+        guard: ({ context }) => context.domainState.role === "clan_odbora",
+        actions: assign(({ context, event }) => ({
+          boardProtocol: {
+            ...context.boardProtocol,
+            boardMemberRemarks: [...context.boardProtocol.boardMemberRemarks, {
+              member: event.member,
+              role: "clan_odbora",
+              text: event.text,
+              timestampMs: context.simulationTimeMs,
+            }],
+          },
+        })),
+      },
+      ADD_OBSERVER_REMARK: {
+        guard: ({ context }) => context.domainState.role === "posmatrac",
+        actions: assign(({ context, event }) => ({
+          observerRecord: {
+            ...context.observerRecord,
+            remarks: [...context.observerRecord.remarks, {
+              observerId: event.observerId,
+              organization: event.organization,
+              text: event.text,
+              timestampMs: context.simulationTimeMs,
+            }],
+          },
         })),
       },
       CHANGE_ROLE: {
@@ -676,13 +711,10 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
         actions: assign(({ context, event }) => {
           if (event.targetMs <= context.simulationTimeMs) return {};
           const update = advanceSimulationInternal(context, event.targetMs);
-          const shouldBeVoting =
-            (context.currentPhase === "pre_opening" || update.currentPhase === "pre_opening") &&
-            event.targetMs >= context.pollSchedule.actualOpenTimeMs;
           return {
             ...update,
             simulationTimeMs: event.targetMs,
-            currentPhase: shouldBeVoting ? ("voting" as const) : (update.currentPhase ?? context.currentPhase),
+            currentPhase: update.currentPhase ?? context.currentPhase,
           };
         }),
       },

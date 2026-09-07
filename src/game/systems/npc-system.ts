@@ -145,6 +145,37 @@ export class NPCStationManager {
     return [...this.queue];
   }
 
+  getCompletedVoterIds(): string[] {
+    return [...this.completedVoters];
+  }
+
+  /** Rebuilds the logical station world from a persisted Phaser snapshot. */
+  restoreVoters(entries: Array<{
+    profile: VoterProfile;
+    currentStation: ActiveVoterEntity["currentStation"];
+    timeAtStationMs: number;
+    assignedBoothIndex?: number;
+    actorSnapshot?: unknown;
+  }>, queueOrder: string[], completedVoterIds: string[] = []) {
+    for (const voter of this.activeVoters.values()) voter.actor.stop();
+    this.activeVoters.clear();
+    this.queue = [];
+    this.completedVoters = new Set(completedVoterIds);
+    this.stationOccupancy = { uv: null, identification: null, voter_roll: null, spray: null, receive_ballot: null, booths: [null, null, null], ballot_box: null };
+    for (const saved of entries) {
+      const actor = createActor(createVoterMachine(saved.profile), saved.actorSnapshot ? { snapshot: saved.actorSnapshot as never } : undefined);
+      actor.start();
+      const entity: ActiveVoterEntity = { profile: saved.profile, actor, currentStation: saved.currentStation, timeAtStationMs: saved.timeAtStationMs, assignedBoothIndex: saved.assignedBoothIndex };
+      this.activeVoters.set(saved.profile.id, entity);
+      if (saved.currentStation === "booth" && saved.assignedBoothIndex !== undefined) this.stationOccupancy.booths[saved.assignedBoothIndex] = saved.profile.id;
+      else if (saved.currentStation !== "queue" && saved.currentStation !== "exiting") {
+        const station = saved.currentStation as Exclude<ActiveVoterEntity["currentStation"], "queue" | "exiting" | "booth">;
+        this.stationOccupancy[station] = saved.profile.id;
+      }
+    }
+    this.queue = queueOrder.filter((id) => this.activeVoters.get(id)?.currentStation === "queue");
+  }
+
   /**
    * Proverava da li ima slobodnog paravana (0, 1, 2).
    */

@@ -153,7 +153,7 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     actor.stop();
   });
 
-  it("zakonit tok zatvaranja i diskretna overa Zapisnika (minimalno 3 člana po čl. 104 i 115 ZINP)", () => {
+  it("zakonit tok zatvaranja i diskretna evidencija potpisa", () => {
     const machine = createElectionDayMachine({ role: "clan_odbora", startTime: "06:00" });
     const actor = createActor(machine);
     actor.start();
@@ -161,6 +161,10 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     expect(actor.getSnapshot().context.currentPhase).toBe("pre_opening");
     expect(actor.getSnapshot().context.countingSession).toBeUndefined();
 
+    // Pre 07:00 se biračko mesto ne može otvoriti.
+    actor.send({ type: "START_VOTING" });
+    expect(actor.getSnapshot().context.currentPhase).toBe("pre_opening");
+    actor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 25_200_000 });
     // 1. Otvaranje biračkog mesta
     actor.send({ type: "START_VOTING" });
     expect(actor.getSnapshot().context.currentPhase).toBe("voting");
@@ -181,7 +185,7 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     expect(countingSnapshot.context.countingSession?.receivedBallots).toBe(500);
     expect(countingSnapshot.context.actionLog.some((a) => a.type === "phase_change")).toBe(true);
 
-    // 5. Diskretno potpisivanje: 1 potpis nije dovoljan za pravovaljanost (čl. 104 i 115 ZINP)
+    // 5. Diskretni potpisi: manje od tri sprečava utvrđivanje rezultata pri dostavljanju (čl. 115).
     actor.send({ type: "SIGN_PROTOCOL", memberName: "Predsednik biračkog odbora" });
     let snapshot = actor.getSnapshot();
     expect(snapshot.context.countingSession?.signedByMembers).toHaveLength(1);
@@ -193,7 +197,7 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     expect(snapshot.context.countingSession?.signedByMembers).toHaveLength(2);
     expect(snapshot.context.countingSession?.isProtocolSigned).toBe(false);
 
-    // 3. potpis dostiže zakonski kvorum od najmanje 3 člana
+    // Treći potpis dostiže prag iz čl. 115.
     actor.send({ type: "SIGN_PROTOCOL", memberName: "Član BO (stalni sastav)" });
     snapshot = actor.getSnapshot();
     expect(snapshot.context.countingSession?.signedByMembers).toHaveLength(3);
@@ -210,6 +214,7 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     const actor = createActor(machine);
     actor.start();
 
+    actor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 25_200_000 });
     actor.send({ type: "START_VOTING" });
     actor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 72_000_000 });
 
@@ -225,6 +230,7 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     actor.start();
 
     actor.send({ type: "CHANGE_ROLE", role: "posmatrac" });
+    actor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 25_200_000 });
     actor.send({ type: "START_VOTING" });
     actor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 72_000_000 });
 
@@ -234,4 +240,3 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     actor.stop();
   });
 });
-

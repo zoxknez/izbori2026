@@ -34,10 +34,13 @@ export interface WorldSimulationSaveState {
   rngState: number;
   deterministicCounter?: number;
   nextEntityId: number;
-  activeVoters: SerializedVoterEntity[];
+  /** Scene-owned entities including profile and persisted voter actor snapshot. */
+  activeVoters: unknown[];
   queueOrder: string[];
   nextSpawnAtMs: number;
   legalInterruptions: LegalVotingInterruption[];
+  voterPool?: unknown[];
+  completedVoterIds?: string[];
 }
 
 export interface GameSaveV2 {
