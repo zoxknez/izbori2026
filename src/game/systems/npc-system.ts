@@ -137,6 +137,14 @@ export class NPCStationManager {
     return this.queue.indexOf(voterId);
   }
 
+  getQueueLength(): number {
+    return this.queue.length;
+  }
+
+  getQueueOrder(): string[] {
+    return [...this.queue];
+  }
+
   /**
    * Proverava da li ima slobodnog paravana (0, 1, 2).
    */

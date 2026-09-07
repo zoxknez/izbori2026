@@ -4,7 +4,15 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
   test("otvara /izborni-dan, omogućava prebacivanje na 2D režim i montira Phaser canvas", async ({ page }) => {
     // Slušamo konzolne greške da bismo osigurali da Phaser ne baca greške
     const errors: string[] = [];
-    page.on("pageerror", (err) => errors.push(err.message));
+    page.on("pageerror", (err) => {
+      console.error("CLIENT PAGEERROR:", err);
+      errors.push(err.message);
+    });
+    page.on("console", (msg) => {
+      if (msg.type() === "error") {
+        console.error("CLIENT CONSOLE ERROR:", msg.text());
+      }
+    });
 
     await page.goto("/izborni-dan");
     await expect(page.locator("h1")).toContainText("Izborni dan");
@@ -69,19 +77,26 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     }
     await expect(roleBtn).toContainText(/Posmatrač/i);
 
-    // Milestone 6: Prebacivanje na fazu prebrojavanja (20:00)
-    const startCountingBtn = page.getByTestId("start-counting-button");
-    await expect(startCountingBtn).toBeVisible();
-    await startCountingBtn.click();
+    // Milestone 6: Prebacivanje na fazu prebrojavanja (20:00) po čl. 91, 99 i 100 ZINP
+    // Premotavamo do 20:00 (kraj glasanja)
+    const ffBtn = page.getByTestId("fast-forward-to-closing-button");
+    await expect(ffBtn).toBeVisible({ timeout: 10_000 });
+    await ffBtn.click();
+
+    // Zatvaramo biračko mesto u 20:00 (čl. 99 ZINP)
+    const closePollsBtn = page.getByTestId("close-polls-button");
+    await expect(closePollsBtn).toBeEnabled({ timeout: 10_000 });
+    await closePollsBtn.click();
+
+    // Prelazak u brojanje (nakon pražnjenja reda po čl. 99 ZINP)
+    const finishClosingBtn = page.getByTestId("finish-closing-button");
+    await expect(finishClosingBtn).toBeEnabled({ timeout: 20_000 });
+    await finishClosingBtn.click();
 
     // Verifikujemo da je faza prešla u Prebrojavanje i Zapisnik
     await expect(page.getByText(/Prebrojavanje i Zapisnik \(20:00\+\)/i)).toBeVisible();
 
-    // Otvaramo zvanični zapisnik biračkog odbora
-    const openProtocolBtn = page.getByTestId("open-protocol-button");
-    await expect(openProtocolBtn).toBeVisible();
-    await openProtocolBtn.click();
-
+    // Zvanični zapisnik biračkog odbora se automatski otvara na početku prebrojavanja
     const countingModal = page.getByTestId("counting-protocol-modal");
     await expect(countingModal).toBeVisible();
     await expect(countingModal.getByText(/Zapisnik o radu biračkog odbora/i)).toBeVisible();
@@ -113,13 +128,26 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     }
     await expect(roleBtn).toContainText(/Član BO/i);
 
-    // Ponovo otvaramo zapisnik i potpisujemo ga kao Član BO
+    // Ponovo otvaramo zapisnik i potpisujemo ga kao Član BO + obezbeđujemo kvorum od najmanje 3 člana (čl. 104 i 115 ZINP)
+    const openProtocolBtn = page.getByTestId("open-protocol-button");
+    await expect(openProtocolBtn).toBeVisible();
     await openProtocolBtn.click();
     await expect(countingModal).toBeVisible();
     const signBtn = countingModal.getByTestId("sign-protocol-button");
     await expect(signBtn).toBeVisible();
     await signBtn.click();
-    await expect(countingModal.getByText(/Zapisnik je potpisan i overen/i)).toBeVisible();
+
+    // Dodajemo još 2 potpisa članova odbora za pravovaljanost
+    const signMember1 = countingModal.getByTestId("sign-member-1");
+    if (await signMember1.isVisible()) {
+      await signMember1.click();
+    }
+    const signMember2 = countingModal.getByTestId("sign-member-2");
+    if (await signMember2.isVisible()) {
+      await signMember2.click();
+    }
+
+    await expect(countingModal.getByText(/Zapisnik je pravovaljano potpisan/i)).toBeVisible();
     await countingModal.getByRole("button", { name: "Zatvori" }).click();
 
     // Milestone 7: Testiranje čuvanja stanja (Save) i determinističkog Replay pregleda

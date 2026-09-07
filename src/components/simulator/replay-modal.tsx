@@ -45,8 +45,16 @@ export function ReplayModal({
   const [copied, setCopied] = useState(false);
 
   const replayResult: ReplayResult = useMemo(() => {
+    if (!isOpen) {
+      return {
+        initialState: currentDomainState,
+        finalDomainState: currentDomainState,
+        steps: [],
+        isDeterministicParity: true,
+      };
+    }
     return replaySimulation(seed, mode, role, actionLog, currentDomainState);
-  }, [seed, mode, role, actionLog, currentDomainState]);
+  }, [isOpen, seed, mode, role, actionLog, currentDomainState]);
 
   if (!isOpen) return null;
 

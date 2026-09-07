@@ -49,20 +49,26 @@ export function CountingProtocolModal({
 
   const roleConfig = ROLE_CONFIGS[currentRole];
 
-  const handleSignProtocol = () => {
+  const BOARD_MEMBERS_AVAILABLE = [
+    `Član BO (${roleConfig.shortLabel})`,
+    "Predsednik biračkog odbora",
+    "Zamenik predsednika BO",
+    "Član BO (stalni sastav 2)",
+    "Član BO (prošireni sastav)",
+  ];
+
+  const handleSignMember = (memberName: string) => {
+    if (session.signedByMembers.includes(memberName)) return;
+    const updatedMembers = [...session.signedByMembers, memberName];
+    const isSigned = updatedMembers.length >= 3;
     const updated: CountingSession = {
       ...session,
-      isProtocolSigned: true,
-      signedByAtLeastThree: true,
-      signedByMembers: [
-        ...session.signedByMembers,
-        `Član BO (${roleConfig.shortLabel})`,
-        "Predsednik BO",
-        "Zamenik predsednika BO",
-      ],
+      isProtocolSigned: isSigned,
+      signedByAtLeastThree: isSigned,
+      signedByMembers: updatedMembers,
     };
     onUpdateSession(updated);
-    setStatusMessage("Zapisnik o radu biračkog odbora je uspešno overen i potpisan.");
+    setStatusMessage(`Potpisano: ${memberName} (${updatedMembers.length}/3 minimalno potrebnih potpisa po čl. 104 i 115 ZINP).`);
     setTimeout(() => setStatusMessage(null), 4000);
   };
 
@@ -436,22 +442,25 @@ export function CountingProtocolModal({
           )}
         </div>
 
-        {/* 5. Footer sa akcijom potpisivanja */}
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border/80 pt-4">
-          <div className="flex items-center gap-2">
-            {session.isProtocolSigned ? (
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400">
-                <CheckCircle2 className="h-4 w-4" />
-                <span>Zapisnik je potpisan i overen</span>
-              </span>
-            ) : (
-              <span className="text-xs text-ink-dim">
-                Zapisnik čeka overu članova biračkog odbora pre predaje komisiji.
-              </span>
-            )}
-          </div>
+        {/* 5. Footer sa akcijom diskretnog potpisivanja po čl. 104 i 115 ZINP */}
+        <div className="mt-4 flex flex-col gap-3 border-t border-border/80 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              {session.isProtocolSigned ? (
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400">
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>Zapisnik je pravovaljano potpisan ({session.signedByMembers.length} potpisa, kvorum $\ge 3$)</span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span>
+                    Potpisi: {session.signedByMembers.length}/3 (minimalno 3 člana po čl. 104 i 115 ZINP)
+                  </span>
+                </span>
+              )}
+            </div>
 
-          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={onClose}
@@ -459,19 +468,54 @@ export function CountingProtocolModal({
             >
               Zatvori
             </button>
-
-            {currentRole === "clan_odbora" && !session.isProtocolSigned && (
-              <button
-                type="button"
-                data-testid="sign-protocol-button"
-                onClick={handleSignProtocol}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-5 py-2 text-xs font-bold text-brand-contrast shadow-sm hover:opacity-90"
-              >
-                <PenTool className="h-3.5 w-3.5" />
-                <span>Potpiši i overi zapisnik (Član BO)</span>
-              </button>
-            )}
           </div>
+
+          {/* Lista zabeleženih potpisa */}
+          {session.signedByMembers.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+              <span className="text-ink-dim font-medium">Potpisnici:</span>
+              {session.signedByMembers.map((m) => (
+                <span
+                  key={m}
+                  className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-400"
+                >
+                  <CheckCircle2 className="h-3 w-3" />
+                  {m}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Dugmad za potpisivanje članova BO */}
+          {currentRole === "clan_odbora" && (
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="text-xs font-bold text-ink">Potpiši / evidentiraj potpis člana BO:</span>
+              {BOARD_MEMBERS_AVAILABLE.map((member, idx) => {
+                const isAlreadySigned = session.signedByMembers.includes(member);
+                const isPlayer = idx === 0;
+                return (
+                  <button
+                    key={member}
+                    type="button"
+                    data-testid={isPlayer ? "sign-protocol-button" : `sign-member-${idx}`}
+                    disabled={isAlreadySigned}
+                    onClick={() => handleSignMember(member)}
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-bold transition-all shadow-sm",
+                      isAlreadySigned
+                        ? "border border-border/50 bg-surface-2/40 text-ink-dim opacity-50 cursor-not-allowed"
+                        : isPlayer
+                        ? "bg-brand text-brand-contrast hover:opacity-90 ring-1 ring-brand/40"
+                        : "border border-sky-500/40 bg-sky-500/15 text-sky-300 hover:bg-sky-500/25",
+                    )}
+                  >
+                    <PenTool className="h-3 w-3" />
+                    <span>{isAlreadySigned ? `✓ ${member}` : `Potpiši: ${member}`}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

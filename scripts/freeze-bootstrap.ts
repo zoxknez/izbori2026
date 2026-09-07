@@ -18,9 +18,15 @@ async function main() {
       }
 
       // Verifikacija heša payload-a
-      const payloadString = JSON.stringify(parsed.payload);
+      const { stableStringify } = await import("../src/lib/offline/dataset-validator");
+      const payloadString = stableStringify(parsed.payload);
       const computedHash = createHash("sha256").update(payloadString).digest("hex");
-      console.log(`[Bootstrap] CI fixture režim aktivan. Verifikovan snapshot sha256=${parsed.sha256.substring(0, 12)}... (izračunat=${computedHash.substring(0, 12)}...).`);
+      if (computedHash !== parsed.sha256) {
+        throw new Error(
+          `Bootstrap fixture checksum mismatch: očekivan=${parsed.sha256}, izračunat=${computedHash}`,
+        );
+      }
+      console.log(`[Bootstrap] CI fixture režim aktivan. Verifikovan snapshot sha256=${parsed.sha256}.`);
       return;
     } catch (err) {
       if (process.env.CI_BOOTSTRAP_MODE === "fixture") {

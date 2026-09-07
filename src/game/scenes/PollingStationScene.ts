@@ -32,6 +32,8 @@ export class PollingStationScene extends Phaser.Scene {
 
   private unsubClock?: () => void;
   private unsubSpeed?: () => void;
+  private unsubSnapshot?: () => void;
+  private unsubRestore?: () => void;
   private isSimPaused: boolean = false;
   private simSpeed: number = 1;
 
@@ -50,10 +52,17 @@ export class PollingStationScene extends Phaser.Scene {
     const width = this.scale.width;
     const height = this.scale.height;
 
-    // Slušamo CLOCK_TICK i SPEED_CHANGED iz GameBridge-a
+    // Slušamo autoritativni CLOCK_TICK iz XState / GameBridge-a
     this.unsubClock = this.bridge?.on("CLOCK_TICK", (data) => {
       if (data.paused !== undefined) this.isSimPaused = data.paused;
       if (data.speed !== undefined) this.simSpeed = data.speed;
+      const prevMs = this.elapsedTimeMs;
+      this.elapsedTimeMs = data.simulationTimeMs;
+      const effectiveDelta =
+        data.deltaSimMs ?? (data.simulationTimeMs > prevMs ? data.simulationTimeMs - prevMs : 0);
+      if (!this.isSimPaused && effectiveDelta > 0) {
+        this.stepSimulation(effectiveDelta);
+      }
     });
 
     this.unsubSpeed = this.bridge?.on("SPEED_CHANGED", (data) => {
@@ -61,14 +70,51 @@ export class PollingStationScene extends Phaser.Scene {
       this.isSimPaused = data.paused;
     });
 
+    this.unsubSnapshot = this.bridge?.on("REQUEST_WORLD_SNAPSHOT", () => {
+      const activeVoters = this.npcManager.getAllActiveVoters().map((v) => {
+        const visual = this.voterVisuals.get(v.profile.id);
+        return {
+          id: v.profile.id,
+          name: v.profile.name,
+          gender: v.profile.gender,
+          ageCategory: v.profile.ageCategory,
+          walkSpeed: v.profile.walkSpeed,
+          currentStation: v.currentStation,
+          timeAtStationMs: v.timeAtStationMs,
+          assignedBoothIndex: v.assignedBoothIndex,
+          progress: v.timeAtStationMs,
+          x: visual?.container.x ?? 0,
+          y: visual?.container.y ?? 0,
+        };
+      });
+      this.bridge?.emit("WORLD_STATE_SNAPSHOT", {
+        rngState: this.rng.getState(),
+        deterministicCounter: this.elapsedTimeMs,
+        activeVoters,
+        queueOrder: this.npcManager.getQueueOrder(),
+        nextSpawnAtMs: this.nextSpawnTimeMs,
+        nextEntityId: this.npcManager.getAllActiveVoters().length,
+      });
+    });
+
+    this.unsubRestore = this.bridge?.on("RESTORE_WORLD_STATE", (data) => {
+      if (data.rngState !== undefined) {
+        this.rng.setState(data.rngState);
+      }
+    });
+
     this.events.on("shutdown", () => {
       this.unsubClock?.();
       this.unsubSpeed?.();
+      this.unsubSnapshot?.();
+      this.unsubRestore?.();
     });
 
     this.events.on("destroy", () => {
       this.unsubClock?.();
       this.unsubSpeed?.();
+      this.unsubSnapshot?.();
+      this.unsubRestore?.();
     });
 
     // 1. Pod biračkog mesta
@@ -154,17 +200,15 @@ export class PollingStationScene extends Phaser.Scene {
     this.bridge?.emit("WORLD_READY", { width, height });
   }
 
-  update(_time: number, delta: number) {
-    if (this.isSimPaused) {
-      return;
-    }
+  update(_time: number, _delta: number) {
+    // Phaser update frame se ne koristi za nezavisno koračanje simulacije.
+    // Autoritet za tok vremena ima isključivo XState preko CLOCK_TICK poruka.
+  }
 
-    const effectiveDelta = delta * (this.simSpeed || 1);
-    this.elapsedTimeMs += effectiveDelta;
-
-    // Spawnovanje novih birača sa pauzama
-    if (this.elapsedTimeMs >= this.nextSpawnTimeMs && this.voterPool.length > 0) {
-      // Maksimalno 6 birača u isto vreme u prostoriji (perfomance & visual clarity)
+  private stepSimulation(effectiveDelta: number) {
+    // Spawnovanje novih birača sa pauzama (samo pre zatvaranja u 20:00 po čl. 99 ZINP)
+    if (this.elapsedTimeMs < 72_000_000 && this.elapsedTimeMs >= this.nextSpawnTimeMs && this.voterPool.length > 0) {
+      // Maksimalno 6 birača u isto vreme u prostoriji (performanse i vizuelna preglednost)
       if (this.npcManager.getAllActiveVoters().length < 6) {
         this.spawnNextVoter();
       }
@@ -234,6 +278,12 @@ export class PollingStationScene extends Phaser.Scene {
         });
       }
     }
+
+    // Obavesti sistem o metrikama
+    this.bridge?.emit("NPC_METRICS_UPDATED", {
+      activeVoterCount: this.npcManager.getAllActiveVoters().length,
+      queueLength: this.npcManager.getQueueLength(),
+    });
   }
 
   private spawnNextVoter() {

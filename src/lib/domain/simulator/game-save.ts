@@ -32,6 +32,7 @@ export interface SerializedVoterEntity {
 
 export interface WorldSimulationSaveState {
   rngState: number;
+  deterministicCounter?: number;
   nextEntityId: number;
   activeVoters: SerializedVoterEntity[];
   queueOrder: string[];
@@ -87,6 +88,11 @@ export async function computeCanonicalStateHash(data: {
   flags: string[];
   actionLogLength: number;
   pollSchedule: PollSchedule;
+  decisionHistory?: Array<{ eventId: string; choiceId: string }>;
+  activeIncidentIds?: string[];
+  missedIncidentIds?: string[];
+  boardProtocol?: BoardProtocol;
+  rngState?: number;
 }): Promise<string> {
   const canonicalPayload = JSON.stringify({
     runId: data.runId,
@@ -100,6 +106,20 @@ export async function computeCanonicalStateHash(data: {
       }, {} as Record<string, number>),
     flags: [...data.flags].sort(),
     actionLogLength: data.actionLogLength,
+    decisionHistory: (data.decisionHistory ?? []).map((d) => ({
+      choiceId: d.choiceId,
+      eventId: d.eventId,
+    })),
+    activeIncidentIds: [...(data.activeIncidentIds ?? [])].sort(),
+    missedIncidentIds: [...(data.missedIncidentIds ?? [])].sort(),
+    rngState: data.rngState ?? null,
+    boardProtocol: data.boardProtocol
+      ? {
+          isSigned: data.boardProtocol.isSigned,
+          signedByMembers: [...data.boardProtocol.signedByMembers].sort(),
+          remarksCount: data.boardProtocol.boardMemberRemarks.length,
+        }
+      : null,
     pollSchedule: {
       scheduledOpenTimeMs: data.pollSchedule.scheduledOpenTimeMs,
       actualOpenTimeMs: data.pollSchedule.actualOpenTimeMs,
@@ -259,7 +279,7 @@ export function replaySimulation(
       const ev = simulationEvents.find((e) => e.id === entry.eventId);
       const choice = ev?.choices.find((c) => c.id === entry.choiceId);
       if (ev && choice) {
-        current = resolveChoice(current, ev, choice);
+        current = resolveChoice(current, ev, choice, { bypassRoleCheck: true });
       }
     } else if (entry.type === "role_change") {
       const details = entry.details ?? "";

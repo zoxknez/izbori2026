@@ -15,12 +15,21 @@ export interface GameBridgeEventMap {
   HOTSPOT_CLICKED: { hotspotId: string; locationId: string; title: string };
   HOTSPOT_HOVERED: { hotspotId: string | null };
   WORLD_ACTION_REQUESTED: { worldActionId: string; choiceId: string; eventId?: string };
+  NPC_METRICS_UPDATED: { activeVoterCount: number; queueLength: number };
+  WORLD_STATE_SNAPSHOT: {
+    rngState: number;
+    deterministicCounter?: number;
+    activeVoters: unknown[];
+    queueOrder: string[];
+    nextSpawnAtMs: number;
+    nextEntityId: number;
+  };
 
   // Iz XState / Domain layer-a ka Phaseru i Reactu:
   CLOCK_TICK: {
     simulationTimeMs: number;
-    timeString: string;
-    deltaMs: number;
+    timeString?: string;
+    deltaMs?: number;
     deltaSimMs?: number;
     paused?: boolean;
     speed?: 1 | 2 | 4;
@@ -38,6 +47,14 @@ export interface GameBridgeEventMap {
   RESET_REQUESTED: { seed?: number };
   SWITCH_SCENE: { sceneKey: "PollingStationScene" | "CountingScene" };
   PHASE_CHANGED: { phase: "voting" | "counting" };
+  REQUEST_WORLD_SNAPSHOT: Record<string, never>;
+  RESTORE_WORLD_STATE: {
+    rngState: number;
+    activeVoters?: unknown[];
+    queueOrder?: string[];
+    nextSpawnAtMs?: number;
+    nextEntityId?: number;
+  };
 }
 
 export type GameBridgeEventName = keyof GameBridgeEventMap;

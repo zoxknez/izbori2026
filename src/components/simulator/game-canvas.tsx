@@ -10,19 +10,20 @@ import type { GameBridge } from "@/game/bridge/game-bridge";
 
 interface GameCanvasProps {
   bridge: GameBridge;
+  seed?: number;
 }
 
-export function GameCanvas({ bridge }: GameCanvasProps) {
+export function GameCanvas({ bridge, seed }: GameCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<Phaser.Game | null>(null);
 
   useEffect(() => {
     if (!containerRef.current || gameRef.current) return;
 
-    // Prilagođena BootScene koja automatski prenosi bridge na sledeće scene
+    // Prilagođena BootScene koja automatski prenosi bridge i seed na sledeće scene
     class InjectedBootScene extends BootScene {
       init() {
-        super.init({ bridge });
+        super.init({ bridge, seed });
       }
     }
 
@@ -42,7 +43,7 @@ export function GameCanvas({ bridge }: GameCanvasProps) {
             gameRef.current.scene.stop(s.scene.key);
           }
         }
-        gameRef.current.scene.start(sceneKey, { bridge });
+        gameRef.current.scene.start(sceneKey, { bridge, seed });
       }
     });
 

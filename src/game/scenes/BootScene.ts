@@ -4,12 +4,15 @@ import type { GameBridge } from "@/game/bridge/game-bridge";
 export class BootScene extends Phaser.Scene {
   private bridge?: GameBridge;
 
+  private seed?: number;
+
   constructor() {
     super({ key: "BootScene" });
   }
 
-  init(data: { bridge?: GameBridge }) {
+  init(data: { bridge?: GameBridge; seed?: number }) {
     this.bridge = data.bridge;
+    this.seed = data.seed;
   }
 
   create() {
@@ -17,7 +20,7 @@ export class BootScene extends Phaser.Scene {
     this.generateProceduralTextures();
 
     // Prelazak na glavnu scenu biračkog mesta
-    this.scene.start("PollingStationScene", { bridge: this.bridge });
+    this.scene.start("PollingStationScene", { bridge: this.bridge, seed: this.seed });
   }
 
   private generateProceduralTextures() {

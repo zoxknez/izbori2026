@@ -153,7 +153,7 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     actor.stop();
   });
 
-  it("START_COUNTING i SIGN_PROTOCOL orkestriraju prelazak na 20:00 i overu Zapisnika", () => {
+  it("zakonit tok zatvaranja i diskretna overa Zapisnika (minimalno 3 člana po čl. 104 i 115 ZINP)", () => {
     const machine = createElectionDayMachine({ role: "clan_odbora", startTime: "06:00" });
     const actor = createActor(machine);
     actor.start();
@@ -161,24 +161,76 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     expect(actor.getSnapshot().context.currentPhase).toBe("pre_opening");
     expect(actor.getSnapshot().context.countingSession).toBeUndefined();
 
-    // Pokrećemo brojanje (zatvaranje u 20:00)
-    actor.send({ type: "START_COUNTING" });
+    // 1. Otvaranje biračkog mesta
+    actor.send({ type: "START_VOTING" });
+    expect(actor.getSnapshot().context.currentPhase).toBe("voting");
 
+    // 2. Simulacija toka do 20:00
+    actor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 72_000_000 });
+    expect(actor.getSnapshot().context.simulationTimeMs).toBeGreaterThanOrEqual(72_000_000);
+
+    // 3. Zatvaranje biračkog mesta u 20:00 (čl. 99 ZINP)
+    actor.send({ type: "CLOSE_POLLS" });
+    expect(actor.getSnapshot().context.currentPhase).toBe("closing");
+
+    // 4. Završetak glasanja zatečenih birača -> prebrojavanje (čl. 100 ZINP)
+    actor.send({ type: "FINISH_CLOSING" });
     const countingSnapshot = actor.getSnapshot();
     expect(countingSnapshot.context.currentPhase).toBe("counting");
-    expect(countingSnapshot.context.simulationTimeMs).toBeGreaterThanOrEqual(72000000); // 20:00
     expect(countingSnapshot.context.countingSession).toBeDefined();
     expect(countingSnapshot.context.countingSession?.receivedBallots).toBe(500);
     expect(countingSnapshot.context.actionLog.some((a) => a.type === "phase_change")).toBe(true);
 
-    // Overa zapisnika
-    actor.send({ type: "SIGN_PROTOCOL" });
+    // 5. Diskretno potpisivanje: 1 potpis nije dovoljan za pravovaljanost (čl. 104 i 115 ZINP)
+    actor.send({ type: "SIGN_PROTOCOL", memberName: "Predsednik biračkog odbora" });
+    let snapshot = actor.getSnapshot();
+    expect(snapshot.context.countingSession?.signedByMembers).toHaveLength(1);
+    expect(snapshot.context.countingSession?.isProtocolSigned).toBe(false);
 
-    const signedSnapshot = actor.getSnapshot();
-    expect(signedSnapshot.context.countingSession?.isProtocolSigned).toBe(true);
-    expect(signedSnapshot.context.countingSession?.signedByAtLeastThree).toBe(true);
-    expect(signedSnapshot.context.actionLog.some((a) => a.type === "protocol_signed")).toBe(true);
+    // 2 potpisa i dalje nisu dovoljna
+    actor.send({ type: "SIGN_PROTOCOL", memberName: "Zamenik predsednika BO" });
+    snapshot = actor.getSnapshot();
+    expect(snapshot.context.countingSession?.signedByMembers).toHaveLength(2);
+    expect(snapshot.context.countingSession?.isProtocolSigned).toBe(false);
 
+    // 3. potpis dostiže zakonski kvorum od najmanje 3 člana
+    actor.send({ type: "SIGN_PROTOCOL", memberName: "Član BO (stalni sastav)" });
+    snapshot = actor.getSnapshot();
+    expect(snapshot.context.countingSession?.signedByMembers).toHaveLength(3);
+    expect(snapshot.context.countingSession?.isProtocolSigned).toBe(true);
+    expect(snapshot.context.countingSession?.signedByAtLeastThree).toBe(true);
+    expect(snapshot.context.boardProtocol.isSigned).toBe(true);
+    expect(snapshot.context.actionLog.some((a) => a.type === "protocol_signed")).toBe(true);
+
+    actor.stop();
+  });
+
+  it("ADVANCE_SIMULATION_TO pomera vreme sa 06:00 na 20:00 u sekvenci sa START_VOTING", () => {
+    const machine = createElectionDayMachine({ role: "clan_odbora", startTime: "06:00" });
+    const actor = createActor(machine);
+    actor.start();
+
+    actor.send({ type: "START_VOTING" });
+    actor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 72_000_000 });
+
+    const snap = actor.getSnapshot();
+    expect(snap.context.simulationTimeMs).toBe(72_000_000);
+    expect(snap.context.currentPhase).toBe("voting");
+    actor.stop();
+  });
+
+  it("ADVANCE_SIMULATION_TO pomera vreme na 20:00 kada je uloga posmatrac", () => {
+    const machine = createElectionDayMachine({ role: "clan_odbora", startTime: "06:00" });
+    const actor = createActor(machine);
+    actor.start();
+
+    actor.send({ type: "CHANGE_ROLE", role: "posmatrac" });
+    actor.send({ type: "START_VOTING" });
+    actor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 72_000_000 });
+
+    const snap = actor.getSnapshot();
+    expect(snap.context.simulationTimeMs).toBe(72_000_000);
+    expect(snap.context.currentPhase).toBe("voting");
     actor.stop();
   });
 });

@@ -1,0 +1,6382 @@
+{
+  "filename": "snapshot.json",
+  "payload": {
+    "rules": [
+      {
+        "id": "P01",
+        "slug": "nedostaje-izvod-birackog-spiska",
+        "naziv": "Nedostaje izvod iz biračkog spiska",
+        "order": 1,
+        "phases": [
+          "pre_otvaranja"
+        ],
+        "aliases": [],
+        "doNotDo": [
+          "Ne otvarati glasanje „privremeno“ dok se čeka materijal"
+        ],
+        "summary": "Pre otvaranja nedostaje izvod iz biračkog spiska za to biračko mesto.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Ako pre otvaranja biračkog mesta nedostaje deo izbornog materijala bez kojeg glasanje ne može da se sprovede (izvod iz biračkog spiska, glasačka kutija ili kontrolni list), biračko mesto se ne otvara.",
+        "mythCheck": null,
+        "kategorija": "pre_otvaranja",
+        "sourceUrls": [],
+        "legalEffect": "Biračko mesto se ne otvara dok se nedostatak ne otkloni.",
+        "whatToCheck": [
+          "Da li izvod uopšte postoji u materijalu koji je odbor preuzeo",
+          "Da li je problem prijavljen nadležnoj izbornoj komisiji"
+        ],
+        "relatedSlugs": [
+          "nedostaje-glasacka-kutija",
+          "nedostaje-kontrolni-list-pre-otvaranja"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Sačekaj zvanično obaveštenje odbora, ne napuštaj red bez informacije"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži vreme i razlog kašnjenja otvaranja u sopstveni zapisnik"
+        ],
+        "controllerActions": [
+          "Ne otvarati biračko mesto dok materijal nije kompletan",
+          "Odmah obavestiti nadležnu izbornu komisiju",
+          "Zabeležiti tačno vreme uočavanja nedostatka"
+        ],
+        "evidenceChecklist": [
+          "Vreme uočavanja",
+          "Ko je obavešten",
+          "Kada je materijal dopunjen"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "P02",
+        "slug": "nedostaje-glasacka-kutija",
+        "naziv": "Nedostaje glasačka kutija",
+        "order": 2,
+        "phases": [
+          "pre_otvaranja"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Glasačka kutija nije deo preuzetog izbornog materijala.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Glasačka kutija je deo materijala bez kojeg se glasanje ne može sprovesti. Biračko mesto se ne otvara dok kutija ne stigne.",
+        "mythCheck": null,
+        "kategorija": "pre_otvaranja",
+        "sourceUrls": [],
+        "legalEffect": "Biračko mesto se ne otvara.",
+        "whatToCheck": [
+          "Da li je kutija zamenjena ispravnom pre stvarnog otvaranja"
+        ],
+        "relatedSlugs": [
+          "nedostaje-izvod-birackog-spiska"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži tačno vreme i tok rešavanja"
+        ],
+        "controllerActions": [
+          "Ne otvarati mesto",
+          "Prijaviti izbornoj komisiji odmah"
+        ],
+        "evidenceChecklist": [
+          "Vreme",
+          "Ko je kontaktiran",
+          "Kada je kutija dopremljena"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "P03",
+        "slug": "nedostaje-kontrolni-list-pre-otvaranja",
+        "naziv": "Nedostaje kontrolni list (pre otvaranja)",
+        "order": 3,
+        "phases": [
+          "pre_otvaranja"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Kontrolni list nije zatečen u preuzetom izbornom materijalu.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Kontrolni list je obavezan deo materijala. Ako nedostaje, biračko mesto se ne otvara dok se pitanje ne reši sa izbornom komisijom.",
+        "mythCheck": null,
+        "kategorija": "pre_otvaranja",
+        "sourceUrls": [],
+        "legalEffect": "Biračko mesto se ne otvara.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "kontrolni-list-nije-popunjen"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži vreme i razlog"
+        ],
+        "controllerActions": [
+          "Ne otvarati mesto",
+          "Odmah kontaktirati izbornu komisiju"
+        ],
+        "evidenceChecklist": [
+          "Vreme",
+          "Komunikacija sa komisijom"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "P04",
+        "slug": "manji-broj-listica-nije-razlog-za-neotvaranje",
+        "naziv": "Manji broj listića od broja birača nije razlog da se mesto ne otvori",
+        "order": 4,
+        "phases": [
+          "pre_otvaranja"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Ako je broj primljenih glasačkih listića manji od broja upisanih birača, to samo po sebi nije razlog da se biračko mesto ne otvori.",
+        "severity": "info",
+        "legalRule": "Zakon posebno predviđa da se u ovom slučaju biračko mesto ipak otvara, za razliku od nedostatka izvoda, kutije ili kontrolnog lista.",
+        "mythCheck": {
+          "claim": "Ako nema dovoljno listića za sve upisane birače, biračko mesto se ne otvara.",
+          "verdict": "mit",
+          "explanation": "Zakon ovaj slučaj tretira drugačije od nedostatka izvoda, kutije ili kontrolnog lista: mesto se otvara, a listići se dopunjuju."
+        },
+        "kategorija": "pre_otvaranja",
+        "sourceUrls": [],
+        "legalEffect": "Glasanje počinje po planu; dopuna listića se rešava u hodu preko izborne komisije.",
+        "whatToCheck": [
+          "Da li je odbor prijavio nedostatak listića komisiji radi blagovremene dopune"
+        ],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Otvoriti biračko mesto u zakazano vreme",
+          "Zatražiti dopunu listića"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "P05",
+        "slug": "kutija-nije-pokazana-prazna",
+        "naziv": "Kutija nije pokazana prazna prvom biraču",
+        "order": 5,
+        "phases": [
+          "pre_otvaranja"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Pred prvim biračem nije utvrđeno da je glasačka kutija prazna i ispravna.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Pre početka glasanja, pred prvim biračem se utvrđuje da je glasačka kutija prazna i ispravna, nakon čega se ubacuje kontrolni list i kutija se pečati.",
+        "mythCheck": null,
+        "kategorija": "pre_otvaranja",
+        "sourceUrls": [],
+        "legalEffect": "Ako je propust primećen pre pečaćenja, procedura se može sprovesti ispravno; ako je glasanje već počelo, činjenicu treba uneti u zapisnik i odmah obavestiti nadležnu izbornu komisiju.",
+        "whatToCheck": [
+          "Da li je prvi birač zaista bio prisutan i video prazan prostor kutije"
+        ],
+        "relatedSlugs": [
+          "kontrolni-list-nije-popunjen"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Ako si prvi birač i ovo se preskoči, zatraži da se procedura sprovede pre nego što glasaš"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži da li je provera sprovedena pred svedocima"
+        ],
+        "controllerActions": [
+          "Ako kutija još nije zapečaćena, sprovesti proveru pred prvim biračem i popuniti kontrolni list",
+          "Ako je glasanje već počelo, ne pokušavati naknadnu rekonstrukciju; uneti činjenicu u zapisnik i obavestiti komisiju"
+        ],
+        "evidenceChecklist": [
+          "Vreme otvaranja",
+          "Ko je prvi birač",
+          "Da li je provera sprovedena"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "P06",
+        "slug": "kontrolni-list-nije-popunjen",
+        "naziv": "Kontrolni list nije popunjen",
+        "order": 6,
+        "phases": [
+          "pre_otvaranja"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Kontrolni list koji treba da bude ubačen u kutiju pre pečaćenja nije uopšte popunjen.",
+        "severity": "ponistavanje",
+        "legalRule": "Kontrolni list se popunjava, potpisuje ga prvi birač i najmanje jedan član biračkog odbora, ubacuje se u kutiju, pa se kutija pečati.",
+        "mythCheck": null,
+        "kategorija": "pre_otvaranja",
+        "sourceUrls": [],
+        "legalEffect": "Ako se pri otvaranju kutije utvrdi da kontrolni list nije popunjen, to je jedan od zakonom izričito propisanih razloga za poništavanje glasanja na tom biračkom mestu po službenoj dužnosti.",
+        "whatToCheck": [
+          "Da li kontrolni list uopšte postoji u kutiji pri otvaranju"
+        ],
+        "relatedSlugs": [
+          "kontrolni-list-bez-potpisa-prvog-biraca",
+          "kontrolni-list-bez-potpisa-clana-odbora",
+          "kontrolni-list-nije-ubacen-u-kutiju"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 116 · poništavanje po službenoj dužnosti"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži da li je kontrolni list vidljivo popunjen pre pečaćenja"
+        ],
+        "controllerActions": [
+          "Pre pečaćenja popuniti i potpisati kontrolni list prema propisanoj proceduri",
+          "Ako je kutija već zapečaćena, ne dopisivati podatke naknadno; uneti činjenicu u zapisnik i obavestiti komisiju"
+        ],
+        "evidenceChecklist": [
+          "Da li je kontrolni list popunjen",
+          "Ko je prisustvovao"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": true
+      },
+      {
+        "id": "P07",
+        "slug": "kontrolni-list-bez-potpisa-prvog-biraca",
+        "naziv": "Kontrolni list nije potpisao prvi birač",
+        "order": 7,
+        "phases": [
+          "pre_otvaranja"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Kontrolni list postoji, ali ga prvi birač nije potpisao.",
+        "severity": "ponistavanje",
+        "legalRule": "Kontrolni list mora potpisati prvi birač i najmanje jedan član biračkog odbora.",
+        "mythCheck": null,
+        "kategorija": "pre_otvaranja",
+        "sourceUrls": [],
+        "legalEffect": "Zakonski osnov za poništavanje glasanja na biračkom mestu po službenoj dužnosti.",
+        "whatToCheck": [
+          "Da li potpis prvog birača zaista nedostaje ili je samo nečitak"
+        ],
+        "relatedSlugs": [
+          "kontrolni-list-nije-popunjen"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 116 · poništavanje po službenoj dužnosti"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Proveri vidljivost potpisa pri otvaranju kutije nakon glasanja"
+        ],
+        "controllerActions": [
+          "Pre pečaćenja obezbediti potpis prvog birača prema propisanoj proceduri",
+          "Ako je kutija već zapečaćena, ne dopisivati potpis naknadno; uneti primedbu u zapisnik"
+        ],
+        "evidenceChecklist": [
+          "Fotografija/opis stanja kontrolnog lista pri otvaranju kutije"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": true
+      },
+      {
+        "id": "P08",
+        "slug": "kontrolni-list-bez-potpisa-clana-odbora",
+        "naziv": "Kontrolni list nije potpisao nijedan član odbora",
+        "order": 8,
+        "phases": [
+          "pre_otvaranja"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Kontrolni list nema potpis nijednog člana biračkog odbora.",
+        "severity": "ponistavanje",
+        "legalRule": "Kontrolni list mora potpisati i najmanje jedan član biračkog odbora, uz prvog birača.",
+        "mythCheck": null,
+        "kategorija": "pre_otvaranja",
+        "sourceUrls": [],
+        "legalEffect": "Zakonski osnov za poništavanje glasanja na biračkom mestu po službenoj dužnosti.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "kontrolni-list-nije-popunjen"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 116 · poništavanje po službenoj dužnosti"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Pre pečaćenja obezbediti potpis najmanje jednog člana odbora prema propisanoj proceduri",
+          "Ako je kutija već zapečaćena, ne dopisivati potpis naknadno; uneti primedbu u zapisnik"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": true
+      },
+      {
+        "id": "P09",
+        "slug": "kontrolni-list-nije-ubacen-u-kutiju",
+        "naziv": "Kontrolni list nije ubačen u kutiju",
+        "order": 9,
+        "phases": [
+          "brojanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Pri otvaranju kutije posle glasanja, kontrolni list se u njoj ne nalazi.",
+        "severity": "ponistavanje",
+        "legalRule": "Kontrolni list se ubacuje u kutiju pre pečaćenja, pred prvim biračem.",
+        "mythCheck": null,
+        "kategorija": "pre_otvaranja",
+        "sourceUrls": [],
+        "legalEffect": "Ako kontrolnog lista nema pri otvaranju kutije, to je zakonski osnov za poništavanje glasanja na biračkom mestu po službenoj dužnosti.",
+        "whatToCheck": [
+          "Da li je moguće da je list zaostao među listićima pre konačnog zaključka"
+        ],
+        "relatedSlugs": [
+          "kontrolni-list-nije-popunjen",
+          "vise-listica-u-kutiji-nego-biraca"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 116 · poništavanje po službenoj dužnosti"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Prati pretragu kutije pri brojanju"
+        ],
+        "controllerActions": [
+          "Detaljno pretražiti sadržaj kutije pre donošenja zaključka",
+          "Uneti nalaz u zapisnik"
+        ],
+        "evidenceChecklist": [
+          "Da li je kontrolni list pronađen",
+          "Ko je pretraživao kutiju"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": true
+      },
+      {
+        "id": "P10",
+        "slug": "kutija-nije-zapecacena",
+        "naziv": "Kutija nije propisno zapečaćena",
+        "order": 10,
+        "phases": [
+          "pre_otvaranja"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Nakon ubacivanja kontrolnog lista, kutija nije propisno zapečaćena.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Nakon ubacivanja kontrolnog lista, glasačka kutija se pečati pre početka glasanja.",
+        "mythCheck": null,
+        "kategorija": "pre_otvaranja",
+        "sourceUrls": [],
+        "legalEffect": "Teška proceduralna nepravilnost, dovodi u pitanje ispravnost kutije tokom celog dana.",
+        "whatToCheck": [
+          "Stanje pečata tokom dana i pri zatvaranju"
+        ],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Prati stanje pečata tokom dana"
+        ],
+        "controllerActions": [
+          "Zaustaviti glasanje dok se kutija propisno ne zapečati",
+          "Uneti primedbu u zapisnik"
+        ],
+        "evidenceChecklist": [
+          "Fotografija/opis pečata",
+          "Vreme pečaćenja"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "P11",
+        "slug": "paravani-ne-obezbedjuju-tajnost",
+        "naziv": "Paravani ne obezbeđuju tajnost glasanja",
+        "order": 11,
+        "phases": [
+          "pre_otvaranja"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Paravani su postavljeni tako da se sa strane ili iz reda može videti kako birač popunjava listić.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Paravani moraju biti raspoređeni tako da ni drugi birači, ni članovi odbora, ni posmatrači ne mogu videti kako birač popunjava listić.",
+        "mythCheck": null,
+        "kategorija": "tajnost_sloboda",
+        "sourceUrls": [],
+        "legalEffect": "Povreda garancije tajnosti glasanja za sve birače koji glasaju dok stanje traje.",
+        "whatToCheck": [
+          "Ugao gledanja od stola odbora, ulaza i reda čekanja"
+        ],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Ukazati odboru ako primetiš da te neko može videti dok glasaš"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Proveri raspored paravana na početku obilaska"
+        ],
+        "controllerActions": [
+          "Zahtevati premeštanje paravana pre nastavka glasanja"
+        ],
+        "evidenceChecklist": [
+          "Opis/skica rasporeda prostorije"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "P12",
+        "slug": "propaganda-na-birackom-mestu",
+        "naziv": "Stranački simboli ili propagandni materijal u prostoru",
+        "order": 12,
+        "phases": [
+          "pre_otvaranja"
+        ],
+        "aliases": [],
+        "doNotDo": [
+          "Ne fotografisati unutrašnjost biračkog mesta radi ovoga"
+        ],
+        "summary": "Na biračkom mestu ili neposredno ispred njega nalazi se stranački simbol ili izborni propagandni materijal.",
+        "severity": "nepravilnost",
+        "legalRule": "Isticanje stranačkih simbola i izbornog propagandnog materijala na biračkom mestu ili neposredno ispred njega zakon navodi kao narušavanje reda.",
+        "mythCheck": null,
+        "kategorija": "pre_otvaranja",
+        "sourceUrls": [],
+        "legalEffect": "Narušavanje reda na biračkom mestu koje birački odbor treba odmah da otkloni.",
+        "whatToCheck": [
+          "Da li se materijal nalazi unutar ili neposredno ispred mesta"
+        ],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Fotografisati materijal samo van biračkog mesta i bez ometanja glasanja"
+        ],
+        "controllerActions": [
+          "Zahtevati uklanjanje materijala",
+          "Uneti primedbu u zapisnik ako se ne ukloni"
+        ],
+        "evidenceChecklist": [
+          "Lokacija",
+          "Vreme",
+          "Opis materijala"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "I01",
+        "slug": "preskocena-uv-provera",
+        "naziv": "Preskočena UV provera",
+        "order": 13,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Birač dobija glasački listić bez prethodne provere UV lampom.",
+        "severity": "nepravilnost",
+        "legalRule": "Redosled provere pre izdavanja listića je: UV lampa, utvrđivanje identiteta, provera u izvodu biračkog spiska, potpis, UV sprej, pa tek onda jedan glasački listić.",
+        "mythCheck": null,
+        "kategorija": "identitet_spisak",
+        "sourceUrls": [],
+        "legalEffect": "Proceduralna nepravilnost koja slabi zaštitu od višestrukog glasanja.",
+        "whatToCheck": [
+          "Da li je UV lampa uopšte prisutna i ispravna na biračkom mestu"
+        ],
+        "relatedSlugs": [
+          "preskocen-uv-sprej"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 93"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Prati da li se korak dosledno primenjuje kod svakog birača"
+        ],
+        "controllerActions": [
+          "Zahtevati da se procedura odmah počne da sprovodi ispravno",
+          "Uneti primedbu u zapisnik"
+        ],
+        "evidenceChecklist": [
+          "Vreme",
+          "Broj birača kod kojih je korak preskočen"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "I02",
+        "slug": "uv-trag-clan-biracke-komisije-izuzetak",
+        "naziv": "UV trag kod birača koji je član biračkog odbora",
+        "order": 14,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "UV lampa pokazuje trag kod birača, ali on tvrdi da je član drugog biračkog odbora i ima odgovarajuće rešenje.",
+        "severity": "proveri",
+        "legalRule": "Zakon predviđa poseban izuzetak za birača koji dokaže da je član biračkog odbora: takva osoba može ponovo glasati na drugom mestu uz odgovarajuće rešenje/potvrdu, jer je UV trag posledica ranijeg obavljanja dužnosti, a ne dvostrukog glasanja.",
+        "mythCheck": null,
+        "kategorija": "identitet_spisak",
+        "sourceUrls": [],
+        "legalEffect": "Ako je izuzetak dokazan, glasanje je dozvoljeno; ako nije, primenjuje se pravilo o ponovljenom glasanju.",
+        "whatToCheck": [
+          "Da li osoba poseduje formalno rešenje/potvrdu o članstvu u biračkom odboru",
+          "Da li su ispunjeni svi ostali uslovi (identitet, spisak)"
+        ],
+        "relatedSlugs": [
+          "ponovljeno-glasanje"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Ponesi rešenje o imenovanju ako očekuješ ovu situaciju"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 93"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži kako je odbor postupio i na osnovu kog dokumenta"
+        ],
+        "controllerActions": [
+          "Proveriti dokument pre donošenja odluke",
+          "Ne odbijati automatski, ali ni ne dozvoliti bez dokaza"
+        ],
+        "evidenceChecklist": [
+          "Da li je dokument pokazan",
+          "Broj rešenja"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "I03",
+        "slug": "nije-provalena-javna-isprava",
+        "naziv": "Identitet nije proveren odgovarajućom javnom ispravom",
+        "order": 15,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Birač dobija listić bez prethodne provere identiteta odgovarajućom javnom ispravom sa fotografijom i JMBG.",
+        "severity": "nepravilnost",
+        "legalRule": "Identitet birača se utvrđuje ličnom kartom ili drugom odgovarajućom javnom ispravom sa fotografijom i JMBG.",
+        "mythCheck": null,
+        "kategorija": "identitet_spisak",
+        "sourceUrls": [],
+        "legalEffect": "Proceduralna nepravilnost.",
+        "whatToCheck": [
+          "Koji dokument je (ne)korišćen"
+        ],
+        "relatedSlugs": [
+          "znamo-covjeka-ne-treba-licna"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 93"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Zahtevati propisanu proveru pre izdavanja listića"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "I04",
+        "slug": "znamo-covjeka-ne-treba-licna",
+        "naziv": "„Znamo čoveka, ne treba mu lična karta“",
+        "order": 16,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Član odbora izdaje listić samo na osnovu ličnog poznanstva, bez provere isprave.",
+        "severity": "nepravilnost",
+        "legalRule": "Lično poznavanje birača ne zamenjuje propisanu proveru identiteta odgovarajućom javnom ispravom.",
+        "mythCheck": {
+          "claim": "Član biračkog odbora sme da propusti proveru lične karte ako lično poznaje birača.",
+          "verdict": "mit",
+          "explanation": "Poznavanje birača ne zamenjuje propisanu proveru identiteta odgovarajućom javnom ispravom."
+        },
+        "kategorija": "identitet_spisak",
+        "sourceUrls": [],
+        "legalEffect": "Proceduralna nepravilnost, bez obzira na dobru nameru.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "nije-provalena-javna-isprava"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Ponudi ličnu kartu i kad te član odbora poznaje"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 93"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Insistirati na proveri isprave kod svakog birača, bez izuzetka"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "I05",
+        "slug": "birac-nije-u-izvodu-dobija-listic",
+        "naziv": "Glasa lice koje nije upisano u izvod biračkog spiska",
+        "order": 17,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Biračko mesto omogućava da glasa osoba koja se ne nalazi u izvodu iz biračkog spiska.",
+        "severity": "ponistavanje",
+        "legalRule": "Birač mora biti upisan u izvod biračkog spiska za to biračko mesto da bi mogao da glasa na njemu.",
+        "mythCheck": null,
+        "kategorija": "identitet_spisak",
+        "sourceUrls": [],
+        "legalEffect": "Ovo je jedan od zakonom izričito propisanih razloga za poništavanje glasanja na biračkom mestu po službenoj dužnosti.",
+        "whatToCheck": [
+          "Da li je moguće da je osoba upisana na drugom biračkom mestu ili u drugom delu spiska"
+        ],
+        "relatedSlugs": [
+          "rucno-dopisivanje-biraca"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Proveri svoj upis u birački spisak pre dana glasanja preko nadležnog organa"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 116 · poništavanje po službenoj dužnosti"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži slučaj i traži da bude unet u zapisnik"
+        ],
+        "controllerActions": [
+          "Ne izdavati listić licu koje nije u izvodu",
+          "Uputiti birača da proveri svoj status preko lokalne izborne komisije",
+          "Uneti događaj u zapisnik ako je do izdavanja ipak došlo"
+        ],
+        "evidenceChecklist": [
+          "Ime lica (samo ako je zaista neophodno)",
+          "Vreme",
+          "Kako je odbor postupio"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": true
+      },
+      {
+        "id": "I06",
+        "slug": "rucno-dopisivanje-biraca",
+        "naziv": "Član odbora ručno dopisuje birača u spisak",
+        "order": 18,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Birački odbor pokušava da ručno dopiše osobu koja nije u izvodu, čak i ako smatra da je izostavljena greškom.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Birački odbor ne sme dopisivati birače u izvod, čak ni kada svi članovi smatraju da je birač očigledno izostavljen greškom.",
+        "mythCheck": null,
+        "kategorija": "identitet_spisak",
+        "sourceUrls": [],
+        "legalEffect": "Zabranjena radnja; ako birač ipak glasa na osnovu dopisivanja, otvara se osnov za poništavanje.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "birac-nije-u-izvodu-dobija-listic"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Ako te izostave iz spiska, obrati se odmah lokalnoj izbornoj komisiji, ne odboru"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 89"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži pokušaj dopisivanja"
+        ],
+        "controllerActions": [
+          "Odbiti dopisivanje",
+          "Uputiti birača na nadležni organ za hitno rešavanje statusa"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "I07",
+        "slug": "vec-postoji-potpis-pored-imena",
+        "naziv": "Birač zatiče potpis kod svog imena iako nije glasao",
+        "order": 19,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Birač dolazi da glasa i primećuje da već postoji potpis pored njegovog imena u izvodu.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Potpis birača u izvodu treba da postoji samo ako je taj birač lično glasao. Neslaganje treba odmah proveriti i evidentirati.",
+        "mythCheck": null,
+        "kategorija": "identitet_spisak",
+        "sourceUrls": [],
+        "legalEffect": "Visoko prioritetna nepravilnost, treba je odmah prijaviti lokalnoj izbornoj komisiji. Samo postojanje potpisa nije samo po sebi dokaz zloupotrebe dok se ne provere okolnosti.",
+        "whatToCheck": [
+          "Da li je moguća greška u redu/prepisu imena",
+          "Da li postoji evidencija da je birač navodno glasao"
+        ],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Zatraži da se slučaj odmah zabeleži",
+          "Nakon izbora zatraži od lokalne izborne komisije informaciju da li je evidentirano da si glasao"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži tačno vreme i reakciju odbora"
+        ],
+        "controllerActions": [
+          "Zaustaviti dalje postupanje i odmah kontaktirati lokalnu izbornu komisiju"
+        ],
+        "evidenceChecklist": [
+          "Ime (samo birača kog se tiče, uz njegov pristanak)",
+          "Vreme",
+          "Ko je obavešten"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "I08",
+        "slug": "listic-urucen-pre-potpisa",
+        "naziv": "Listić uručen pre potpisa birača",
+        "order": 20,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Birač dobija glasački listić pre nego što se potpiše u izvodu.",
+        "severity": "nepravilnost",
+        "legalRule": "Propisani redosled je: zaokruživanje rednog broja u izvodu, potpis birača, UV sprej, pa tek onda jedan glasački listić.",
+        "mythCheck": null,
+        "kategorija": "identitet_spisak",
+        "sourceUrls": [],
+        "legalEffect": "Proceduralna nepravilnost.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "nema-potpisa-a-dobija-listic"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 93"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Ispraviti redosled radnji"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "I09",
+        "slug": "nema-potpisa-a-dobija-listic",
+        "naziv": "Birač nije potpisan, a dobija listić",
+        "order": 21,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Birač uopšte nije potpisao izvod biračkog spiska, a ipak je dobio glasački listić.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Potpis birača u izvodu je preduslov za izdavanje listića.",
+        "mythCheck": null,
+        "kategorija": "identitet_spisak",
+        "sourceUrls": [],
+        "legalEffect": "Broj potpisa kasnije služi za utvrđivanje broja birača koji su glasali i poredi se sa brojem listića u kutiji. Izostanak potpisa narušava tu kontrolu.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "vise-listica-u-kutiji-nego-biraca"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 93"
+          },
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 116 · poništavanje po službenoj dužnosti"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži broj slučajeva"
+        ],
+        "controllerActions": [
+          "Zaustaviti praksu odmah",
+          "Uneti primedbu u zapisnik"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "I10",
+        "slug": "preskocen-uv-sprej",
+        "naziv": "Preskočeno obeležavanje UV sprejom",
+        "order": 22,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Birač dobija listić bez prethodnog obeležavanja prsta UV sprejom.",
+        "severity": "nepravilnost",
+        "legalRule": "UV sprej se nanosi nakon potpisa birača, pre uručenja glasačkog listića.",
+        "mythCheck": null,
+        "kategorija": "identitet_spisak",
+        "sourceUrls": [],
+        "legalEffect": "Proceduralna nepravilnost, slabi zaštitu od ponovljenog glasanja.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "preskocena-uv-provera"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 93"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Zahtevati doslednu primenu kod svakog birača"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "I11",
+        "slug": "dva-listica-jednom-biracu",
+        "naziv": "Jednom biraču data dva ili više glasačkih listića",
+        "order": 23,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Član biračkog odbora uruči jednom biraču više od jednog glasačkog listića.",
+        "severity": "krivicno_delo",
+        "legalRule": "Birač dobija tačno jedan glasački listić.",
+        "mythCheck": null,
+        "kategorija": "identitet_spisak",
+        "sourceUrls": [],
+        "legalEffect": "Krivični zakonik kažnjava korišćenje više od jednog glasačkog listića, kao i člana biračkog odbora koji to omogući. Za člana odbora predviđena je stroža kazna.",
+        "whatToCheck": [],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Krivični zakonik Republike Srbije",
+            "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+            "article": "čl. 157 · Zloupotreba prava glasanja"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Prijaviti nadležnim organima"
+        ],
+        "controllerActions": [
+          "Sprečiti i prijaviti odmah predsedniku odbora"
+        ],
+        "evidenceChecklist": [
+          "Vreme",
+          "Ko je uručio",
+          "Ko je primio"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "I12",
+        "slug": "glasanje-pod-tudjim-imenom",
+        "naziv": "Glasanje pod tuđim imenom",
+        "order": 24,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Osoba pokušava ili uspeva da glasa koristeći identitet drugog birača.",
+        "severity": "krivicno_delo",
+        "legalRule": "Glasanje je strogo lično i vezano za sopstveni identitet birača.",
+        "mythCheck": null,
+        "kategorija": "identitet_spisak",
+        "sourceUrls": [],
+        "legalEffect": "Krivično delo prema Krivičnom zakoniku.",
+        "whatToCheck": [],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Krivični zakonik Republike Srbije",
+            "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+            "article": "čl. 157 · Zloupotreba prava glasanja"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Prijaviti policiji"
+        ],
+        "controllerActions": [
+          "Odbiti izdavanje listića pod tuđim imenom",
+          "Ne ulaziti u fizički sukob niti samostalno zadržavati lice; obavestiti predsednika odbora i pozvati policiju kada okolnosti to zahtevaju"
+        ],
+        "evidenceChecklist": [
+          "Identitet lica",
+          "Vreme",
+          "Svedoci"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "I13",
+        "slug": "ponovljeno-glasanje",
+        "naziv": "Pokušaj ponovnog glasanja iste osobe",
+        "order": 25,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Osoba koja je već glasala pokušava da ponovo glasa, uključujući na drugom biračkom mestu.",
+        "severity": "krivicno_delo",
+        "legalRule": "Birač glasa samo jednom, na biračkom mestu gde je upisan u izvod.",
+        "mythCheck": null,
+        "kategorija": "identitet_spisak",
+        "sourceUrls": [],
+        "legalEffect": "Krivično delo prema Krivičnom zakoniku, osim u zakonom predviđenom izuzetku (npr. član biračkog odbora sa UV tragom i dokazom).",
+        "whatToCheck": [
+          "Da li postoji zakonski izuzetak (vidi UV trag kod člana odbora)"
+        ],
+        "relatedSlugs": [
+          "uv-trag-clan-biracke-komisije-izuzetak"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Krivični zakonik Republike Srbije",
+            "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+            "article": "čl. 157 · Zloupotreba prava glasanja"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Prijaviti nadležnim organima"
+        ],
+        "controllerActions": [
+          "Odbiti drugo glasanje",
+          "Prijaviti slučaj"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "T01",
+        "slug": "grupno-porodicno-glasanje",
+        "naziv": "Grupno ili porodično glasanje bez zakonskog osnova",
+        "order": 26,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Dvoje ili više ljudi ulazi zajedno iza paravana, bez zakonskog osnova za pomoć birača.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Birač glasa sam. Izuzetak postoji samo ako birač zbog nepismenosti, slabovidosti, invaliditeta ili drugog razloga nije sposoban da sam popuni listić: tada sam bira pomagača.",
+        "mythCheck": null,
+        "kategorija": "tajnost_sloboda",
+        "sourceUrls": [],
+        "legalEffect": "Bez ispunjenog zakonskog uslova za pomagača, ovo je teška povreda tajnosti i slobode glasanja.",
+        "whatToCheck": [
+          "Da li birač ima stvarnu potrebu za pomagačem",
+          "Da li je birač sam odredio ko mu pomaže"
+        ],
+        "relatedSlugs": [
+          "pomagac-samostalno-odlucuje",
+          "neko-drugi-bira-pomagaca"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Glasaj sam ako ti pomoć nije zaista potrebna"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži broj i okolnosti slučajeva"
+        ],
+        "controllerActions": [
+          "Proveriti osnov pre nego što dozvoliš zajednički ulazak",
+          "Uneti primedbu ako osnova nema"
+        ],
+        "evidenceChecklist": [
+          "Vreme",
+          "Da li je odbor proverio osnov"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "T02",
+        "slug": "pomagac-samostalno-odlucuje",
+        "naziv": "Pomagač samostalno određuje za koga se glasa",
+        "order": 27,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Osoba koja pomaže biraču (npr. dete roditelju) sama odlučuje kako će listić biti popunjen.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Pomagač sme isključivo da tehnički popuni listić prema izričitom nalogu birača. Ne sme sam birati opciju.",
+        "mythCheck": {
+          "claim": "Svaka pomoć starijoj ili bolesnoj osobi iza paravana je zabranjena.",
+          "verdict": "zavisi",
+          "explanation": "Zakon predviđa institut pomagača za birače koji zaista ne mogu sami da popune listić, pod uslovom da birač sam odredi pomagača i da pomagač samo izvršava njegov nalog."
+        },
+        "kategorija": "tajnost_sloboda",
+        "sourceUrls": [],
+        "legalEffect": "Povreda slobode glasanja birača kome se pomaže.",
+        "whatToCheck": [
+          "Da li je birač jasno saopštio svoj izbor pomagaču"
+        ],
+        "relatedSlugs": [
+          "grupno-porodicno-glasanje"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Insistiraj da pomagač uradi tačno ono što mu kažeš"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Prekinuti postupak ako pomagač očigledno odlučuje umesto birača"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "T03",
+        "slug": "clan-odbora-sugerise-broj-liste",
+        "naziv": "Član biračkog odbora sugeriše broj liste",
+        "order": 28,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Član biračkog odbora govori biraču koji broj/listu da zaokruži.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Niko na biračkom mestu ne sme sugerisati biraču za koga da glasa.",
+        "mythCheck": null,
+        "kategorija": "tajnost_sloboda",
+        "sourceUrls": [],
+        "legalEffect": "Teška povreda slobode i tajnosti glasanja, posebno ozbiljna jer dolazi od službenog lica.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "drugi-birac-sugerise-izbor"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Ne moraš da poslušaš: glasaj po sopstvenom izboru i prijavi slučaj"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži tačne reči i okolnosti"
+        ],
+        "controllerActions": [
+          "Odmah prekinuti takvo ponašanje i uneti primedbu u zapisnik"
+        ],
+        "evidenceChecklist": [
+          "Vreme",
+          "Ko je izgovorio",
+          "Svedoci"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "T04",
+        "slug": "drugi-birac-sugerise-izbor",
+        "naziv": "Drugi birač ili treće lice sugeriše izbor",
+        "order": 29,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Neko ko nije član odbora (drugi birač, posmatrač, treće lice) sugeriše biraču kako da glasa.",
+        "severity": "nepravilnost",
+        "legalRule": "Zabrana sugerisanja izbora važi za sva lica na biračkom mestu, ne samo za članove odbora.",
+        "mythCheck": null,
+        "kategorija": "tajnost_sloboda",
+        "sourceUrls": [],
+        "legalEffect": "Nepravilnost koju treba prekinuti odmah, bez obzira ko je izvršilac.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "clan-odbora-sugerise-broj-liste"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Upozoriti lice i po potrebi ga udaljiti sa mesta"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "T05",
+        "slug": "neko-stoji-uz-paravan",
+        "naziv": "Neko stoji uz paravan dok birač glasa",
+        "order": 30,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Treće lice stoji neposredno uz paravan dok birač popunjava listić.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Niko ne sme da prilazi paravanu dok birač glasa, osim zakonitog pomagača kada je to zaista potrebno.",
+        "mythCheck": null,
+        "kategorija": "tajnost_sloboda",
+        "sourceUrls": [],
+        "legalEffect": "Povreda tajnosti glasanja.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "clan-odbora-gleda-preko-paravana"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Udaljiti lice od paravana"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "T06",
+        "slug": "clan-odbora-gleda-preko-paravana",
+        "naziv": "Član biračkog odbora gleda kako birač glasa",
+        "order": 31,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Član biračkog odbora namerno posmatra kako birač popunjava listić.",
+        "severity": "krivicno_delo",
+        "legalRule": "Tajnost glasanja je zaštićena; član odbora ne sme videti kako birač glasa.",
+        "mythCheck": null,
+        "kategorija": "tajnost_sloboda",
+        "sourceUrls": [],
+        "legalEffect": "Krivično delo povrede tajnosti glasanja, sa težim oblikom kada delo izvrši član biračkog odbora u vršenju dužnosti.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "neko-stoji-uz-paravan"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Krivični zakonik Republike Srbije",
+            "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+            "article": "čl. 160 · Povreda tajnosti glasanja"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Prijaviti nadležnim organima"
+        ],
+        "controllerActions": [
+          "Prijaviti predsedniku odbora i nadležnim organima"
+        ],
+        "evidenceChecklist": [
+          "Vreme",
+          "Svedoci",
+          "Opis položaja"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "T07",
+        "slug": "zahtev-da-pokaze-glas",
+        "naziv": "Od birača se traži da pokaže za koga je glasao",
+        "order": 32,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Neko traži od birača da pokaže listić ili na drugi način otkrije svoj izbor pre ubacivanja u kutiju.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Glasanje je tajno; niko nema pravo da traži od birača da otkrije svoj izbor.",
+        "mythCheck": null,
+        "kategorija": "tajnost_sloboda",
+        "sourceUrls": [],
+        "legalEffect": "Teška povreda tajnosti glasanja; u zavisnosti od okolnosti (pretnja, korist) može dodatno predstavljati krivično delo.",
+        "whatToCheck": [
+          "Da li je zahtev praćen pretnjom ili obećanjem koristi"
+        ],
+        "relatedSlugs": [
+          "trazi-se-fotografija-kao-dokaz",
+          "pretnja-biracu"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Nisi dužan da pokažeš listić bilo kome"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži okolnosti"
+        ],
+        "controllerActions": [
+          "Prekinuti pokušaj, obavestiti predsednika odbora"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "T08",
+        "slug": "trazi-se-fotografija-kao-dokaz",
+        "naziv": "Od birača se traži fotografija listića kao „dokaz“",
+        "order": 33,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [
+          "Ne savetuj biraču da fotografiše listić unutar biračkog mesta"
+        ],
+        "summary": "Neko van ili unutar biračkog mesta traži da birač fotografiše listić kao dokaz kako je glasao.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Ovakav zahtev ugrožava tajnost glasanja; ako je povezan sa korišću ili pretnjom, može predstavljati i posebno krivično delo.",
+        "mythCheck": null,
+        "kategorija": "tajnost_sloboda",
+        "sourceUrls": [],
+        "legalEffect": "Ozbiljna crvena zastavica: u kombinaciji sa novcem, pretnjom ili pritiskom može predstavljati mito ili prinudu.",
+        "whatToCheck": [
+          "Da li postoji ponuđena korist",
+          "Da li postoji pretnja",
+          "Ko postavlja zahtev"
+        ],
+        "relatedSlugs": [
+          "birac-sam-fotografise-listic",
+          "kupovina-glasova",
+          "pretnja-biracu"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Ne moraš da postupiš po ovakvom zahtevu; prijavi ga"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži okolnosti bez fotografisanja unutrašnjosti mesta"
+        ],
+        "controllerActions": [
+          "Prijaviti predsedniku odbora",
+          "Ne dozvoliti fotografisanje unutar biračkog mesta"
+        ],
+        "evidenceChecklist": [
+          "Ko je tražio",
+          "Šta je obećano ili zaprećeno"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "T09",
+        "slug": "birac-sam-fotografise-listic",
+        "naziv": "Birač sam fotografiše svoj listić",
+        "order": 34,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Birač bez spoljnog zahteva sam fotografiše svoj popunjeni listić.",
+        "severity": "nepravilnost",
+        "legalRule": "Neovlašćeno fotografisanje na biračkom mestu tretira se kao narušavanje reda.",
+        "mythCheck": {
+          "claim": "Ako neko fotografiše svoj listić, to samo po sebi dokazuje da je prodao glas.",
+          "verdict": "mit",
+          "explanation": "Posmatračke misije ovakve slučajeve beleže kao proceduralne probleme, ali fotografija sama po sebi ne dokazuje kupovinu glasa. Potrebni su dodatni dokazi o koristi ili pritisku."
+        },
+        "kategorija": "tajnost_sloboda",
+        "sourceUrls": [],
+        "legalEffect": "Problematično ponašanje, ali samo po sebi nije dokaz kupovine glasova.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "trazi-se-fotografija-kao-dokaz"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Upozoriti birača na pravila o snimanju na biračkom mestu"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "T10",
+        "slug": "pretnja-biracu",
+        "naziv": "Pretnja ili prinuda prema biraču",
+        "order": 35,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Nekome se preti ili se koristi sila da glasa, ne glasa, ili glasa na određeni način.",
+        "severity": "krivicno_delo",
+        "legalRule": "Upotreba sile ili pretnje radi prisiljavanja nekoga da glasa, ne glasa ili glasa na određeni način je zabranjena.",
+        "mythCheck": null,
+        "kategorija": "tajnost_sloboda",
+        "sourceUrls": [],
+        "legalEffect": "Krivično delo povrede prava glasanja.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "pretnja-poslom",
+          "prinuda-fotografija-i-glas"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Prijavi pretnju policiji ili tužilaštvu što pre"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Krivični zakonik Republike Srbije",
+            "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+            "article": "čl. 155 · Povreda prava glasanja"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži okolnosti i svedoke"
+        ],
+        "controllerActions": [
+          "Prijaviti policiji"
+        ],
+        "evidenceChecklist": [
+          "Ko je pretio",
+          "Šta je tačno rečeno",
+          "Svedoci"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "T11",
+        "slug": "pretnja-poslom",
+        "naziv": "„Izgubićeš posao ako ne izađeš/ne glasaš kako treba“",
+        "order": 36,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Poslodavac ili nadređeni preti otkazom ili drugom posledicom u vezi sa izlaskom ili načinom glasanja.",
+        "severity": "krivicno_delo",
+        "legalRule": "Prisiljavanje na glasanje, neglasanje ili glasanje na određeni način zabranjeno je bez obzira na sredstvo prinude.",
+        "mythCheck": null,
+        "kategorija": "tajnost_sloboda",
+        "sourceUrls": [],
+        "legalEffect": "Krivično delo povrede prava glasanja.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "pretnja-biracu"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Prijavi slučaj: pretnja poslom u vezi sa glasanjem je krivično delo"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Krivični zakonik Republike Srbije",
+            "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+            "article": "čl. 155 · Povreda prava glasanja"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Ako si član odbora, bezbedno evidentiraj navod i obavesti predsednika odbora",
+          "Ako postoji neposredna opasnost, pozovi policiju; ne ulazi u fizičku konfrontaciju"
+        ],
+        "evidenceChecklist": [
+          "Ko je pretio",
+          "Kada i kako",
+          "Svedoci/poruke"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "T12",
+        "slug": "prinuda-fotografija-i-glas",
+        "naziv": "Prinuda da se fotografiše i glasa za određenu opciju",
+        "order": 37,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Kombinacija pretnje, zahteva za fotografijom i naloga za koga tačno da se glasa.",
+        "severity": "krivicno_delo",
+        "legalRule": "Ova kombinacija istovremeno ugrožava tajnost glasanja i slobodu odlučivanja birača.",
+        "mythCheck": null,
+        "kategorija": "tajnost_sloboda",
+        "sourceUrls": [],
+        "legalEffect": "Krivično delo povrede prava glasanja, uz moguću povredu tajnosti glasanja.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "pretnja-biracu",
+          "trazi-se-fotografija-kao-dokaz"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Prijavi slučaj policiji ili tužilaštvu"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Krivični zakonik Republike Srbije",
+            "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+            "article": "čl. 155 · Povreda prava glasanja"
+          },
+          {
+            "law": "Krivični zakonik Republike Srbije",
+            "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+            "article": "čl. 160 · Povreda tajnosti glasanja"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Ne ulaziti u fizički sukob; obavestiti predsednika odbora i sačuvati činjenice",
+          "Ako postoji neposredna opasnost, pozvati policiju"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "KG01",
+        "slug": "kupovina-glasova",
+        "naziv": "Kupovina glasova",
+        "order": 38,
+        "phases": [
+          "svaka"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Nekome je ponuđena, obećana ili data korist (novac, roba, usluga, posao, otpis duga i sl.) u zamenu za glasanje, neglasanje, ili glasanje za/protiv određene opcije.",
+        "severity": "krivicno_delo",
+        "legalRule": "Davanje i primanje bilo kakve koristi u zamenu za određeno ponašanje na izborima je zabranjeno, bilo da korist nudi ili traži birač ili treće lice.",
+        "mythCheck": {
+          "claim": "Organizovan prevoz birača do biračkog mesta je sam po sebi dokaz kupovine glasova.",
+          "verdict": "zavisi",
+          "explanation": "Sam prevoz nije automatski dokaz kupovine glasa. Potrebno je da postoji stvarno nuđenje, obećanje ili davanje koristi u zamenu za određeno glasanje."
+        },
+        "kategorija": "kupovina_glasova",
+        "sourceUrls": [],
+        "legalEffect": "Krivično delo davanja i primanja mita u vezi sa glasanjem. Kažnjivo je i nuđenje/davanje/obećavanje koristi i njeno traženje/primanje; za člana biračkog odbora predviđen je stroži oblik.",
+        "whatToCheck": [
+          "Da li je korist zaista ponuđena/data ili se radi o legalnoj aktivnosti (npr. organizovan prevoz)"
+        ],
+        "relatedSlugs": [
+          "trazi-se-fotografija-kao-dokaz"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Ne prihvatati ponudu, prijaviti nadležnim organima"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Krivični zakonik Republike Srbije",
+            "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+            "article": "čl. 156 · Davanje i primanje mita u vezi sa glasanjem"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži okolnosti, izbegavaj direktnu konfrontaciju"
+        ],
+        "controllerActions": [
+          "Ne prihvatati niti nuditi korist; zabeležiti šta je ponuđeno i ko je učestvovao",
+          "Bez direktne konfrontacije obavestiti nadležnu izbornu komisiju ili policiju"
+        ],
+        "evidenceChecklist": [
+          "Ko je nudio",
+          "Šta je nuđeno",
+          "Kada",
+          "Svedoci"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "E01",
+        "slug": "crtice-ukupne-izlaznosti",
+        "naziv": "Član odbora vodi brojčanu evidenciju izlaznosti (crtice)",
+        "order": 39,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Član biračkog odbora zadužen za spisak vodi na posebnom papiru crtice, samo broj birača koji su izašli.",
+        "severity": "dozvoljeno",
+        "legalRule": "Članovi odbora zaduženi za birački spisak mogu na posebnom papiru voditi samo brojčanu evidenciju izlaznosti crticama, dostupnu svim članovima odbora.",
+        "mythCheck": {
+          "claim": "Svaka beleška odbora o broju izašlih birača je nezakonita paralelna evidencija.",
+          "verdict": "mit",
+          "explanation": "Brojčana evidencija crticama, dostupna svim članovima odbora, je izričito dozvoljena."
+        },
+        "kategorija": "paralelna_evidencija",
+        "sourceUrls": [],
+        "legalEffect": "Dozvoljena, legitimna administrativna praksa.",
+        "whatToCheck": [
+          "Da li je podatak zaista samo brojčani i dostupan svim članovima"
+        ],
+        "relatedSlugs": [
+          "spisak-sa-imenima-ko-je-glasao"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "E02",
+        "slug": "spisak-sa-imenima-ko-je-glasao",
+        "naziv": "Neslužbeni spisak sa imenima ko je (nije) glasao",
+        "order": 40,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Neko na biračkom mestu vodi spisak sa konkretnim imenima birača koji jesu ili nisu izašli.",
+        "severity": "nepravilnost",
+        "legalRule": "Zabranjeno je praviti neslužbene spiskove birača koji jesu ili nisu izašli na izbore.",
+        "mythCheck": null,
+        "kategorija": "paralelna_evidencija",
+        "sourceUrls": [],
+        "legalEffect": "Nepravilnost: narušavanje reda i potencijalna osnova za pritisak na birače.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "crtice-ukupne-izlaznosti",
+          "telefonom-javljanje-ko-je-glasao"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži ko vodi spisak i za koga"
+        ],
+        "controllerActions": [
+          "Zahtevati prestanak i uklanjanje spiska"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "E03",
+        "slug": "telefonom-javljanje-ko-je-glasao",
+        "naziv": "Telefonsko javljanje ko je konkretno glasao",
+        "order": 41,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Neko telefonom prenosi podatke o tome koje konkretne osobe jesu ili nisu izašle na glasanje.",
+        "severity": "nepravilnost",
+        "legalRule": "Zabranjeno je neovlašćeno davanje obaveštenja o tome koja konkretna lica jesu ili nisu izašla na izbore.",
+        "mythCheck": null,
+        "kategorija": "paralelna_evidencija",
+        "sourceUrls": [],
+        "legalEffect": "Nepravilnost: narušavanje reda na biračkom mestu.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "spisak-sa-imenima-ko-je-glasao"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Zahtevati prestanak",
+          "Uneti u zapisnik"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "E04",
+        "slug": "saopstavanje-samo-ukupne-izlaznosti",
+        "naziv": "Saopštava se samo zbirni broj izašlih birača",
+        "order": 42,
+        "phases": [
+          "identifikacija"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Član odbora saopštava samo ukupan broj birača koji su do tog trenutka glasali, bez imena.",
+        "severity": "dozvoljeno",
+        "legalRule": "Zbirni, brojčani podatak o izlaznosti dostupan svim članovima odbora je dozvoljen.",
+        "mythCheck": null,
+        "kategorija": "paralelna_evidencija",
+        "sourceUrls": [],
+        "legalEffect": "Dozvoljeno.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "crtice-ukupne-izlaznosti"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "N01",
+        "slug": "nepoznata-osoba-bez-legitimacije",
+        "naziv": "Nepoznata osoba boravi na biračkom mestu bez osnova",
+        "order": 43,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Osoba koja nije birač, član odbora ni akreditovani posmatrač zadržava se na biračkom mestu.",
+        "severity": "proveri",
+        "legalRule": "Zadržavanje lica koja nemaju pravo ni dužnost u vezi sa sprovođenjem izbora predstavlja narušavanje reda.",
+        "mythCheck": null,
+        "kategorija": "neovlascena_lica",
+        "sourceUrls": [],
+        "legalEffect": "Ako lice nema osnov, radi se o nepravilnosti; akreditovani posmatrač je izuzetak i ima pravo prisustva.",
+        "whatToCheck": [
+          "Da li osoba ima akreditaciju posmatrača ili drugi zakonski osnov"
+        ],
+        "relatedSlugs": [
+          "posmatracu-onemoguceno-pracenje-brojanja"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Proveriti osnov prisustva",
+          "Udaljiti lice bez osnova"
+        ],
+        "evidenceChecklist": [
+          "Ko je lice",
+          "Osnov (ili odsustvo osnova) prisustva"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "N02",
+        "slug": "posmatracu-onemoguceno-pracenje-brojanja",
+        "naziv": "Akreditovanom posmatraču se onemogućava praćenje brojanja",
+        "order": 44,
+        "phases": [
+          "brojanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Birački odbor sprečava akreditovanog posmatrača da prati otvaranje kutije i prebrojavanje.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Akreditovani posmatrač ima pravo da nesmetano prati rad biračkog odbora, od preuzimanja materijala, preko glasanja, do otvaranja kutije, brojanja i predaje materijala.",
+        "mythCheck": null,
+        "kategorija": "neovlascena_lica",
+        "sourceUrls": [],
+        "legalEffect": "Ozbiljna nepravilnost koja ograničava zakonom predviđeno posmatranje rada biračkog odbora.",
+        "whatToCheck": [
+          "Da li posmatrač ima važeću akreditaciju"
+        ],
+        "relatedSlugs": [
+          "nepoznata-osoba-bez-legitimacije"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zahtevati unos primedbe u sopstveni zapisnik posmatrača"
+        ],
+        "controllerActions": [
+          "Omogućiti nesmetano posmatranje u skladu sa pravilima reda"
+        ],
+        "evidenceChecklist": [
+          "Vreme",
+          "Ko je sprečio",
+          "Kako"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "N03",
+        "slug": "posmatrac-krsi-pravila-ponasanja",
+        "naziv": "Posmatrač koristi telefon ili ometa rad odbora",
+        "order": 45,
+        "phases": [
+          "glasanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Akreditovani posmatrač ne poštuje pravila reda: koristi sredstva komunikacije ili ometa rad odbora.",
+        "severity": "nepravilnost",
+        "legalRule": "Posmatrač mora poštovati pravila reda; birački odbor može udaljiti posmatrača koji ih krši.",
+        "mythCheck": null,
+        "kategorija": "neovlascena_lica",
+        "sourceUrls": [],
+        "legalEffect": "Posmatrač snosi posledice kršenja pravila; ne utiče automatski na ispravnost samog glasanja.",
+        "whatToCheck": [],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Poštuj zabrane korišćenja telefona i komunikacije na biračkom mestu"
+        ],
+        "controllerActions": [
+          "Upozoriti posmatrača",
+          "Udaljiti ako se ponašanje nastavi"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "BV01",
+        "slug": "bugarski-voz",
+        "naziv": "Sumnja na organizovanu manipulaciju listićima („bugarski voz“)",
+        "order": 46,
+        "phases": [
+          "svaka"
+        ],
+        "aliases": [],
+        "doNotDo": [
+          "Ovaj vodič ne opisuje operativni način izvršenja, samo znake za prepoznavanje"
+        ],
+        "summary": "Naziv za oblik organizovane manipulacije u kojem se službeni glasački listić protivpravno iznosi iz normalnog toka glasanja i koristi za kontrolisano/cirkularno glasanje.",
+        "severity": "krivicno_delo",
+        "legalRule": "Iznošenje službenog glasačkog listića izvan propisanog toka je ozbiljna izborna nepravilnost. Krivična kvalifikacija zavisi od dokazanih radnji, kao što su glasanje više puta, korišćenje više listića, povreda tajnosti ili menjanje rezultata.",
+        "mythCheck": null,
+        "kategorija": "bugarski_voz",
+        "sourceUrls": [],
+        "legalEffect": "Ozbiljna sumnja na organizovanu izbornu manipulaciju; moguće krivičnopravne posledice procenjuju nadležni organi prema konkretnim dokazima.",
+        "whatToCheck": [
+          "Da li birač pokušava da napusti mesto sa glasačkim listićem",
+          "Da li postoji službeni listić van mesta gde sme da bude",
+          "Da li se broj izdatih, vraćenih i pronađenih listića ne slaže",
+          "Da li neko van biračkog mesta traži od birača da donese ili pokaže listić"
+        ],
+        "relatedSlugs": [
+          "vise-listica-u-kutiji-nego-biraca"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          },
+          {
+            "law": "Krivični zakonik Republike Srbije",
+            "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+            "article": "čl. 157 · Zloupotreba prava glasanja"
+          },
+          {
+            "law": "Krivični zakonik Republike Srbije",
+            "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+            "article": "čl. 160 · Povreda tajnosti glasanja"
+          },
+          {
+            "law": "Krivični zakonik Republike Srbije",
+            "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+            "article": "čl. 161 · Falsifikovanje rezultata glasanja"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Prijaviti sumnjive slučajeve policiji, kao što su to ranije radile akreditovane posmatračke organizacije"
+        ],
+        "controllerActions": [
+          "Ne ulaziti u fizički sukob; obavestiti predsednika odbora i zahtevati da se činjenice unesu u zapisnik",
+          "Prema okolnostima obavestiti nadležnu izbornu komisiju ili policiju"
+        ],
+        "evidenceChecklist": [
+          "Vreme",
+          "Opis situacije",
+          "Svedoci",
+          "Da li se računica listića slaže"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "V01",
+        "slug": "samo-jedan-clan-odbora-kod-kuce",
+        "naziv": "Kod birača ide samo jedan član biračkog odbora",
+        "order": 47,
+        "phases": [
+          "van_birackog_mesta"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Glasanju van biračkog mesta prisustvuje samo jedan član odbora umesto propisana tri.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Kod birača idu tri člana biračkog odbora, imenovana na predlog različitih ovlašćenih predlagača.",
+        "mythCheck": null,
+        "kategorija": "van_birackog_mesta",
+        "sourceUrls": [],
+        "legalEffect": "Teška proceduralna nepravilnost koja dovodi u pitanje ispravnost postupka.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "samo-dva-clana-odbora-kod-kuce"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 96 · glasanje van biračkog mesta"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži broj prisutnih članova"
+        ],
+        "controllerActions": [
+          "Ne sprovoditi postupak dok se ne obezbede tri člana"
+        ],
+        "evidenceChecklist": [
+          "Broj prisutnih članova",
+          "Vreme"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "V02",
+        "slug": "samo-dva-clana-odbora-kod-kuce",
+        "naziv": "Kod birača idu samo dva člana biračkog odbora",
+        "order": 48,
+        "phases": [
+          "van_birackog_mesta"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Glasanju van biračkog mesta prisustvuju samo dva umesto propisana tri člana odbora.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Kod birača idu tri člana biračkog odbora, imenovana na predlog različitih ovlašćenih predlagača.",
+        "mythCheck": null,
+        "kategorija": "van_birackog_mesta",
+        "sourceUrls": [],
+        "legalEffect": "Teška proceduralna nepravilnost.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "samo-jedan-clan-odbora-kod-kuce"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 96 · glasanje van biračkog mesta"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Ne sprovoditi postupak dok se ne obezbedi treći član"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "V03",
+        "slug": "poverenici-isti-predlagac",
+        "naziv": "Sva tri poverenika pripadaju istom predlagaču",
+        "order": 49,
+        "phases": [
+          "van_birackog_mesta"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Tri člana koja idu kod birača nisu imenovana na predlog različitih ovlašćenih predlagača.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Tri člana koja sprovode glasanje van biračkog mesta moraju biti imenovana na predlog različitih ovlašćenih predlagača.",
+        "mythCheck": null,
+        "kategorija": "van_birackog_mesta",
+        "sourceUrls": [],
+        "legalEffect": "Nepravilnost koja ugrožava nepristrasnost postupka.",
+        "whatToCheck": [
+          "Ko je predložio svakog od tri člana"
+        ],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 96 · glasanje van biračkog mesta"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Zahtevati zamenu sastava pre sprovođenja postupka"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "V04",
+        "slug": "identitet-nije-proveren-kod-kuce",
+        "naziv": "Identitet birača nije proveren kod kuće",
+        "order": 50,
+        "phases": [
+          "van_birackog_mesta"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Poverenici ne provere identitet birača pre glasanja van biračkog mesta.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Identitet birača mora biti proveren i pri glasanju van biračkog mesta, na isti način kao na biračkom mestu.",
+        "mythCheck": null,
+        "kategorija": "van_birackog_mesta",
+        "sourceUrls": [],
+        "legalEffect": "Teška proceduralna nepravilnost.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "nema-uv-provere-kod-kuce"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 96 · glasanje van biračkog mesta"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Zahtevati proveru identiteta pre nastavka postupka"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "V05",
+        "slug": "nema-uv-provere-kod-kuce",
+        "naziv": "UV provera nije sprovedena kod kuće",
+        "order": 51,
+        "phases": [
+          "van_birackog_mesta"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Poverenici ne sprovedu UV proveru i obeležavanje prsta pri glasanju van biračkog mesta.",
+        "severity": "nepravilnost",
+        "legalRule": "UV provera i obeležavanje su deo propisanog postupka i pri glasanju van biračkog mesta.",
+        "mythCheck": null,
+        "kategorija": "van_birackog_mesta",
+        "sourceUrls": [],
+        "legalEffect": "Proceduralna nepravilnost.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "identitet-nije-proveren-kod-kuce"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 96 · glasanje van biračkog mesta"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Zahtevati sprovođenje kompletne procedure"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "V06",
+        "slug": "nema-potpisane-potvrde-kod-kuce",
+        "naziv": "Birač nije potpisao potvrdu o glasanju van biračkog mesta",
+        "order": 52,
+        "phases": [
+          "van_birackog_mesta"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Birač nije potpisao propisanu potvrdu, ali se njegov glas ipak uzima u obzir.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Bez potpisane potvrde o pravu glasanja van biračkog mesta, listić se ne ubacuje u glasačku kutiju.",
+        "mythCheck": null,
+        "kategorija": "van_birackog_mesta",
+        "sourceUrls": [],
+        "legalEffect": "Ako se listić uprkos tome ubaci u kutiju, radi se o teškoj proceduralnoj nepravilnosti.",
+        "whatToCheck": [
+          "Da li potvrda uopšte postoji i da li je potpisana"
+        ],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 96 · glasanje van biračkog mesta"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Ne ubacivati listić u kutiju bez potpisane potvrde",
+          "Uneti u zapisnik"
+        ],
+        "evidenceChecklist": [
+          "Da li potvrda postoji",
+          "Potpis birača"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "V07",
+        "slug": "poverenici-ostaju-dok-birac-glasa",
+        "naziv": "Poverenici ostaju u prostoriji dok birač popunjava listić",
+        "order": 53,
+        "phases": [
+          "van_birackog_mesta"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Nakon objašnjenja postupka, poverenici ne napuštaju prostoriju dok birač glasa.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Nakon objašnjenja postupka, poverenici napuštaju prostoriju u kojoj birač samostalno popunjava listić.",
+        "mythCheck": null,
+        "kategorija": "van_birackog_mesta",
+        "sourceUrls": [],
+        "legalEffect": "Povreda tajnosti glasanja.",
+        "whatToCheck": [],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Zatraži da poverenici izađu dok popunjavaš listić"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 96 · glasanje van biračkog mesta"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Napustiti prostoriju tokom popunjavanja listića"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "V08",
+        "slug": "neko-drugi-bira-pomagaca-kod-kuce",
+        "naziv": "Neko drugi umesto birača bira ko će mu pomoći",
+        "order": 54,
+        "phases": [
+          "van_birackog_mesta"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Pomagača pri glasanju van biračkog mesta određuje neko drugi, a ne sam birač.",
+        "severity": "nepravilnost",
+        "legalRule": "Birač sam određuje ko će mu pomoći, ako mu je pomoć zaista potrebna.",
+        "mythCheck": null,
+        "kategorija": "van_birackog_mesta",
+        "sourceUrls": [],
+        "legalEffect": "Nepravilnost: povreda slobode izbora birača.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "pomagac-samostalno-odlucuje"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 96 · glasanje van biračkog mesta"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Proveriti da li je birač sam izabrao pomagača"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "V09",
+        "slug": "koverat-nije-zapecacen-pred-biracem",
+        "naziv": "Koverat sa listićem nije zapečaćen pred biračem",
+        "order": 55,
+        "phases": [
+          "van_birackog_mesta"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Koverat sa popunjenim listićem se pečati van vidokruga birača.",
+        "severity": "nepravilnost",
+        "legalRule": "Koverat se pečati pred biračem, neposredno nakon što popuni listić.",
+        "mythCheck": null,
+        "kategorija": "van_birackog_mesta",
+        "sourceUrls": [],
+        "legalEffect": "Proceduralna nepravilnost koja otvara sumnju u ispravnost listića.",
+        "whatToCheck": [],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 96 · glasanje van biračkog mesta"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Pečatiti koverat isključivo pred biračem"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "Z01",
+        "slug": "izbacivanje-birača-u-redu",
+        "naziv": "Birači u redu u 20:00 ne dobijaju priliku da glasaju",
+        "order": 56,
+        "phases": [
+          "zatvaranje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Birački odbor zatvara mesto tačno u 20:00 i odbija birače koji su već bili u redu ili na mestu.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Svi koji se u 20:00 nalaze na biračkom mestu ili neposredno ispred u redu moraju dobiti mogućnost da glasaju.",
+        "mythCheck": null,
+        "kategorija": "zatvaranje",
+        "sourceUrls": [],
+        "legalEffect": "Teška povreda biračkog prava birača u redu.",
+        "whatToCheck": [
+          "Da li su birači zaista bili u redu do 20:00"
+        ],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Ostani u redu i insistiraj na svom pravu ako si stigao pre 20:00"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži tačno vreme zatvaranja i broj odbijenih birača"
+        ],
+        "controllerActions": [
+          "Omogućiti glasanje svima koji su bili u redu do 20:00"
+        ],
+        "evidenceChecklist": [
+          "Vreme",
+          "Broj ljudi u redu",
+          "Kako je odbor postupio"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "Z02",
+        "slug": "kasnjenje-otvaranja-produzenje-glasanja",
+        "naziv": "Kasnilo je otvaranje: da li se glasanje produžava?",
+        "order": 57,
+        "phases": [
+          "zatvaranje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Biračko mesto je otvoreno kasnije od 07:00 ili je bilo prekida u radu.",
+        "severity": "proveri",
+        "legalRule": "Ako je otvaranje kasnilo ili je glasanje bilo prekinuto duže od sat vremena, vreme glasanja se produžava za odgovarajući period.",
+        "mythCheck": null,
+        "kategorija": "zatvaranje",
+        "sourceUrls": [],
+        "legalEffect": "Glasanje se ne zatvara mehanički u 20:00 ako je bilo kašnjenja ili dužeg prekida.",
+        "whatToCheck": [
+          "Tačno vreme otvaranja",
+          "Trajanje eventualnih prekida"
+        ],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži vreme otvaranja i sve prekide"
+        ],
+        "controllerActions": [
+          "Izračunati i objaviti produženo vreme zatvaranja",
+          "Uneti u zapisnik"
+        ],
+        "evidenceChecklist": [
+          "Vreme otvaranja",
+          "Trajanje prekida"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "Z03",
+        "slug": "ranije-zatvaranje-svi-glasali",
+        "naziv": "Ranije zatvaranje kada su svi upisani birači glasali",
+        "order": 58,
+        "phases": [
+          "zatvaranje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Biračko mesto se zatvara pre 20:00 jer su svi birači iz izvoda već glasali.",
+        "severity": "dozvoljeno",
+        "legalRule": "Zakon dozvoljava ranije zatvaranje ako su glasali svi birači iz izvoda, ali rezultat se ne sme javno saopštiti ili istaći pre 20:00.",
+        "mythCheck": null,
+        "kategorija": "zatvaranje",
+        "sourceUrls": [],
+        "legalEffect": "Dozvoljeno, uz obavezu da se rezultat ne objavljuje pre zvaničnog vremena zatvaranja.",
+        "whatToCheck": [
+          "Da li je zaista glasao svaki birač iz izvoda",
+          "Da li je rezultat slučajno objavljen pre 20:00"
+        ],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Proveriti da rezultat nije prevremeno objavljen"
+        ],
+        "controllerActions": [
+          "Ne saopštavati niti isticati rezultat pre 20:00"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "AN01",
+        "slug": "vise-listica-u-kutiji-nego-biraca",
+        "naziv": "Više listića u kutiji nego birača koji su glasali",
+        "order": 59,
+        "phases": [
+          "brojanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Broj glasačkih listića pronađenih u kutiji veći je od broja birača koji su, prema potpisima, glasali.",
+        "severity": "ponistavanje",
+        "legalRule": "Broj listića u kutiji ne sme biti veći od broja birača koji su glasali (utvrđenog preko potpisa i evidencije glasanja van biračkog mesta).",
+        "mythCheck": null,
+        "kategorija": "brojanje",
+        "sourceUrls": [],
+        "legalEffect": "Jedan od zakonom izričito propisanih razloga za poništavanje glasanja na biračkom mestu po službenoj dužnosti.",
+        "whatToCheck": [
+          "Tačnost prebrojavanja potpisa",
+          "Tačnost prebrojavanja listića u kutiji"
+        ],
+        "relatedSlugs": [
+          "kontrolni-list-nije-ubacen-u-kutiju",
+          "nema-potpisa-a-dobija-listic"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 116 · poništavanje po službenoj dužnosti"
+          },
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 102 · utvrđivanje broja birača koji su glasali"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Prati brojanje oba niza podataka"
+        ],
+        "controllerActions": [
+          "Ponovo prebrojati oba broja pre donošenja zaključka",
+          "Uneti tačne brojeve u zapisnik"
+        ],
+        "evidenceChecklist": [
+          "Broj potpisa",
+          "Broj listića u kutiji"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": true
+      },
+      {
+        "id": "AN02",
+        "slug": "neupotrebljeni-plus-kutija-veci-od-primljenih",
+        "naziv": "Neupotrebljeni listići + listići iz kutije > broj primljenih listića",
+        "order": 60,
+        "phases": [
+          "brojanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Zbir neiskorišćenih listića i listića pronađenih u kutiji veći je od broja listića koje je odbor primio.",
+        "severity": "ponistavanje",
+        "legalRule": "Zbir neupotrebljenih listića i listića iz kutije ne sme biti veći od broja primljenih listića.",
+        "mythCheck": null,
+        "kategorija": "brojanje",
+        "sourceUrls": [],
+        "legalEffect": "Jedan od zakonom izričito propisanih razloga za poništavanje glasanja na biračkom mestu po službenoj dužnosti.",
+        "whatToCheck": [
+          "Da li je broj primljenih listića tačno evidentiran na početku dana"
+        ],
+        "relatedSlugs": [
+          "vise-listica-u-kutiji-nego-biraca"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 116 · poništavanje po službenoj dužnosti"
+          },
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 102 · utvrđivanje broja birača koji su glasali"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [],
+        "controllerActions": [
+          "Ponovo prebrojati sve tri kategorije pre zaključka"
+        ],
+        "evidenceChecklist": [
+          "Broj primljenih",
+          "Broj neupotrebljenih",
+          "Broj u kutiji"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": true
+      },
+      {
+        "id": "NR01",
+        "slug": "nemogucnost-utvrdjivanja-rezultata",
+        "naziv": "Nemogućnost utvrđivanja rezultata glasanja",
+        "order": 61,
+        "phases": [
+          "brojanje"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Postoji situacija u kojoj se rezultat glasanja na biračkom mestu uopšte ne može utvrditi.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Rezultat se ne može utvrditi kada, između ostalog: glasanje nije održano; glasanje je prekinuto i nije nastavljeno; komisija nije dobila zapisnik; zapisnik nije potpisalo najmanje tri člana biračkog odbora; postoje grube logičko-računske greške koje se ne mogu otkloniti ni pregledom kompletnog materijala.",
+        "mythCheck": null,
+        "kategorija": "brojanje",
+        "sourceUrls": [],
+        "legalEffect": "Ovo je pravno drugačija situacija od poništavanja po službenoj dužnosti, iako obe mogu voditi ponovljenom glasanju na tom mestu.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "vise-listica-u-kutiji-nego-biraca"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Zabeleži tačan razlog zbog kog rezultat nije mogao biti utvrđen"
+        ],
+        "controllerActions": [
+          "Obezbediti da zapisnik potpiše najmanje tri člana odbora",
+          "Odmah dostaviti zapisnik komisiji"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "ZP01",
+        "slug": "potpisivanje-praznog-zapisnika",
+        "naziv": "Od člana odbora se traži da potpiše prazan ili nepotpun zapisnik",
+        "order": 62,
+        "phases": [
+          "zapisnik"
+        ],
+        "aliases": [],
+        "doNotDo": [
+          "Ne potpisuj pod pritiskom vremena bez provere podataka"
+        ],
+        "summary": "Član biračkog odbora se poziva da potpiše zapisnik pre nego što su svi relevantni podaci uneti i provereni.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Zapisnik mora sadržati sve propisane podatke (brojeve birača, listića, kontrolni list, prekide, primedbe) pre potpisivanja.",
+        "mythCheck": null,
+        "kategorija": "zapisnik",
+        "sourceUrls": [],
+        "legalEffect": "Nikada ne potpisuj zapisnik čiji podaci nisu uneti i provereni.",
+        "whatToCheck": [
+          "Da li su sva propisana polja popunjena i tačna"
+        ],
+        "relatedSlugs": [
+          "treci-primerak-nije-istaknut"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Prati da li se ovo dešava i uneti primedbu u sopstveni zapisnik"
+        ],
+        "controllerActions": [
+          "Odbiti potpis dok podaci nisu kompletni i tačni",
+          "Zahtevati vreme za proveru"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "ZP02",
+        "slug": "ne-dozvoljavaju-primedbu-u-zapisnik",
+        "naziv": "Članu odbora se ne dozvoljava da unese primedbu",
+        "order": 63,
+        "phases": [
+          "zapisnik"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Predsednik odbora odbija da unese primedbu člana odbora u zapisnik.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Zapisnik izričito sadrži i primedbe članova biračkog odbora.",
+        "mythCheck": null,
+        "kategorija": "zapisnik",
+        "sourceUrls": [],
+        "legalEffect": "Ozbiljna nepravilnost koja onemogućava pravnu zaštitu člana odbora.",
+        "whatToCheck": [],
+        "relatedSlugs": [],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Iskoristi sopstveni zapisnik posmatrača za istu primedbu"
+        ],
+        "controllerActions": [
+          "Insistirati na pravu da primedba bude uneta",
+          "Sačuvati sopstvenu pisanu kopiju primedbe"
+        ],
+        "evidenceChecklist": [],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "ZP03",
+        "slug": "treci-primerak-nije-istaknut",
+        "naziv": "Treći primerak zapisnika nije javno istaknut",
+        "order": 64,
+        "phases": [
+          "zapisnik"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Nakon završetka brojanja, treći primerak zapisnika nije istaknut na biračkom mestu na javni uvid.",
+        "severity": "nepravilnost",
+        "legalRule": "Treći primerak zapisnika ističe se na biračkom mestu na javni uvid.",
+        "mythCheck": null,
+        "kategorija": "zapisnik",
+        "sourceUrls": [],
+        "legalEffect": "Proceduralna nepravilnost: otežava javnu kontrolu rezultata.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "rezultat-se-razlikuje-od-prebrojanog"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Fotografisati istaknuti zapisnik radi kasnijeg poređenja"
+        ],
+        "controllerActions": [
+          "Istaći primerak odmah po završetku brojanja"
+        ],
+        "evidenceChecklist": [
+          "Da li je i kada istaknut"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "ZP04",
+        "slug": "rezultat-se-razlikuje-od-prebrojanog",
+        "naziv": "Objavljeni rezultat se razlikuje od onoga što je stvarno prebrojano",
+        "order": 65,
+        "phases": [
+          "zapisnik"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Brojevi u istaknutom ili objavljenom zapisniku ne odgovaraju onome što je zabeleženo tokom brojanja.",
+        "severity": "teska_nepravilnost",
+        "legalRule": "Zapisnik mora verno odražavati rezultat utvrđen prilikom brojanja.",
+        "mythCheck": null,
+        "kategorija": "zapisnik",
+        "sourceUrls": [],
+        "legalEffect": "Ozbiljna nepravilnost; u zavisnosti od namere može predstavljati i falsifikovanje rezultata glasanja.",
+        "whatToCheck": [
+          "Uporedi sopstvene beleške sa objavljenim zapisnikom broj po broj"
+        ],
+        "relatedSlugs": [
+          "namerno-menjanje-rezultata"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Zakon o izboru narodnih poslanika",
+            "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+            "article": "čl. 87-99 (opšti tok glasanja)"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Uporedi svoje beleške sa istaknutim zapisnikom i prijavi neslaganje"
+        ],
+        "controllerActions": [],
+        "evidenceChecklist": [
+          "Sopstvene beleške tokom brojanja",
+          "Fotografija istaknutog zapisnika"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      },
+      {
+        "id": "FR01",
+        "slug": "namerno-menjanje-rezultata",
+        "naziv": "Namerno menjanje rezultata glasanja",
+        "order": 66,
+        "phases": [
+          "zapisnik"
+        ],
+        "aliases": [],
+        "doNotDo": [],
+        "summary": "Član izbornog organa ili drugo lice u vezi sa glasanjem svesno menja broj glasova ili listića, ili objavljuje neistinit rezultat.",
+        "severity": "krivicno_delo",
+        "legalRule": "Dodavanje ili oduzimanje listića ili glasova, ili promena broja glasova ili objava neistinitog rezultata od strane člana izbornog organa ili drugog lica u vezi sa glasanjem je zabranjeno.",
+        "mythCheck": null,
+        "kategorija": "falsifikovanje",
+        "sourceUrls": [],
+        "legalEffect": "Krivično delo falsifikovanja rezultata glasanja. Republička izborna komisija je dužna da podnese krivičnu prijavu ako postoji osnovana sumnja da veliko neslaganje materijala i zapisnika potiče od svesne i namerne aktivnosti radi utvrđivanja neistinitog rezultata.",
+        "whatToCheck": [],
+        "relatedSlugs": [
+          "rezultat-se-razlikuje-od-prebrojanog"
+        ],
+        "reviewStatus": "verified",
+        "voterActions": [
+          "Prijavi neslaganje odmah nadležnoj izbornoj komisiji i, po potrebi, tužilaštvu"
+        ],
+        "electionTypes": [
+          "narodni_poslanici",
+          "predsednik",
+          "lokalni"
+        ],
+        "lawReferences": [
+          {
+            "law": "Krivični zakonik Republike Srbije",
+            "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+            "article": "čl. 161 · Falsifikovanje rezultata glasanja"
+          }
+        ],
+        "informalQueries": [],
+        "lastLegalReview": "2026-09-05",
+        "observerActions": [
+          "Sačuvaj sve beleške i dokaze o neslaganju brojeva"
+        ],
+        "controllerActions": [
+          "Ne menjati originalni materijal; sačuvati tačne brojke, primedbu i prateće dokaze",
+          "Obavestiti nadležnu izbornu komisiju, a kod osnovane sumnje i javno tužilaštvo"
+        ],
+        "evidenceChecklist": [
+          "Sve zabeležene brojke tokom brojanja",
+          "Fotografija istaknutog zapisnika",
+          "Objavljeni zvanični rezultat"
+        ],
+        "publicationStatus": "published",
+        "isAutomaticAnnulment": false
+      }
+    ],
+    "sources": [
+      {
+        "id": "rik-registar-prigovora",
+        "url": "https://www.rik.parlament.gov.rs/tekst/1553/izborna-dokumenta.php",
+        "tier": 1,
+        "type": "rik",
+        "label": "RIK: registar prigovora i rezultati",
+        "status": "active",
+        "description": "Zvanični rezultati, zapisnici sa biračkih mesta i registar podnetih prigovora.",
+        "lastCheckedAt": "2026-09-05T13:14:28.965Z"
+      },
+      {
+        "id": "rik-zakoni",
+        "url": "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php",
+        "tier": 1,
+        "type": "law",
+        "label": "RIK: važeći izborni zakoni",
+        "status": "active",
+        "description": "Republička izborna komisija. Zakon o izboru narodnih poslanika, Zakon o lokalnim izborima, Zakon o Jedinstvenom biračkom spisku i njihove izmene.",
+        "lastCheckedAt": "2026-09-05T13:14:28.883Z"
+      },
+      {
+        "id": "rik-podzakonska",
+        "url": "https://www.rik.parlament.gov.rs/tekst/70/podzakonska-akta.php",
+        "tier": 1,
+        "type": "bylaw",
+        "label": "RIK: podzakonska akta i obrasci",
+        "status": "active",
+        "description": "Uputstva, odluke i obrasci koje RIK objavljuje za sprovođenje izbora, uključujući obrazac ZP-4.",
+        "lastCheckedAt": "2026-09-05T13:14:28.910Z"
+      },
+      {
+        "id": "rik-zp4",
+        "url": "https://www.rik.parlament.gov.rs/extfile/sr/files/additionalDocuments/996/48/Uputstvo%20-%20prigovori.pdf",
+        "tier": 1,
+        "type": "rik",
+        "label": "RIK: obrazac ZP-4 i uputstvo za pravna sredstva",
+        "status": "active",
+        "description": "Zvanično uputstvo i obrasci za podnošenje zahteva birača za poništavanje glasanja.",
+        "lastCheckedAt": "2026-09-05T13:14:28.938Z"
+      },
+      {
+        "id": "krivicni-zakonik",
+        "url": "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5",
+        "tier": 1,
+        "type": "law",
+        "label": "Krivični zakonik Republike Srbije",
+        "status": "active",
+        "description": "Glava XV: Krivična dela protiv izbornih prava (čl. 154-161).",
+        "lastCheckedAt": "2026-09-05T13:14:29.047Z"
+      },
+      {
+        "id": "odihr-2023",
+        "url": "https://odihr.osce.org/odihr/elections/serbia/563502",
+        "tier": 2,
+        "type": "odihr",
+        "label": "ODIHR/OSCE: izveštaj o parlamentarnim izborima 2023",
+        "status": "active",
+        "description": "Posmatračka misija OSCE/ODIHR beležila je proceduralne probleme uključujući grupno glasanje, fotografisanje listića i pokušaje uticaja na birače.",
+        "lastCheckedAt": "2026-09-05T13:14:28.993Z"
+      },
+      {
+        "id": "odihr-2024",
+        "url": "https://odihr.osce.org/odihr/elections/serbia/575488",
+        "tier": 2,
+        "type": "odihr",
+        "label": "ODIHR/OSCE: izveštaj o lokalnim izborima 2024",
+        "status": "active",
+        "description": "Nastavak praćenja proceduralnih problema na lokalnim izborima.",
+        "lastCheckedAt": "2026-09-05T13:14:29.018Z"
+      },
+      {
+        "id": "crta",
+        "url": "https://crta.rs/",
+        "tier": 3,
+        "type": "observer_report",
+        "label": "CRTA: građanske posmatračke misije",
+        "status": "active",
+        "description": "Akreditovana posmatračka organizacija koja prati i prijavljuje izborne nepravilnosti, uključujući slučajeve tipa „bugarski voz“.",
+        "lastCheckedAt": "2026-09-05T13:14:29.072Z"
+      }
+    ],
+    "version": "2026.09.07-simulator-training-upgrade",
+    "training": [
+      {
+        "ruleIds": [
+          "I01"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "AN01"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "T02"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "T01"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "E01"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "E02"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "I06"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "I04"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "P04"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "Z01"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "N02"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "T09"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "KG01"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "AN01"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "ZP02"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "I07"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "P01"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "ZP01"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "V01"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "AN01"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "AN02"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "NR01"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "I07"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "I05"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "T08"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "I02"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "FR01"
+        ],
+        "sourceIds": []
+      },
+      {
+        "ruleIds": [
+          "P01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P06"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P06"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P06"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P06"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P10"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P10"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P10"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P11"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P11"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P11"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P12"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P12"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I06"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I06"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I10"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I10"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I11"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I11"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I11"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I11"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I12"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I12"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I12"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I12"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I13"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I13"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I13"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I13"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T06"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T06"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T06"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T06"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T10"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T10"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T10"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T10"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T11"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T11"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T11"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T11"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T12"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T12"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T12"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T12"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "KG01"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "KG01"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "KG01"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "E01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "E02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "E03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "E03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "E04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "E04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "BV01"
+        ],
+        "sourceIds": [
+          "rik-zakoni",
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "BV01"
+        ],
+        "sourceIds": [
+          "rik-zakoni",
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "BV01"
+        ],
+        "sourceIds": [
+          "rik-zakoni",
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "BV01"
+        ],
+        "sourceIds": [
+          "rik-zakoni",
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V06"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V06"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V06"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "Z01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "Z01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "Z02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "Z02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "Z03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "Z03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "NR01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "NR01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "FR01"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "FR01"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "FR01"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      }
+    ],
+    "simulation": [
+      {
+        "ruleIds": [
+          "P12"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P12"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P12"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P04",
+          "AN02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P11"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P11"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P06",
+          "P07",
+          "P08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P06",
+          "P07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P06",
+          "Z02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P10"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P10"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "E01",
+          "E04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "E01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I01",
+          "I08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I03",
+          "I04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I04",
+          "N02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I03",
+          "I04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I01",
+          "I08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T05",
+          "P11"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I02",
+          "I13"
+        ],
+        "sourceIds": [
+          "rik-zakoni",
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I13",
+          "I11"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P11"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P11"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I06"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I06"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I06",
+          "I05"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T01",
+          "N02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T01",
+          "T02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T02",
+          "V08"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V01",
+          "V02",
+          "V03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V02",
+          "V03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V06",
+          "V09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V06",
+          "V09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "V07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N02",
+          "N03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N03",
+          "E03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN02",
+          "ZP01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I07",
+          "ZP02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I07",
+          "ZP02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I07",
+          "ZP02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T09",
+          "KG01"
+        ],
+        "sourceIds": [
+          "rik-zakoni",
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "KG01",
+          "T08"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik",
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "KG01"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "KG01"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "KG01",
+          "T08"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik",
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "KG01"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "KG01"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "N01",
+          "T09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T09",
+          "N01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "E01",
+          "E02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "E01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "E02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "E03",
+          "ZP02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "E03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P10",
+          "AN01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P10"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T03",
+          "ZP02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T03",
+          "T02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I10"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I10"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T11",
+          "T10"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T11"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "T11",
+          "T08"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik",
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "BV01",
+          "ZP02"
+        ],
+        "sourceIds": [
+          "rik-zakoni",
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "BV01"
+        ],
+        "sourceIds": [
+          "rik-zakoni",
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "BV01",
+          "AN02"
+        ],
+        "sourceIds": [
+          "rik-zakoni",
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "Z01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "Z01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "Z01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "Z01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "Z02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "Z02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN01",
+          "AN02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P09"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "P09",
+          "ZP01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP01",
+          "N02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "FR01",
+          "AN01"
+        ],
+        "sourceIds": [
+          "krivicni-zakonik",
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "AN01",
+          "NR01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "NR01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP02",
+          "I07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP02",
+          "I07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP02"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP01",
+          "FR01"
+        ],
+        "sourceIds": [
+          "rik-zakoni",
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP03"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP03",
+          "ZP04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "I07"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP04",
+          "FR01"
+        ],
+        "sourceIds": [
+          "rik-zakoni",
+          "krivicni-zakonik"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP04",
+          "ZP01"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP03",
+          "ZP04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      },
+      {
+        "ruleIds": [
+          "ZP04"
+        ],
+        "sourceIds": [
+          "rik-zakoni"
+        ]
+      }
+    ],
+    "generatedAt": "2026-09-07T04:00:17.080Z",
+    "decisionTrees": [
+      {
+        "id": "DT01",
+        "slug": "kontrolni-list-i-kutija",
+        "nodes": [
+          {
+            "id": "DT01-N1",
+            "type": "question",
+            "order": 1,
+            "prompt": "Da li je kontrolni list pravilno popunjen i potpisan?",
+            "options": [
+              {
+                "id": "yes",
+                "label": "Da",
+                "ruleIds": [],
+                "nextNodeId": "DT01-N2"
+              },
+              {
+                "id": "no",
+                "label": "Ne",
+                "ruleIds": [
+                  "P06",
+                  "P07",
+                  "P08"
+                ],
+                "nextNodeId": "DT01-R1"
+              }
+            ],
+            "ruleIds": []
+          },
+          {
+            "id": "DT01-N2",
+            "type": "question",
+            "order": 2,
+            "prompt": "Da li je glasačka kutija pokazana prazna pre prvog glasa?",
+            "options": [
+              {
+                "id": "yes",
+                "label": "Da",
+                "ruleIds": [],
+                "nextNodeId": "DT01-R2"
+              },
+              {
+                "id": "no",
+                "label": "Ne",
+                "ruleIds": [
+                  "P05"
+                ],
+                "nextNodeId": "DT01-R3"
+              }
+            ],
+            "ruleIds": []
+          },
+          {
+            "id": "DT01-R1",
+            "type": "result",
+            "order": 3,
+            "prompt": "Mogući zakonski osnov za poništavanje - otvorite relevantno pravilo.",
+            "options": [],
+            "ruleIds": [
+              "P06",
+              "P07",
+              "P08"
+            ]
+          },
+          {
+            "id": "DT01-R2",
+            "type": "result",
+            "order": 4,
+            "prompt": "Osnovna procedura je ispunjena.",
+            "options": [],
+            "ruleIds": [
+              "P06",
+              "P07",
+              "P08"
+            ]
+          },
+          {
+            "id": "DT01-R3",
+            "type": "result",
+            "order": 5,
+            "prompt": "Zabeležite proceduralnu nepravilnost i zahtevajte ponavljanje kontrole.",
+            "options": [],
+            "ruleIds": [
+              "P05"
+            ]
+          }
+        ],
+        "order": 1,
+        "title": "Kontrolni list i glasačka kutija",
+        "description": "Brza provera problema sa kutijom, kontrolnim listom i pečaćenjem pre glasanja.",
+        "startNodeId": "DT01-N1",
+        "reviewStatus": "legal_review",
+        "publicationStatus": "published"
+      },
+      {
+        "id": "DT02",
+        "slug": "tajnost-glasanja",
+        "nodes": [
+          {
+            "id": "DT02-N1",
+            "type": "question",
+            "order": 1,
+            "prompt": "Da li je birač fotografisao svoj listić ili pokazao kako je glasao?",
+            "options": [
+              {
+                "id": "yes",
+                "label": "Da",
+                "ruleIds": [
+                  "T09"
+                ],
+                "nextNodeId": "DT02-R1"
+              },
+              {
+                "id": "no",
+                "label": "Ne",
+                "ruleIds": [],
+                "nextNodeId": "DT02-N2"
+              }
+            ],
+            "ruleIds": []
+          },
+          {
+            "id": "DT02-N2",
+            "type": "question",
+            "order": 2,
+            "prompt": "Da li je drugo lice usmeravalo birača ili glasalo umesto njega?",
+            "options": [
+              {
+                "id": "yes",
+                "label": "Da",
+                "ruleIds": [
+                  "T02",
+                  "T03"
+                ],
+                "nextNodeId": "DT02-R2"
+              },
+              {
+                "id": "no",
+                "label": "Ne",
+                "ruleIds": [],
+                "nextNodeId": "DT02-R3"
+              }
+            ],
+            "ruleIds": []
+          },
+          {
+            "id": "DT02-R1",
+            "type": "result",
+            "order": 3,
+            "prompt": "Zaštitite tajnost i unesite događaj u zapisnik.",
+            "options": [],
+            "ruleIds": [
+              "T09"
+            ]
+          },
+          {
+            "id": "DT02-R2",
+            "type": "result",
+            "order": 4,
+            "prompt": "Zaustavite radnju, proverite identitet pomagača i zabeležite činjenice.",
+            "options": [],
+            "ruleIds": [
+              "T02",
+              "T03"
+            ]
+          },
+          {
+            "id": "DT02-R3",
+            "type": "result",
+            "order": 5,
+            "prompt": "Nije identifikovan ovaj tip problema.",
+            "options": [],
+            "ruleIds": []
+          }
+        ],
+        "order": 2,
+        "title": "Tajnost i sloboda glasanja",
+        "description": "Razlikujte pomoć biraču, pritisak i fotografisanje glasačkog listića.",
+        "startNodeId": "DT02-N1",
+        "reviewStatus": "legal_review",
+        "publicationStatus": "published"
+      },
+      {
+        "id": "DT03",
+        "slug": "neslaganje-u-zapisniku",
+        "nodes": [
+          {
+            "id": "DT03-N1",
+            "type": "question",
+            "order": 1,
+            "prompt": "Da li je broj listića u kutiji veći od broja birača koji su glasali?",
+            "options": [
+              {
+                "id": "yes",
+                "label": "Da",
+                "ruleIds": [
+                  "Z01"
+                ],
+                "nextNodeId": "DT03-R1"
+              },
+              {
+                "id": "no",
+                "label": "Ne",
+                "ruleIds": [],
+                "nextNodeId": "DT03-N2"
+              }
+            ],
+            "ruleIds": []
+          },
+          {
+            "id": "DT03-N2",
+            "type": "question",
+            "order": 2,
+            "prompt": "Da li zbir neupotrebljenih listića i listića u kutiji premašuje primljene listiće?",
+            "options": [
+              {
+                "id": "yes",
+                "label": "Da",
+                "ruleIds": [
+                  "Z01"
+                ],
+                "nextNodeId": "DT03-R1"
+              },
+              {
+                "id": "no",
+                "label": "Ne",
+                "ruleIds": [],
+                "nextNodeId": "DT03-R2"
+              }
+            ],
+            "ruleIds": []
+          },
+          {
+            "id": "DT03-R1",
+            "type": "result",
+            "order": 3,
+            "prompt": "Mogući osnov za poništavanje po članu 116 - odmah zabeležite tačne brojeve.",
+            "options": [],
+            "ruleIds": [
+              "Z01"
+            ]
+          },
+          {
+            "id": "DT03-R2",
+            "type": "result",
+            "order": 4,
+            "prompt": "Ponovo prebrojte i razjasnite računsku razliku pre potpisivanja.",
+            "options": [],
+            "ruleIds": [
+              "Z01"
+            ]
+          }
+        ],
+        "order": 3,
+        "title": "Neslaganje brojeva u zapisniku",
+        "description": "Odredite da li neslaganje zahteva ponovno brojanje ili predstavlja zakonski osnov za poništavanje po službenoj dužnosti.",
+        "startNodeId": "DT03-N1",
+        "reviewStatus": "legal_review",
+        "publicationStatus": "published"
+      }
+    ],
+    "schemaVersion": 1
+  },
+  "sha256": "c30014fb626137a69c401104c9ad07712d04893152ea81ea7d32ef8877f61512",
+  "size": 113707
+}

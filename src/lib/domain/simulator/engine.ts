@@ -141,8 +141,9 @@ export function resolveChoice(
   state: SimulationState,
   event: SimulationEvent,
   choice: SimulationChoice,
+  options?: { bypassRoleCheck?: boolean },
 ): SimulationState {
-  if (!availableChoices(event, state).some((candidate) => candidate.id === choice.id)) {
+  if (!options?.bypassRoleCheck && !availableChoices(event, state).some((candidate) => candidate.id === choice.id)) {
     throw new Error(`Odluka ${choice.id} nije dostupna u događaju ${event.id}.`);
   }
 
@@ -150,7 +151,9 @@ export function resolveChoice(
   const updated = applyEffect(state, choice.effects, penaltyMultiplier);
 
   const maxScores = { ...state.maxScores };
-  for (const [category, value] of Object.entries(bestPossibleScores(availableChoices(event, state))) as [
+  const roleChoices = availableChoices(event, state);
+  const scoringChoices = roleChoices.length > 0 ? roleChoices : event.choices;
+  for (const [category, value] of Object.entries(bestPossibleScores(scoringChoices)) as [
     ScoreCategory,
     number,
   ][]) {

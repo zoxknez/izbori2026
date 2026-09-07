@@ -291,29 +291,6 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
     states: {
       pre_opening: {
         on: {
-          START_COUNTING: {
-            target: "counting",
-            actions: assign(({ context }) => {
-              const session =
-                context.countingSession ?? initializeCountingSession(context.domainState);
-              const targetTime = Math.max(context.simulationTimeMs, 72_000_000);
-              return {
-                currentPhase: "counting" as const,
-                simulationTimeMs: targetTime,
-                countingSession: session,
-                actionLog: [
-                  ...context.actionLog,
-                  {
-                    id: `phase-${context.deterministicCounter + 1}`,
-                    simulationTimeMs: targetTime,
-                    timestamp: msToTimeString(targetTime),
-                    type: "phase_change" as const,
-                    details: "Započeto prebrojavanje glasova i izrada zapisnika (20:00).",
-                  },
-                ],
-              };
-            }),
-          },
           START_VOTING: {
             target: "voting",
             actions: assign(({ context }) => ({
@@ -361,31 +338,13 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
       },
       voting: {
         on: {
-          START_COUNTING: {
-            target: "counting",
-            actions: assign(({ context }) => {
-              const session =
-                context.countingSession ?? initializeCountingSession(context.domainState);
-              const targetTime = Math.max(context.simulationTimeMs, 72_000_000);
-              return {
-                currentPhase: "counting" as const,
-                simulationTimeMs: targetTime,
-                countingSession: session,
-                actionLog: [
-                  ...context.actionLog,
-                  {
-                    id: `phase-${context.deterministicCounter + 1}`,
-                    simulationTimeMs: targetTime,
-                    timestamp: msToTimeString(targetTime),
-                    type: "phase_change" as const,
-                    details: "Biračko mesto je zatvoreno, počinje prebrojavanje glasova (20:00).",
-                  },
-                ],
-              };
-            }),
-          },
           CLOSE_POLLS: {
             target: "closing",
+            guard: ({ context }) => {
+              const isScheduledClose = context.simulationTimeMs >= context.pollSchedule.effectiveCloseTimeMs;
+              const isEarlyCloseLegal = context.pollSchedule.earlyCloseAtMs !== undefined;
+              return isScheduledClose || isEarlyCloseLegal;
+            },
             actions: assign(({ context }) => ({
               currentPhase: "closing" as const,
               pollSchedule: {
@@ -405,54 +364,25 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
               ],
             })),
           },
-          TICK: [
-            {
-              target: "closing",
-              guard: ({ context, event }) => {
-                if (context.paused || context.systemPaused) return false;
-                const nextMs = tickClock({
-                  currentMs: context.simulationTimeMs,
-                  deltaRealMs: event.deltaRealMs,
-                  speed: context.speed,
-                  paused: false,
-                });
-                return nextMs >= context.pollSchedule.effectiveCloseTimeMs;
-              },
-              actions: [
-                assign(({ context, event }) => {
-                  const update = processTickLogic(context, event.deltaRealMs);
-                  return {
-                    ...update,
-                    currentPhase: "closing" as const,
-                    pollSchedule: {
-                      ...context.pollSchedule,
-                      actualClosingStartedAtMs: context.simulationTimeMs,
-                    },
-                  };
-                }),
-              ],
-            },
-            {
-              actions: assign(({ context, event }) => processTickLogic(context, event.deltaRealMs)),
-            },
-          ],
+          TICK: {
+            actions: assign(({ context, event }) => {
+              const update = processTickLogic(context, event.deltaRealMs);
+              if (
+                update.simulationTimeMs &&
+                update.simulationTimeMs > context.pollSchedule.effectiveCloseTimeMs
+              ) {
+                update.simulationTimeMs = context.pollSchedule.effectiveCloseTimeMs;
+              }
+              return update;
+            }),
+          },
         },
       },
       closing: {
         on: {
-          START_COUNTING: {
-            target: "counting",
-            actions: assign(({ context }) => {
-              const session =
-                context.countingSession ?? initializeCountingSession(context.domainState);
-              return {
-                currentPhase: "counting" as const,
-                countingSession: session,
-              };
-            }),
-          },
           FINISH_CLOSING: {
             target: "counting",
+            guard: ({ context }) => context.queueLength === 0 && context.activeVoterCount === 0,
             actions: assign(({ context }) => {
               const session =
                 context.countingSession ?? initializeCountingSession(context.domainState);
@@ -473,28 +403,9 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
               };
             }),
           },
-          TICK: [
-            {
-              target: "counting",
-              guard: ({ context }) =>
-                context.activeVoterCount === 0 && context.queueLength === 0,
-              actions: [
-                assign(({ context, event }) => {
-                  const update = processTickLogic(context, event.deltaRealMs);
-                  const session =
-                    context.countingSession ?? initializeCountingSession(context.domainState);
-                  return {
-                    ...update,
-                    currentPhase: "counting" as const,
-                    countingSession: session,
-                  };
-                }),
-              ],
-            },
-            {
-              actions: assign(({ context, event }) => processTickLogic(context, event.deltaRealMs)),
-            },
-          ],
+          TICK: {
+            actions: assign(({ context, event }) => processTickLogic(context, event.deltaRealMs)),
+          },
         },
       },
       counting: {
@@ -515,8 +426,6 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
                 new Set([
                   ...context.boardProtocol.signedByMembers,
                   signer,
-                  "Predsednik BO",
-                  "Zamenik predsednika BO",
                 ]),
               );
               const isSigned = updatedMembers.length >= 3;
@@ -535,7 +444,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
                 boardProtocol: {
                   ...context.boardProtocol,
                   isSigned,
-                  signedAtMs: context.simulationTimeMs,
+                  signedAtMs: isSigned ? (context.boardProtocol.signedAtMs ?? context.simulationTimeMs) : undefined,
                   signedByMembers: updatedMembers,
                 },
                 actionLog: [
@@ -545,7 +454,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
                     simulationTimeMs: context.simulationTimeMs,
                     timestamp: msToTimeString(context.simulationTimeMs),
                     type: "protocol_signed" as const,
-                    details: `Zapisnik o radu biračkog odbora overen i potpisan od strane: ${signer}.`,
+                    details: `Zapisnik o radu biračkog odbora overen i potpisan od strane: ${signer} (potpisa: ${updatedMembers.length}/3).`,
                   },
                 ],
               };
@@ -573,7 +482,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
             actions: assign(({ context, event }) => {
               const signer = event.memberName ?? `Član BO (${context.domainState.role})`;
               const updatedMembers = Array.from(
-                new Set([...context.boardProtocol.signedByMembers, signer, "Predsednik BO"]),
+                new Set([...context.boardProtocol.signedByMembers, signer]),
               );
               const isSigned = updatedMembers.length >= 3;
 
@@ -591,7 +500,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
                 boardProtocol: {
                   ...context.boardProtocol,
                   isSigned,
-                  signedAtMs: context.simulationTimeMs,
+                  signedAtMs: isSigned ? (context.boardProtocol.signedAtMs ?? context.simulationTimeMs) : undefined,
                   signedByMembers: updatedMembers,
                 },
                 actionLog: [
@@ -601,7 +510,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
                     simulationTimeMs: context.simulationTimeMs,
                     timestamp: msToTimeString(context.simulationTimeMs),
                     type: "protocol_signed" as const,
-                    details: `Zapisnik o radu biračkog odbora overen i potpisan od strane: ${signer}.`,
+                    details: `Zapisnik o radu biračkog odbora overen i potpisan od strane: ${signer} (potpisa: ${updatedMembers.length}/3).`,
                   },
                 ],
               };
@@ -766,7 +675,15 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
       ADVANCE_SIMULATION_TO: {
         actions: assign(({ context, event }) => {
           if (event.targetMs <= context.simulationTimeMs) return {};
-          return advanceSimulationInternal(context, event.targetMs);
+          const update = advanceSimulationInternal(context, event.targetMs);
+          const shouldBeVoting =
+            (context.currentPhase === "pre_opening" || update.currentPhase === "pre_opening") &&
+            event.targetMs >= context.pollSchedule.actualOpenTimeMs;
+          return {
+            ...update,
+            simulationTimeMs: event.targetMs,
+            currentPhase: shouldBeVoting ? ("voting" as const) : (update.currentPhase ?? context.currentPhase),
+          };
         }),
       },
     },
@@ -776,18 +693,26 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
 /**
  * Interni procesor diskretnog TICK-a.
  */
-function processTickLogic(context: ElectionGameContext, deltaRealMs: number) {
-  if (context.paused || context.systemPaused) {
+function processTickLogic(
+  context: ElectionGameContext,
+  deltaRealMs: number,
+  ignorePause: boolean = false,
+  forcedDeltaSimMs?: number,
+) {
+  if (!ignorePause && (context.paused || context.systemPaused)) {
     return {};
   }
 
   const oldMs = context.simulationTimeMs;
-  const newMs = tickClock({
-    currentMs: oldMs,
-    deltaRealMs,
-    speed: context.speed,
-    paused: false,
-  });
+  const newMs =
+    forcedDeltaSimMs !== undefined
+      ? oldMs + forcedDeltaSimMs
+      : tickClock({
+          currentMs: oldMs,
+          deltaRealMs,
+          speed: context.speed,
+          paused: false,
+        });
 
   // 1. Proveri istekle incidente (timeout mapira na autorski choiceId)
   const expired = findExpiredIncidents(context.activeIncidents, newMs);
@@ -800,7 +725,7 @@ function processTickLogic(context: ElectionGameContext, deltaRealMs: number) {
       const ev = simulationEvents.find((e) => e.id === exp.eventId);
       const choice = ev?.choices.find((c) => c.id === exp.binding.timeout!.choiceId);
       if (ev && choice) {
-        updatedDomain = resolveChoice(updatedDomain, ev, choice);
+        updatedDomain = resolveChoice(updatedDomain, ev, choice, { bypassRoleCheck: true });
         nextCount++;
         newActionLog.push({
           id: `timeout-${nextCount}`,
@@ -832,7 +757,9 @@ function processTickLogic(context: ElectionGameContext, deltaRealMs: number) {
         !remainingIncidents.some((i) => i.eventId === binding.eventId) &&
         !updatedDomain.history.some((h) => h.eventId === binding.eventId)
       ) {
-        const durationMs = (binding.timeout?.simulationSeconds ?? 60) * 1000;
+        const baseSeconds = binding.timeout?.simulationSeconds ?? 60;
+        const scale = context.mode === "stress" ? 0.6 : 1.0;
+        const durationMs = Math.round(baseSeconds * scale) * 1000;
         nextCount++;
         remainingIncidents.push({
           instanceId: `${bindingId}-${nextCount}`,
@@ -859,7 +786,7 @@ function processTickLogic(context: ElectionGameContext, deltaRealMs: number) {
 
 /**
  * Deterministički scheduler za vremenske skokove koji obrađuje kaskadne događaje
- * hronološki redom do tačke mirovanja (run-to-quiescence).
+ * hronološki redom do tačke mirovanja (run-to-quiescence) uz sortiranje po prioritetu.
  */
 function advanceSimulationInternal(
   context: ElectionGameContext,
@@ -867,16 +794,48 @@ function advanceSimulationInternal(
 ): Partial<ElectionGameContext> {
   let currentCtx: ElectionGameContext = { ...context };
 
-  // Diskretni koraci od po 1 minut (60_000 ms)
-  const STEP_MS = 60_000;
-  while (currentCtx.simulationTimeMs < targetMs) {
-    const nextStep = Math.min(currentCtx.simulationTimeMs + STEP_MS, targetMs);
-    const deltaMs = nextStep - currentCtx.simulationTimeMs;
+  // Identifikujemo sve diskretne vremenske tačke interesa sortirane hronološki
+  interface ScheduledPoint {
+    timeMs: number;
+    priority: SchedulerPriority;
+    type: string;
+  }
 
-    // Proračun real delta s obzirom na brzinu 1x
-    const deltaReal = (deltaMs / 6000) * 1000;
-    const update = processTickLogic(currentCtx, deltaReal);
+  const points: ScheduledPoint[] = [];
+
+  // Granica otvaranja i zatvaranja
+  if (currentCtx.pollSchedule.actualOpenTimeMs > currentCtx.simulationTimeMs && currentCtx.pollSchedule.actualOpenTimeMs <= targetMs) {
+    points.push({ timeMs: currentCtx.pollSchedule.actualOpenTimeMs, priority: SchedulerPriority.LEGAL_PHASE_BOUNDARY, type: "open" });
+  }
+  if (currentCtx.pollSchedule.effectiveCloseTimeMs > currentCtx.simulationTimeMs && currentCtx.pollSchedule.effectiveCloseTimeMs <= targetMs) {
+    points.push({ timeMs: currentCtx.pollSchedule.effectiveCloseTimeMs, priority: SchedulerPriority.LEGAL_PHASE_BOUNDARY, type: "close" });
+  }
+
+  // Tačke nastanka incidenata
+  for (const binding of Object.values(WORLD_INCIDENT_BINDINGS)) {
+    if (binding.trigger.type === "time" && binding.trigger.simulationTime) {
+      const tMs = timeStringToMs(binding.trigger.simulationTime);
+      if (tMs > currentCtx.simulationTimeMs && tMs <= targetMs) {
+        points.push({ timeMs: tMs, priority: SchedulerPriority.FLAG_TRIGGER, type: `incident-${binding.eventId}` });
+      }
+    }
+  }
+
+  // Sortiramo primarno po vremenu, sekundarno po definisanim prioritetima
+  points.sort((a, b) => a.timeMs - b.timeMs || a.priority - b.priority);
+
+  const STEP_MS = 60_000;
+  let cursor = currentCtx.simulationTimeMs;
+
+  while (cursor < targetMs) {
+    // Sledeća tačka interesa ili redovni korak od 1 minut
+    const nextInterest = points.find((p) => p.timeMs > cursor && p.timeMs <= targetMs);
+    const nextStep = nextInterest ? nextInterest.timeMs : Math.min(cursor + STEP_MS, targetMs);
+    const deltaMs = nextStep - cursor;
+
+    const update = processTickLogic(currentCtx, 0, true, deltaMs);
     currentCtx = { ...currentCtx, ...update, simulationTimeMs: nextStep };
+    cursor = nextStep;
   }
 
   return currentCtx;

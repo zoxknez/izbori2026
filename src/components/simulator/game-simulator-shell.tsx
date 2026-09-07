@@ -83,7 +83,12 @@ export function GameSimulatorShell({
     [initialRole, initialSeed, initialMode, activeSave],
   );
 
-  const [state, send] = useActor(machine);
+  const [state, send, actorRef] = useActor(
+    machine,
+    activeSave && "machineSnapshot" in activeSave && activeSave.machineSnapshot
+      ? { snapshot: activeSave.machineSnapshot as never }
+      : undefined,
+  );
   const context = state.context;
 
   // Provera postojanja sačuvane sesije na pokretanju
@@ -117,6 +122,7 @@ export function GameSimulatorShell({
     let isSubscribed = true;
     void (async () => {
       try {
+        const snapshot = actorRef?.getPersistedSnapshot?.();
         const hash = await computeCanonicalStateHash({
           runId: context.runId,
           seed: context.seed,
@@ -125,6 +131,11 @@ export function GameSimulatorShell({
           flags: context.domainState.flags,
           actionLogLength: context.actionLog.length,
           pollSchedule: context.pollSchedule,
+          decisionHistory: context.domainState.history,
+          activeIncidentIds: context.activeIncidents.map((i) => i.instanceId),
+          missedIncidentIds: context.missedIncidents.map((i) => i.instanceId),
+          boardProtocol: context.boardProtocol,
+          rngState: context.deterministicCounter,
         });
 
         const saveObj: GameSaveV2 = {
@@ -136,9 +147,11 @@ export function GameSimulatorShell({
           role: context.domainState.role,
           simulationTimeMs: context.simulationTimeMs,
           currentPhase: context.currentPhase,
+          machineSnapshot: snapshot,
           domainState: context.domainState,
           worldSimulation: {
             rngState: context.deterministicCounter,
+            deterministicCounter: context.deterministicCounter,
             nextEntityId: context.activeVoterCount,
             activeVoters: [],
             queueOrder: [],
@@ -176,9 +189,11 @@ export function GameSimulatorShell({
     context.countingSession,
     context.boardProtocol,
     context.observerRecord,
+    actorRef,
   ]);
 
   const handleSaveGame = async () => {
+    const snapshot = actorRef?.getPersistedSnapshot?.();
     const hash = await computeCanonicalStateHash({
       runId: context.runId,
       seed: context.seed,
@@ -187,6 +202,11 @@ export function GameSimulatorShell({
       flags: context.domainState.flags,
       actionLogLength: context.actionLog.length,
       pollSchedule: context.pollSchedule,
+      decisionHistory: context.domainState.history,
+      activeIncidentIds: context.activeIncidents.map((i) => i.instanceId),
+      missedIncidentIds: context.missedIncidents.map((i) => i.instanceId),
+      boardProtocol: context.boardProtocol,
+      rngState: context.deterministicCounter,
     });
 
     const saveObj: GameSaveV2 = {
@@ -198,9 +218,11 @@ export function GameSimulatorShell({
       role: context.domainState.role,
       simulationTimeMs: context.simulationTimeMs,
       currentPhase: context.currentPhase,
+      machineSnapshot: snapshot,
       domainState: context.domainState,
       worldSimulation: {
         rngState: context.deterministicCounter,
+        deterministicCounter: context.deterministicCounter,
         nextEntityId: context.activeVoterCount,
         activeVoters: [],
         queueOrder: [],
@@ -237,14 +259,37 @@ export function GameSimulatorShell({
   // Status poruka za povratnu informaciju
   const [statusNotification, setStatusNotification] = useState<string | null>(null);
 
-  const handleStartCounting = () => {
-    send({ type: "START_COUNTING" });
-    bridge.emit("SWITCH_SCENE", { sceneKey: "CountingScene" });
-    setStatusNotification("Biračko mesto je zatvoreno u 20:00. Započeto je prebrojavanje glasova.");
-    setTimeout(() => setStatusNotification(null), 3500);
+  const canClosePolls = useMemo(() => {
+    const isScheduledClose = context.simulationTimeMs >= context.pollSchedule.effectiveCloseTimeMs;
+    const isEarlyCloseLegal =
+      context.pollSchedule.earlyCloseAtMs !== undefined &&
+      context.simulationTimeMs >= context.pollSchedule.earlyCloseAtMs;
+    return isScheduledClose || isEarlyCloseLegal;
+  }, [context.simulationTimeMs, context.pollSchedule]);
+
+  const handleClosePolls = () => {
+    send({ type: "CLOSE_POLLS" });
+    setStatusNotification("Nastupilo vreme zatvaranja (čl. 99 ZINP). Zatečeni birači u hodniku završavaju glasanje.");
+    setTimeout(() => setStatusNotification(null), 4000);
   };
 
-  // 3. Povezivanje Bridge-a sa XState mašinom i React stanjem
+  const handleFinishClosingAndCount = () => {
+    send({ type: "FINISH_CLOSING" });
+    bridge.emit("SWITCH_SCENE", { sceneKey: "CountingScene" });
+    setIsCountingModalOpen(true);
+    setStatusNotification("Svi zatečeni birači su glasali. Biračko mesto je zatvoreno, počinje prebrojavanje (čl. 100+ ZINP).");
+    setTimeout(() => setStatusNotification(null), 4000);
+  };
+
+  // 3. Povezivanje Bridge-a sa XState mašinom i autoritativnim vremenom
+  useEffect(() => {
+    bridge.emit("CLOCK_TICK", {
+      simulationTimeMs: context.simulationTimeMs,
+      paused: context.paused || context.systemPaused,
+      speed: context.speed,
+    });
+  }, [bridge, context.simulationTimeMs, context.paused, context.systemPaused, context.speed]);
+
   useEffect(() => {
     const unsubWorldReady = bridge.on("WORLD_READY", () => {
       send({ type: "WORLD_READY" });
@@ -256,6 +301,14 @@ export function GameSimulatorShell({
       if (data.hotspotId === "counting-protocol") {
         setIsCountingModalOpen(true);
       }
+    });
+
+    const unsubNpcMetrics = bridge.on("NPC_METRICS_UPDATED", (data) => {
+      send({
+        type: "UPDATE_NPC_METRICS",
+        activeVoterCount: data.activeVoterCount,
+        queueLength: data.queueLength,
+      });
     });
 
     // Simulacioni tajmer loop (šalje diskretne TICK poruke u milisekundama)
@@ -270,18 +323,44 @@ export function GameSimulatorShell({
     return () => {
       unsubWorldReady();
       unsubClick();
+      unsubNpcMetrics();
       clearInterval(intervalId);
       bridge.destroy();
     };
   }, [bridge, send]);
 
-  // Aktivna vezivanja za trenutno selektovani hotspot
-  const activeBinding = useMemo(() => {
+  // P1-5: Automatsko pauziranje pri skrivenom tabu (visibilitychange)
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && navigator.webdriver) {
+      return;
+    }
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        send({ type: "SYSTEM_PAUSE" });
+      } else {
+        send({ type: "SYSTEM_RESUME" });
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [send]);
+
+  // P0-8: Aktivni incident na selektovanom mestu
+  const activeIncident = useMemo(() => {
     if (!selectedHotspot) return null;
-    return Object.values(WORLD_INCIDENT_BINDINGS).find(
-      (b) => b.hotspotTarget === selectedHotspot.hotspotId || b.locationId === selectedHotspot.locationId,
+    return context.activeIncidents.find(
+      (inc) =>
+        inc.binding.hotspotTarget === selectedHotspot.hotspotId ||
+        inc.locationId === selectedHotspot.locationId,
     );
-  }, [selectedHotspot]);
+  }, [selectedHotspot, context.activeIncidents]);
+
+  const activeBinding = useMemo(() => {
+    if (!activeIncident) return null;
+    return activeIncident.binding;
+  }, [activeIncident]);
 
   // Akcije specifične za ulogu
   const availableActions = useMemo(() => {
@@ -440,6 +519,27 @@ export function GameSimulatorShell({
               {spd}x
             </button>
           ))}
+
+          {context.currentPhase !== "counting" && context.currentPhase !== "closed" && (
+            <button
+              type="button"
+              data-testid="fast-forward-to-closing-button"
+              onClick={() => {
+                if (context.currentPhase === "pre_opening") {
+                  send({ type: "START_VOTING" });
+                }
+                send({
+                  type: "ADVANCE_SIMULATION_TO",
+                  targetMs: context.pollSchedule.effectiveCloseTimeMs,
+                });
+              }}
+              className="flex h-8 items-center gap-1 rounded-xl border border-border/80 bg-surface-2 px-2.5 text-xs font-bold text-ink-dim hover:text-brand hover:border-brand/40 transition-all shadow-sm"
+              title="Premotaj simulaciju do kraja glasanja (20:00)"
+            >
+              <FastForward className="h-3.5 w-3.5 text-brand" />
+              <span className="hidden sm:inline">20:00</span>
+            </button>
+          )}
         </div>
 
         {/* Status uloge, brojanje, evidencija i debrief */}
@@ -469,8 +569,71 @@ export function GameSimulatorShell({
             <span>{currentRoleConfig.shortLabel}</span>
           </button>
 
-          {/* Dugme za brojanje glasova / Zapisnik */}
-          {context.currentPhase === "counting" ? (
+          {/* Dugmad toka izbora po fazama (čl. 91, 99, 100 ZINP) */}
+          {context.currentPhase === "pre_opening" && (
+            <button
+              type="button"
+              data-testid="start-voting-button"
+              onClick={() => send({ type: "START_VOTING" })}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-brand/40 bg-brand/15 px-3 py-1.5 text-xs font-bold text-brand hover:bg-brand/25 shadow-sm"
+              title="Zvanično otvori biračko mesto u 07:00 (čl. 91 ZINP)"
+            >
+              <Vote className="h-3.5 w-3.5" />
+              <span>Otvori biračko mesto</span>
+            </button>
+          )}
+
+          {context.currentPhase === "voting" && (
+            <button
+              type="button"
+              data-testid="close-polls-button"
+              disabled={!canClosePolls}
+              onClick={handleClosePolls}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition shadow-sm",
+                canClosePolls
+                  ? "border-amber-500/50 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30"
+                  : "border-border/60 bg-surface-2 text-ink-dim opacity-60 cursor-not-allowed",
+              )}
+              title={
+                canClosePolls
+                  ? "Zatvori biračko mesto u 20:00 (čl. 99 ZINP)"
+                  : `Glasanje traje do ${msToTimeString(context.pollSchedule.effectiveCloseTimeMs)} (trenutno ${clockString})`
+              }
+            >
+              <FileCheck2 className="h-3.5 w-3.5" />
+              <span>Zatvori biračko mesto (čl. 99)</span>
+            </button>
+          )}
+
+          {context.currentPhase === "closing" && (
+            <button
+              type="button"
+              data-testid="finish-closing-button"
+              disabled={context.queueLength > 0 || context.activeVoterCount > 0}
+              onClick={handleFinishClosingAndCount}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition shadow-sm",
+                context.queueLength === 0 && context.activeVoterCount === 0
+                  ? "border-emerald-500/50 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30"
+                  : "border-amber-500/40 bg-amber-500/10 text-amber-300 opacity-80 cursor-not-allowed",
+              )}
+              title={
+                context.queueLength === 0 && context.activeVoterCount === 0
+                  ? "Svi birači u hodniku su glasali. Pređi na prebrojavanje (čl. 100+ ZINP)"
+                  : `Sačekajte da birači u redu završe glasanje (preostalo: ${context.queueLength + context.activeVoterCount})`
+              }
+            >
+              <FileCheck2 className="h-3.5 w-3.5" />
+              <span>
+                {context.queueLength === 0 && context.activeVoterCount === 0
+                  ? "Započni prebrojavanje"
+                  : `Završetak glasanja (${context.queueLength + context.activeVoterCount})`}
+              </span>
+            </button>
+          )}
+
+          {context.currentPhase === "counting" && (
             <button
               type="button"
               data-testid="open-protocol-button"
@@ -479,17 +642,6 @@ export function GameSimulatorShell({
             >
               <FileCheck2 className="h-3.5 w-3.5" />
               <span>Zapisnik BO {context.countingSession?.isProtocolSigned ? "(Overen)" : ""}</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              data-testid="start-counting-button"
-              onClick={handleStartCounting}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/15 px-3 py-1.5 text-xs font-bold text-amber-300 transition hover:bg-amber-500/25 shadow-sm"
-              title="Zatvori biračko mesto u 20:00 i pređi na prebrojavanje"
-            >
-              <FileCheck2 className="h-3.5 w-3.5" />
-              <span>Zatvori i broji (20:00)</span>
             </button>
           )}
 
@@ -575,7 +727,7 @@ export function GameSimulatorShell({
 
       {/* 3. GLAVNI CANVAS (PHASER) */}
       <div className="relative">
-        <GameCanvas bridge={bridge} />
+        <GameCanvas bridge={bridge} seed={context.seed} />
 
         {/* Obaveštenje ako je selektovan objekat */}
         {statusNotification && (
@@ -644,6 +796,13 @@ export function GameSimulatorShell({
                   <FileCheck2 className="h-4 w-4" />
                   <span>Otvori Zapisnik o radu BO</span>
                 </button>
+              )}
+
+              {!activeBinding && !selectedHotspot.hotspotId.startsWith("counting-") && (
+                <div className="flex items-center gap-2 rounded-xl bg-surface px-3 py-2 text-xs text-ink-dim border border-border/70">
+                  <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
+                  <span>Stanica funkcioniše regularno. Nema uočenih nepravilnosti.</span>
+                </div>
               )}
 
               {availableActions.length === 0 && activeBinding && !selectedHotspot.hotspotId.startsWith("counting-") && (
