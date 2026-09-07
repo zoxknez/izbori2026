@@ -10,6 +10,7 @@ import { buildTrainingQuestions } from "@/lib/domain/training/generate-questions
 import { simulationEvents } from "@/lib/domain/simulator/seed-events";
 import { calculateStalePropagation, sourceIdsForRule } from "@/lib/domain/legal/dependency-graph";
 import { getAllRules, getDecisionTrees, getSources } from "@/lib/data";
+import { revalidatePublicContent } from "@/lib/domain/content/revalidation";
 
 const patchSchema = z.object({
   label: z.string().trim().min(1).max(500).optional(),
@@ -63,6 +64,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     staleTreeIds.forEach((treeId) => operations.push(db.update(decisionTrees).set({ reviewStatus: "stale", updatedAt: new Date() }).where(eq(decisionTrees.id, treeId))));
     operations.push(db.insert(auditLog).values({ id: crypto.randomUUID(), actorUserId: admin.id, action: "source.update", entityType: "source", entityId: id, before: { label: before.label, status: before.status, version: before.version, supersedesId: before.supersedesId }, after: { label: patch.label ?? before.label, status: nextStatus, version: patch.version ?? before.version, supersedesId: patch.supersedesId === undefined ? before.supersedesId : patch.supersedesId, staleRuleIds, staleTreeIds } }));
     await db.batch(operations as [BatchItem<"pg">, ...BatchItem<"pg">[]]);
+    revalidatePublicContent();
     return NextResponse.json({ ok: true, stale: { rules: staleRuleIds.length, decisionTrees: staleTreeIds.length } });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Izmena izvora nije uspela." }, { status: 400 });

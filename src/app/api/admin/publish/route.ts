@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { auditLog, datasetFiles, datasetVersions } from "@/lib/db/schema";
 import { AdminAccessError, requireAdminPermission } from "@/lib/domain/admin/server-auth";
+import { revalidatePublicContent } from "@/lib/domain/content/revalidation";
 import { datasetSnapshotSchema, sha256Hex, stableStringify, validateDatasetFile } from "@/lib/offline/dataset-validator";
 import { createCurrentDatasetSnapshot } from "@/lib/offline/create-dataset-snapshot";
 
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
       db.insert(datasetFiles).values({ id: `${datasetId}:snapshot.json`, datasetVersionId: datasetId, filename: "snapshot.json", payload: snapshot, sha256, size }),
       db.insert(auditLog).values({ id: crypto.randomUUID(), actorUserId: admin.id, action: "publish", entityType: "dataset_version", entityId: datasetId, after: { version, sha256 } }),
     ]);
+    revalidatePublicContent();
     return NextResponse.json({ ok: true, version, sha256 });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Publish nije uspeo." }, { status: 400 });

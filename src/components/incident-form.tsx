@@ -205,7 +205,7 @@ export function IncidentForm() {
         });
     } else {
       const text = encodeURIComponent(chronology);
-      window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
+      window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank", "noopener,noreferrer");
     }
   }
 

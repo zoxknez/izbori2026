@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { auditLog, rules } from "@/lib/db/schema";
 import { getCurrentAdmin } from "@/lib/domain/admin/server-auth";
 import { assertPermission } from "@/lib/domain/admin/rbac";
+import { revalidatePublicContent } from "@/lib/domain/content/revalidation";
 
 const patchSchema = z.object({
   summary: z.string().trim().min(1).max(10000).optional(),
@@ -36,5 +37,6 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   };
   const [after] = await db.update(rules).set(next).where(eq(rules.id, id)).returning();
   await db.insert(auditLog).values({ id: crypto.randomUUID(), actorUserId: admin.id, action: "rule.update", entityType: "rule", entityId: id, before: { summary: before.summary, legalRule: before.legalRule, publicationStatus: before.publicationStatus, reviewStatus: before.reviewStatus }, after: { summary: after.summary, legalRule: after.legalRule, publicationStatus: after.publicationStatus, reviewStatus: after.reviewStatus } });
+  revalidatePublicContent();
   return NextResponse.json({ ok: true, rule: { id: after.id, updatedAt: after.updatedAt } });
 }

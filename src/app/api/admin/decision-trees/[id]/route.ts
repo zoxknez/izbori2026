@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { auditLog, decisionTrees } from "@/lib/db/schema";
 import { assertPermission } from "@/lib/domain/admin/rbac";
 import { getCurrentAdmin } from "@/lib/domain/admin/server-auth";
+import { revalidatePublicContent } from "@/lib/domain/content/revalidation";
 
 const patchSchema = z.object({
   title: z.string().trim().min(1).max(500).optional(),
@@ -28,5 +29,6 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   const next = { ...(patch.title === undefined ? {} : { title: patch.title }), ...(patch.description === undefined ? {} : { description: patch.description }), ...(patch.publicationStatus === undefined ? {} : { publicationStatus: patch.publicationStatus }), ...(patch.reviewStatus === undefined ? {} : { reviewStatus: patch.reviewStatus }), updatedAt: new Date() };
   const [after] = await db.update(decisionTrees).set(next).where(eq(decisionTrees.id, id)).returning();
   await db.insert(auditLog).values({ id: crypto.randomUUID(), actorUserId: admin.id, action: "decision_tree.update", entityType: "decision_tree", entityId: id, before: { title: before.title, description: before.description, publicationStatus: before.publicationStatus, reviewStatus: before.reviewStatus }, after: { title: after.title, description: after.description, publicationStatus: after.publicationStatus, reviewStatus: after.reviewStatus } });
+  revalidatePublicContent();
   return NextResponse.json({ ok: true, tree: { id: after.id, updatedAt: after.updatedAt } });
 }
