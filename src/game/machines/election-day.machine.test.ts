@@ -236,6 +236,23 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     actor.stop();
   });
 
+  it("skok do 07:00 zadržava incident pečaćenja kutije pri prelasku u glasanje", () => {
+    const machine = createElectionDayMachine({ role: "clan_odbora", startTime: "06:00" });
+    const actor = createActor(machine);
+    actor.start();
+
+    actor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 25_200_000 });
+    actor.send({ type: "START_VOTING" });
+
+    const snapshot = actor.getSnapshot();
+    expect(snapshot.context.currentPhase).toBe("voting");
+    expect(snapshot.context.activeIncidents.some((incident) => incident.eventId === "E06")).toBe(true);
+    expect(snapshot.context.activeIncidents.find((incident) => incident.eventId === "E06")?.locationId)
+      .toBe("ballot-box-station");
+
+    actor.stop();
+  });
+
   it("ADVANCE_SIMULATION_TO pomera vreme na 20:00 kada je uloga posmatrac", () => {
     const machine = createElectionDayMachine({ role: "clan_odbora", startTime: "06:00" });
     const actor = createActor(machine);
