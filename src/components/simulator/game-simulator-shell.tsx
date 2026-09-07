@@ -21,6 +21,8 @@ import {
   FileCheck2,
   Save,
   History,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { createGameBridge } from "@/game/bridge/game-bridge";
 import {
@@ -278,6 +280,8 @@ export function GameSimulatorShell({
 
   // Status poruka za povratnu informaciju
   const [statusNotification, setStatusNotification] = useState<string | null>(null);
+  const [audioMuted, setAudioMuted] = useState(false);
+  const [audioVolume, setAudioVolume] = useState(0.12);
 
   const canClosePolls = useMemo(() => {
     const isScheduledClose = context.simulationTimeMs >= context.pollSchedule.effectiveCloseTimeMs;
@@ -326,6 +330,10 @@ export function GameSimulatorShell({
   useEffect(() => {
     bridge.emit("EVIDENCE_MARKERS_CHANGED", { records: context.evidenceNotebook });
   }, [bridge, context.evidenceNotebook]);
+
+  useEffect(() => {
+    bridge.emit("AUDIO_SETTINGS_CHANGED", { muted: audioMuted, volume: audioVolume });
+  }, [audioMuted, audioVolume, bridge]);
 
   useEffect(() => {
     const unsubWorldReady = bridge.on("WORLD_READY", () => {
@@ -433,6 +441,7 @@ export function GameSimulatorShell({
       worldActionId,
     });
     setStatusNotification(`Preduzeta radnja: ${label}`);
+    bridge.emit("AUDIO_CUE_REQUESTED", { cue: "ui" });
     setTimeout(() => setStatusNotification(null), 4000);
   };
 
@@ -461,6 +470,7 @@ export function GameSimulatorShell({
       },
     });
     setStatusNotification(`Zabeleženo u beležnicu dokaza (${selectedHotspot.title})`);
+    bridge.emit("AUDIO_CUE_REQUESTED", { cue: "evidence" });
     setTimeout(() => setStatusNotification(null), 3000);
   };
 
@@ -575,6 +585,19 @@ export function GameSimulatorShell({
               {spd}x
             </button>
           ))}
+
+          <button
+            type="button"
+            onClick={() => setAudioMuted((muted) => !muted)}
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-surface-2 text-ink-dim hover:border-brand/60 hover:text-brand"
+            aria-label={audioMuted ? "Uključi zvuk" : "Isključi zvuk"}
+            aria-pressed={audioMuted}
+            title={audioMuted ? "Uključi zvuk" : "Isključi zvuk"}
+          >
+            {audioMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
+          <label className="sr-only" htmlFor="simulator-volume">Jačina zvuka</label>
+          <input id="simulator-volume" type="range" min="0" max="1" step="0.01" value={audioVolume} onChange={(event) => setAudioVolume(Number(event.target.value))} className="hidden w-16 accent-brand sm:block" />
 
           {context.currentPhase !== "counting" && context.currentPhase !== "closed" && (
             <button

@@ -1,6 +1,7 @@
 import * as Phaser from "phaser";
 import type { GameBridge } from "@/game/bridge/game-bridge";
 import { COUNTING_WORKFLOW_STEPS, nextCountingWorkflowStep } from "@/game/world/counting-workflow";
+import { ProceduralAudio } from "@/game/audio/procedural-audio";
 
 export interface CountingSceneData {
   bridge?: GameBridge;
@@ -13,6 +14,10 @@ export class CountingScene extends Phaser.Scene {
   private selectedIndicator?: Phaser.GameObjects.Graphics;
   private workflowStep = 0;
   private workflowStatus?: Phaser.GameObjects.Text;
+  private audio = new ProceduralAudio();
+  private unsubAudioSettings?: () => void;
+  private unsubAudioCue?: () => void;
+  private reducedMotion = false;
 
   constructor() {
     super({ key: "CountingScene" });
@@ -25,6 +30,9 @@ export class CountingScene extends Phaser.Scene {
   create() {
     const width = this.scale.width;
     const height = this.scale.height;
+    this.reducedMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+    this.unsubAudioSettings = this.bridge?.on("AUDIO_SETTINGS_CHANGED", (settings) => this.audio.setSettings(settings));
+    this.unsubAudioCue = this.bridge?.on("AUDIO_CUE_REQUESTED", ({ cue }) => this.audio.play(cue));
 
     // 1. Noćna atmosfera prostorije (zatvoreno biračko mesto posle 20:00)
     this.add.tileSprite(width / 2, height / 2, width - 40, height - 40, "floor-tile").setTint(0x8899aa);
@@ -162,6 +170,11 @@ export class CountingScene extends Phaser.Scene {
 
     // Obaveštenje Bridge-u da je brojanje spremno
     this.bridge?.emit("WORLD_READY", { width, height });
+    this.events.once("shutdown", () => {
+      this.unsubAudioSettings?.();
+      this.unsubAudioCue?.();
+      this.audio.destroy();
+    });
   }
 
   private setupHotspot(
@@ -194,6 +207,7 @@ export class CountingScene extends Phaser.Scene {
         locationId,
         title,
       });
+      this.bridge?.emit("AUDIO_CUE_REQUESTED", { cue: "ui" });
       this.handleWorkflowInteraction(hotspotId, target);
     });
   }
@@ -205,7 +219,7 @@ export class CountingScene extends Phaser.Scene {
       this.workflowStatus?.setColor("#fbbf24").setText(
         `Tok rada: ${this.workflowStep + 1}/6 · prvo: ${COUNTING_WORKFLOW_STEPS[this.workflowStep].label}`,
       );
-      this.tweens.add({ targets: target, x: target.x + 3, duration: 70, yoyo: true, repeat: 2 });
+      if (!this.reducedMotion) this.tweens.add({ targets: target, x: target.x + 3, duration: 70, yoyo: true, repeat: 2 });
       return;
     }
     this.workflowStep = nextStep;
@@ -216,7 +230,7 @@ export class CountingScene extends Phaser.Scene {
         `Tok rada: ${this.workflowStep + 1}/6 · ${COUNTING_WORKFLOW_STEPS[this.workflowStep].label}`,
       );
     }
-    this.tweens.add({ targets: target, scaleX: target.scaleX * 1.12, scaleY: target.scaleY * 1.12, duration: 140, yoyo: true });
+    if (!this.reducedMotion) this.tweens.add({ targets: target, scaleX: target.scaleX * 1.12, scaleY: target.scaleY * 1.12, duration: 140, yoyo: true });
   }
 
   private createCountingBadge(x: number, y: number, label: string, color: string) {
@@ -231,7 +245,7 @@ export class CountingScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.tweens.add({
+    if (!this.reducedMotion) this.tweens.add({
       targets: badge,
       alpha: 0.8,
       duration: 1600,

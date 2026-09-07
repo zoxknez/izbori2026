@@ -15,6 +15,7 @@ import type { VoterProfile } from "@/game/machines/voter.machine";
 import type { WorldIncidentPresentation } from "@/game/world/world-incident-presentation";
 import type { EvidenceRecord } from "@/lib/domain/simulator/live-types";
 import { getLogicalMovementPosition, isLogicalMovementComplete, type LogicalMovement } from "@/game/world/logical-movement";
+import { ProceduralAudio } from "@/game/audio/procedural-audio";
 
 interface VoterVisual {
   container: Phaser.GameObjects.Container;
@@ -58,6 +59,10 @@ export class PollingStationScene extends Phaser.Scene {
   private unsubEvidenceMarkers?: () => void;
   private evidenceMarkerVisuals = new Map<string, EvidenceMarkerVisual>();
   private logicalMovements = new Map<string, LogicalMovement>();
+  private audio = new ProceduralAudio();
+  private unsubAudioSettings?: () => void;
+  private unsubAudioCue?: () => void;
+  private reducedMotion = false;
 
   constructor() {
     super({ key: "PollingStationScene" });
@@ -73,6 +78,7 @@ export class PollingStationScene extends Phaser.Scene {
   create() {
     const width = this.scale.width;
     const height = this.scale.height;
+    this.reducedMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
 
     // Slušamo autoritativni CLOCK_TICK iz XState / GameBridge-a
     this.unsubClock = this.bridge?.on("CLOCK_TICK", (data) => {
@@ -90,6 +96,8 @@ export class PollingStationScene extends Phaser.Scene {
     this.unsubPhase = this.bridge?.on("PHASE_CHANGED", ({ acceptingNewVoters }) => {
       this.acceptingNewVoters = acceptingNewVoters;
     });
+    this.unsubAudioSettings = this.bridge?.on("AUDIO_SETTINGS_CHANGED", (settings) => this.audio.setSettings(settings));
+    this.unsubAudioCue = this.bridge?.on("AUDIO_CUE_REQUESTED", ({ cue }) => this.audio.play(cue));
 
     this.unsubSpeed = this.bridge?.on("SPEED_CHANGED", (data) => {
       this.simSpeed = data.speed;
@@ -116,7 +124,11 @@ export class PollingStationScene extends Phaser.Scene {
     });
     this.unsubFocusLocation = this.bridge?.on("FOCUS_LOCATION", ({ locationId, x, y }) => {
       const point = x !== undefined && y !== undefined ? { x, y } : this.getLocationFocusPoint(locationId);
-      this.cameras.main.pan(point.x, point.y, 450, "Sine.easeInOut");
+      if (this.reducedMotion) {
+        this.cameras.main.setScroll(point.x - this.scale.width / 2, point.y - this.scale.height / 2);
+      } else {
+        this.cameras.main.pan(point.x, point.y, 450, "Sine.easeInOut");
+      }
     });
     this.unsubEvidenceMarkers = this.bridge?.on("EVIDENCE_MARKERS_CHANGED", ({ records }) => {
       const incoming = new Map(records.map((record) => [record.id, record]));
@@ -186,6 +198,9 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubIncidentPresentations?.();
       this.unsubFocusLocation?.();
       this.unsubEvidenceMarkers?.();
+      this.unsubAudioSettings?.();
+      this.unsubAudioCue?.();
+      this.audio.destroy();
       for (const marker of this.evidenceMarkerVisuals.values()) marker.container.destroy();
       this.evidenceMarkerVisuals.clear();
     });
@@ -199,6 +214,9 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubIncidentPresentations?.();
       this.unsubFocusLocation?.();
       this.unsubEvidenceMarkers?.();
+      this.unsubAudioSettings?.();
+      this.unsubAudioCue?.();
+      this.audio.destroy();
       for (const marker of this.evidenceMarkerVisuals.values()) marker.container.destroy();
       this.evidenceMarkerVisuals.clear();
     });
@@ -410,7 +428,7 @@ export class PollingStationScene extends Phaser.Scene {
     }).setOrigin(0.5);
     container.add([ring, badge]);
     if (presentation.attention.pulse) {
-      this.tweens.add({ targets: ring, alpha: 0.35, scale: 1.18, duration: 1200, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
+      if (!this.reducedMotion) this.tweens.add({ targets: ring, alpha: 0.35, scale: 1.18, duration: 1200, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
     }
     container.setInteractive(new Phaser.Geom.Circle(0, 0, 34), Phaser.Geom.Circle.Contains);
     container.on("pointerdown", () => this.bridge?.emit("HOTSPOT_CLICKED", {
@@ -418,6 +436,7 @@ export class PollingStationScene extends Phaser.Scene {
       locationId: presentation.locationId,
       title: presentation.attention.label,
     }));
+    container.on("pointerdown", () => this.audio.play("incident"));
     this.incidentVisuals.set(incidentId, { container, incidentId, presentation });
   }
 
@@ -481,7 +500,7 @@ export class PollingStationScene extends Phaser.Scene {
     container.add([sprite, label]);
 
     // Subtle waiting/idle motion: visual feedback only, never simulation state.
-    this.tweens.add({
+    if (!this.reducedMotion) this.tweens.add({
       targets: sprite,
       y: -2,
       duration: entity.currentStation === "queue" ? 900 : 1200,
@@ -616,7 +635,7 @@ export class PollingStationScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     // Blago pulsiranje za bolju interaktivnu uočljivost
-    this.tweens.add({
+    if (!this.reducedMotion) this.tweens.add({
       targets: badge,
       alpha: 0.75,
       duration: 1800,

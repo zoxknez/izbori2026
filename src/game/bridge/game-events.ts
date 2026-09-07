@@ -5,6 +5,7 @@ import type {
   GameActionLogEntry,
 } from "@/lib/domain/simulator/live-types";
 import type { WorldIncidentPresentation } from "@/game/world/world-incident-presentation";
+import type { ProceduralAudioCue } from "@/game/audio/procedural-audio";
 
 /**
  * Tipizirani događaji koje GameBridge razmenjuje između
@@ -45,6 +46,8 @@ export interface GameBridgeEventMap {
   INCIDENT_EXPIRED: { incident: ActiveIncident };
   EVIDENCE_ADDED: { record: EvidenceRecord };
   EVIDENCE_MARKERS_CHANGED: { records: EvidenceRecord[] };
+  AUDIO_SETTINGS_CHANGED: { muted: boolean; volume: number };
+  AUDIO_CUE_REQUESTED: { cue: ProceduralAudioCue };
   ACTION_LOGGED: { entry: GameActionLogEntry };
 
   // Komande interfejsa i scene:
