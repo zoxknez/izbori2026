@@ -57,19 +57,23 @@ test("incident draft survives an online/offline transition without reload", asyn
 async function playSimulation(page: import("@playwright/test").Page, maxSteps: number) {
   for (let index = 0; index < maxSteps; index += 1) {
     if (await page.getByText(/Birački dan završen/i).isVisible().catch(() => false)) return true;
-    const startCounting = page.getByRole("button", { name: /Pokreni brojanje|Prebroj/i });
-    if (await startCounting.isVisible().catch(() => false)) {
-      await startCounting.click();
-      continue;
-    }
+
     const carryOn = page.getByRole("button", { name: /Nastavi dan/i });
     if (await carryOn.isVisible().catch(() => false)) {
       await carryOn.click();
+      await page.waitForTimeout(50);
       continue;
     }
-    const choice = page.getByRole("button", { name: /Radnja/i }).first();
-    if (!(await choice.isVisible().catch(() => false))) break;
-    await choice.click();
+
+    const enabledChoice = page.locator('button:has-text("Radnja"):not([disabled])').first();
+    if (await enabledChoice.isVisible().catch(() => false)) {
+      await enabledChoice.click();
+      await carryOn.waitFor({ state: "visible", timeout: 2000 }).catch(() => {});
+      continue;
+    }
+
+    if (await page.getByText(/Birački dan završen/i).isVisible().catch(() => false)) return true;
+    await page.waitForTimeout(100);
   }
   return page.getByText(/Birački dan završen/i).isVisible();
 }
