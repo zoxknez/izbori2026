@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useActor } from "@xstate/react";
 import {
   Clock,
@@ -278,6 +278,7 @@ export function GameSimulatorShell({
     locationId: string;
     title: string;
   } | null>(null);
+  const [incidentCursor, setIncidentCursor] = useState(0);
 
   // Modal stanja
   const [isEvidenceTrayOpen, setIsEvidenceTrayOpen] = useState(false);
@@ -290,6 +291,54 @@ export function GameSimulatorShell({
   const [statusNotification, setStatusNotification] = useState<string | null>(null);
   const [audioMuted, setAudioMuted] = useState(false);
   const [audioVolume, setAudioVolume] = useState(0.12);
+
+  const focusIncidentAt = useCallback((requestedIndex: number) => {
+    const incidents = context.activeIncidents;
+    if (incidents.length === 0) return;
+
+    const index = ((requestedIndex % incidents.length) + incidents.length) % incidents.length;
+    const incident = incidents[index];
+    setIncidentCursor(index);
+    setSelectedHotspot({
+      hotspotId: incident.binding.hotspotTarget,
+      locationId: incident.locationId,
+      title: `Situacija: ${incident.eventId}`,
+    });
+    send({ type: "SELECT_HOTSPOT", hotspotId: incident.binding.hotspotTarget });
+    bridge.emit("FOCUS_LOCATION", { locationId: incident.locationId });
+    setStatusNotification(`Situacija ${index + 1}/${incidents.length}: ${incident.binding.locationId}. Kamera je fokusirana na mesto događaja.`);
+  }, [bridge, context.activeIncidents, send]);
+
+  useEffect(() => {
+    setIncidentCursor((current) => Math.min(current, Math.max(0, context.activeIncidents.length - 1)));
+  }, [context.activeIncidents.length]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (
+        target?.isContentEditable ||
+        target?.tagName === "INPUT" ||
+        target?.tagName === "TEXTAREA" ||
+        target?.tagName === "SELECT" ||
+        context.activeIncidents.length === 0
+      ) {
+        return;
+      }
+
+      if (event.key === "]") {
+        event.preventDefault();
+        focusIncidentAt(incidentCursor + 1);
+      }
+      if (event.key === "[") {
+        event.preventDefault();
+        focusIncidentAt(incidentCursor - 1);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [context.activeIncidents.length, focusIncidentAt, incidentCursor]);
 
   const canClosePolls = useMemo(() => {
     const isScheduledClose = context.simulationTimeMs >= context.pollSchedule.effectiveCloseTimeMs;
@@ -793,7 +842,7 @@ export function GameSimulatorShell({
               {context.mode === "guided" ? "Vođeni fokus" : context.mode === "realistic" ? "Realni pritisak" : "Stres: više problema"}
             </span>
             <div className="flex flex-wrap gap-1.5">
-              {context.activeIncidents.map((incident) => {
+              {context.activeIncidents.map((incident, incidentIndex) => {
                 const remainingSeconds = incident.expiresAtSimulationTimeMs === undefined
                   ? null
                   : Math.max(0, Math.ceil((incident.expiresAtSimulationTimeMs - context.simulationTimeMs) / 1000));
@@ -802,12 +851,14 @@ export function GameSimulatorShell({
                     key={incident.instanceId}
                     type="button"
                     title={remainingSeconds === null ? "Incident je aktivan dok se ne obradi" : `Preostalo vreme za reakciju: ${remainingSeconds} sekundi`}
-                    onClick={() => {
-                      setSelectedHotspot({ hotspotId: incident.binding.hotspotTarget, locationId: incident.locationId, title: `Situacija: ${incident.eventId}` });
-                      send({ type: "SELECT_HOTSPOT", hotspotId: incident.binding.hotspotTarget });
-                      bridge.emit("FOCUS_LOCATION", { locationId: incident.locationId });
-                    }}
-                    className="inline-flex items-center gap-2 rounded-lg border border-amber-500/30 bg-surface/70 px-2 py-1 text-[11px] font-semibold text-ink hover:border-amber-400 hover:text-amber-300"
+                    onClick={() => focusIncidentAt(incidentIndex)}
+                    aria-current={incidentCursor === incidentIndex ? "true" : undefined}
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-lg border px-2 py-1 text-[11px] font-semibold text-ink transition hover:border-amber-400 hover:text-amber-300",
+                      incidentCursor === incidentIndex
+                        ? "border-amber-400 bg-amber-500/15 ring-1 ring-amber-400/50"
+                        : "border-amber-500/30 bg-surface/70",
+                    )}
                   >
                     <span>{incident.binding.locationId} · {incident.eventId}</span>
                     <span className={cn("font-mono text-[10px]", remainingSeconds !== null && remainingSeconds <= 10 ? "text-rose-400" : "text-amber-300")}>
@@ -825,22 +876,41 @@ export function GameSimulatorShell({
             </p>
           )}
 
-          <button
-            type="button"
-            onClick={() => {
-              const inc = context.activeIncidents[0];
-              setSelectedHotspot({
-                hotspotId: inc.binding.hotspotTarget,
-                locationId: inc.locationId,
-                title: `Situacija: ${inc.eventId}`,
-              });
-              send({ type: "SELECT_HOTSPOT", hotspotId: inc.binding.hotspotTarget });
-              bridge.emit("FOCUS_LOCATION", { locationId: inc.locationId });
-            }}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-400 transition hover:bg-amber-500/30"
-          >
-            <span>Fokusiraj u svetu</span>
-          </button>
+          <div className="flex items-center gap-1.5">
+            {context.activeIncidents.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => focusIncidentAt(incidentCursor - 1)}
+                  className="rounded-xl border border-amber-500/30 px-2.5 py-1.5 text-xs font-bold text-amber-300 transition hover:border-amber-400 hover:bg-amber-500/10"
+                  aria-label="Prethodna aktivna situacija"
+                  title="Prethodna situacija ([)"
+                >
+                  ←
+                </button>
+                <span className="rounded-lg border border-amber-500/20 bg-surface/60 px-2 py-1.5 font-mono text-[10px] font-bold text-amber-200" aria-live="polite">
+                  {incidentCursor + 1}/{context.activeIncidents.length}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => focusIncidentAt(incidentCursor + 1)}
+                  className="rounded-xl border border-amber-500/30 px-2.5 py-1.5 text-xs font-bold text-amber-300 transition hover:border-amber-400 hover:bg-amber-500/10"
+                  aria-label="Sledeća aktivna situacija"
+                  title="Sledeća situacija (])"
+                >
+                  →
+                </button>
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => focusIncidentAt(incidentCursor)}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-400 transition hover:bg-amber-500/30"
+              title="Fokusiraj izabranu situaciju u svetu (Fokus menjaš tasterima [ i ])"
+            >
+              <span>Fokusiraj u svetu</span>
+            </button>
+          </div>
         </div>
       )}
 
