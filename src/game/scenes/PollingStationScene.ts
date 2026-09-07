@@ -16,6 +16,7 @@ import type { WorldIncidentPresentation } from "@/game/world/world-incident-pres
 import type { EvidenceRecord } from "@/lib/domain/simulator/live-types";
 import { getLogicalMovementPosition, isLogicalMovementComplete, type LogicalMovement } from "@/game/world/logical-movement";
 import { ProceduralAudio } from "@/game/audio/procedural-audio";
+import type { SimulationRole } from "@/lib/domain/simulator/types";
 
 interface VoterVisual {
   container: Phaser.GameObjects.Container;
@@ -64,6 +65,8 @@ export class PollingStationScene extends Phaser.Scene {
   private unsubAudioSettings?: () => void;
   private unsubAudioCue?: () => void;
   private reducedMotion = false;
+  private roleLens?: Phaser.GameObjects.Text;
+  private unsubRole?: () => void;
 
   constructor() {
     super({ key: "PollingStationScene" });
@@ -99,6 +102,7 @@ export class PollingStationScene extends Phaser.Scene {
     });
     this.unsubAudioSettings = this.bridge?.on("AUDIO_SETTINGS_CHANGED", (settings) => this.audio.setSettings(settings));
     this.unsubAudioCue = this.bridge?.on("AUDIO_CUE_REQUESTED", ({ cue }) => this.audio.play(cue));
+    this.unsubRole = this.bridge?.on("ROLE_CHANGED", ({ role }) => this.updateRoleLens(role));
 
     this.unsubSpeed = this.bridge?.on("SPEED_CHANGED", (data) => {
       this.simSpeed = data.speed;
@@ -208,6 +212,7 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubEvidenceMarkers?.();
       this.unsubAudioSettings?.();
       this.unsubAudioCue?.();
+      this.unsubRole?.();
       this.audio.destroy();
       for (const marker of this.evidenceMarkerVisuals.values()) marker.container.destroy();
       this.evidenceMarkerVisuals.clear();
@@ -224,6 +229,7 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubEvidenceMarkers?.();
       this.unsubAudioSettings?.();
       this.unsubAudioCue?.();
+      this.unsubRole?.();
       this.audio.destroy();
       for (const marker of this.evidenceMarkerVisuals.values()) marker.container.destroy();
       this.evidenceMarkerVisuals.clear();
@@ -244,6 +250,10 @@ export class PollingStationScene extends Phaser.Scene {
     this.createHeaderPill(85, 34, "🚪 ULAZ / HODNIK", "#38bdf8");
     this.createHeaderPill(width - 70, 34, "🚶 IZLAZ", "#10b981");
     this.createHeaderPill(width / 2, 34, "🏛️ BIRAČKO MESTO BR. 14", "#f1f5f9", 0.95);
+    this.roleLens = this.add.text(28, height - 30, "PERSPEKTIVA · ČLAN BO", {
+      fontSize: "10px", color: "#fbbf24", fontFamily: "sans-serif", fontStyle: "bold",
+      backgroundColor: "rgba(15, 23, 42, 0.9)", padding: { x: 7, y: 3 },
+    }).setDepth(60);
 
     // 2. Stanica 0: Plakat u hodniku (E01)
     const poster = this.add.sprite(50, 95, "poster");
@@ -480,6 +490,17 @@ export class PollingStationScene extends Phaser.Scene {
       "observer-area": { x: 500, y: 480 },
     };
     return points[locationId] ?? { x: 500, y: 300 };
+  }
+
+  private updateRoleLens(role: SimulationRole) {
+    if (!this.roleLens) return;
+    const details: Record<SimulationRole, { label: string; color: string }> = {
+      clan_odbora: { label: "PERSPEKTIVA · ČLAN BO · PROCEDURA", color: "#fbbf24" },
+      posmatrac: { label: "PERSPEKTIVA · POSMATRAČ · DOKAZI", color: "#7dd3fc" },
+      birac: { label: "PERSPEKTIVA · BIRAČ · PRAVA", color: "#6ee7b7" },
+    };
+    const next = details[role];
+    this.roleLens.setText(next.label).setColor(next.color);
   }
 
   private createVoterVisual(entity: ActiveVoterEntity, savedPosition?: Partial<Point2D>) {

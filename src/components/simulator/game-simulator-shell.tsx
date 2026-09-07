@@ -336,6 +336,10 @@ export function GameSimulatorShell({
   }, [audioMuted, audioVolume, bridge]);
 
   useEffect(() => {
+    bridge.emit("ROLE_CHANGED", { role: context.domainState.role });
+  }, [bridge, context.domainState.role]);
+
+  useEffect(() => {
     const unsubWorldReady = bridge.on("WORLD_READY", () => {
       send({ type: "WORLD_READY" });
       if (activeSaveRef.current?.version === 2) {
