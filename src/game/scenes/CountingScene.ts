@@ -14,6 +14,8 @@ export class CountingScene extends Phaser.Scene {
   private selectedIndicator?: Phaser.GameObjects.Graphics;
   private workflowStep = 0;
   private workflowStatus?: Phaser.GameObjects.Text;
+  private workflowProgress?: Phaser.GameObjects.Graphics;
+  private workflowBadges = new Map<string, Phaser.GameObjects.Text>();
   private audio = new ProceduralAudio();
   private unsubAudioSettings?: () => void;
   private unsubAudioCue?: () => void;
@@ -88,35 +90,36 @@ export class CountingScene extends Phaser.Scene {
       backgroundColor: "rgba(15, 23, 42, 0.88)",
       padding: { x: 8, y: 3 },
     }).setOrigin(0.5);
+    this.workflowProgress = this.add.graphics();
 
     // 3. Stanica 1: Neupotrebljeni listići (U)
     const unusedSprite = this.add.sprite(tableCenterX - 180, tableCenterY - 10, "stack-unused");
-    this.createCountingBadge(tableCenterX - 180, tableCenterY + 34, "1. Neupotrebljeni (U)", "#cbd5e1");
+    this.createCountingBadge("counting-unused", tableCenterX - 180, tableCenterY + 34, "1. Neupotrebljeni (U)", "#cbd5e1");
     this.setupHotspot(unusedSprite, "counting-unused", "counting-table", "1. Neupotrebljeni listići (U)");
 
     // 4. Stanica 2: Birački spisak (G)
     const rollSprite = this.add.sprite(tableCenterX - 100, tableCenterY - 10, "table-desk").setScale(0.55);
-    this.createCountingBadge(tableCenterX - 100, tableCenterY + 34, "2. Spisak birača (G)", "#34d399");
+    this.createCountingBadge("counting-voter-roll", tableCenterX - 100, tableCenterY + 34, "2. Spisak birača (G)", "#34d399");
     this.setupHotspot(rollSprite, "counting-voter-roll", "counting-table", "2. Birački spisak i potpisani birači (G)");
 
     // 5. Stanica 3: Kontrolni list u kutiji
     const controlSprite = this.add.sprite(tableCenterX - 20, tableCenterY - 10, "doc-control-sheet");
-    this.createCountingBadge(tableCenterX - 20, tableCenterY + 34, "3. Kontrolni list", "#fb923c");
+    this.createCountingBadge("counting-control-sheet", tableCenterX - 20, tableCenterY + 34, "3. Kontrolni list", "#fb923c");
     this.setupHotspot(controlSprite, "counting-control-sheet", "counting-table", "3. Kontrolni list u glasačkoj kutiji");
 
     // 6. Stanica 4: Listići u kutiji (B)
     const boxBallotsSprite = this.add.sprite(tableCenterX + 60, tableCenterY - 10, "ballot-box").setScale(0.8);
-    this.createCountingBadge(tableCenterX + 60, tableCenterY + 34, "4. Iz kutije (B)", "#38bdf8");
+    this.createCountingBadge("counting-box-ballots", tableCenterX + 60, tableCenterY + 34, "4. Iz kutije (B)", "#38bdf8");
     this.setupHotspot(boxBallotsSprite, "counting-box-ballots", "counting-table", "4. Listići u glasačkoj kutiji (B)");
 
     // 7. Stanica 5: Razvrstavanje (V i N)
     const sortedSprite = this.add.sprite(tableCenterX + 130, tableCenterY - 10, "stack-unused").setTint(0x10b981);
-    this.createCountingBadge(tableCenterX + 130, tableCenterY + 34, "5. Važeći / Nevažeći", "#10b981");
+    this.createCountingBadge("counting-sorting", tableCenterX + 130, tableCenterY + 34, "5. Važeći / Nevažeći", "#10b981");
     this.setupHotspot(sortedSprite, "counting-sorting", "counting-table", "5. Razvrstavanje: Važeći (V) i Nevažeći (N)");
 
     // 8. Stanica 6 & 7: Zapisnik o radu biračkog odbora
     const protocolSprite = this.add.sprite(tableCenterX + 195, tableCenterY - 10, "doc-protocol");
-    this.createCountingBadge(tableCenterX + 195, tableCenterY + 38, "6. Zapisnik BO", "#60a5fa");
+    this.createCountingBadge("counting-protocol", tableCenterX + 195, tableCenterY + 38, "6. Zapisnik BO", "#60a5fa");
     this.setupHotspot(protocolSprite, "counting-protocol", "counting-table", "6. Zapisnik o radu biračkog odbora");
 
     // 9. Članovi biračkog odbora sede oko stola (ozbiljna radna atmosfera)
@@ -158,6 +161,7 @@ export class CountingScene extends Phaser.Scene {
 
     // Indikator selekcije
     this.selectedIndicator = this.add.graphics();
+    this.refreshWorkflowPresentation();
 
     // Mobile pan podrška: prevlačenje kamere prevlačenjem/dodirom
     this.input.on("pointermove", (p: Phaser.Input.Pointer) => {
@@ -237,9 +241,39 @@ export class CountingScene extends Phaser.Scene {
       );
     }
     if (!this.reducedMotion) this.tweens.add({ targets: target, scaleX: target.scaleX * 1.12, scaleY: target.scaleY * 1.12, duration: 140, yoyo: true });
+    this.refreshWorkflowPresentation();
   }
 
-  private createCountingBadge(x: number, y: number, label: string, color: string) {
+  private refreshWorkflowPresentation() {
+    const completedColor = "#6ee7b7";
+    const currentColor = "#bae6fd";
+    const pendingColor = "#64748b";
+    for (let index = 0; index < COUNTING_WORKFLOW_STEPS.length; index += 1) {
+      const step = COUNTING_WORKFLOW_STEPS[index];
+      const badge = this.workflowBadges.get(step.hotspotId);
+      if (!badge) continue;
+      const isComplete = index < this.workflowStep;
+      const isCurrent = index === this.workflowStep;
+      badge.setColor(isComplete ? completedColor : isCurrent ? currentColor : pendingColor);
+      badge.setAlpha(isComplete || isCurrent ? 1 : 0.66);
+      badge.setText(`${isComplete ? "✓ " : isCurrent ? "› " : ""}${index + 1}. ${step.label}`);
+    }
+
+    if (!this.workflowProgress || !this.workflowStatus) return;
+    this.workflowProgress.clear();
+    const total = COUNTING_WORKFLOW_STEPS.length;
+    const blockWidth = 38;
+    const gap = 5;
+    const startX = this.workflowStatus.x - (total * blockWidth + (total - 1) * gap) / 2;
+    const y = this.workflowStatus.y + 24;
+    for (let index = 0; index < total; index += 1) {
+      const color = index < this.workflowStep ? 0x34d399 : index === this.workflowStep ? 0x38bdf8 : 0x334155;
+      this.workflowProgress.fillStyle(color, index <= this.workflowStep ? 0.95 : 0.58);
+      this.workflowProgress.fillRoundedRect(startX + index * (blockWidth + gap), y, blockWidth, 5, 2);
+    }
+  }
+
+  private createCountingBadge(hotspotId: string, x: number, y: number, label: string, color: string) {
     const badge = this.add
       .text(x, y, label, {
         fontSize: "10px",
@@ -259,6 +293,8 @@ export class CountingScene extends Phaser.Scene {
       repeat: -1,
       ease: "Sine.easeInOut",
     });
+
+    this.workflowBadges.set(hotspotId, badge);
 
     return badge;
   }
