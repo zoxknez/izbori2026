@@ -1152,6 +1152,9 @@ export function GameSimulatorShell({
                 });
                 send({ type: "SELECT_HOTSPOT", hotspotId: item.id });
                 bridge.emit("FOCUS_LOCATION", { locationId: item.loc });
+                if (context.currentPhase === "counting") {
+                  bridge.emit("ADVANCE_COUNTING_WORKFLOW", { hotspotId: item.id });
+                }
               }}
               className={cn(
                 "rounded-lg border px-2.5 py-1.5 text-xs font-medium transition",

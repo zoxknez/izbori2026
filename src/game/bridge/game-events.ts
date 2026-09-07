@@ -58,6 +58,8 @@ export interface GameBridgeEventMap {
   SPEED_SET: { speed: 1 | 2 | 4 };
   RESET_REQUESTED: { seed?: number };
   SWITCH_SCENE: { sceneKey: "PollingStationScene" | "CountingScene" };
+  /** A11y/touch equivalent of selecting a numbered item at the counting table. */
+  ADVANCE_COUNTING_WORKFLOW: { hotspotId: string };
   PHASE_CHANGED: {
     phase: "pre_opening" | "voting" | "closing" | "counting" | "protocol" | "handover" | "debrief" | "closed";
     acceptingNewVoters: boolean;

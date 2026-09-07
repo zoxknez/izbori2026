@@ -20,6 +20,7 @@ export class CountingScene extends Phaser.Scene {
   private unsubAudioSettings?: () => void;
   private unsubAudioCue?: () => void;
   private unsubResetCamera?: () => void;
+  private unsubAdvanceWorkflow?: () => void;
   private reducedMotion = false;
 
   constructor() {
@@ -39,6 +40,9 @@ export class CountingScene extends Phaser.Scene {
     this.unsubResetCamera = this.bridge?.on("RESET_CAMERA", () => {
       this.cameras.main.centerOn(this.scale.width / 2, this.scale.height / 2);
       this.cameras.main.setZoom(1);
+    });
+    this.unsubAdvanceWorkflow = this.bridge?.on("ADVANCE_COUNTING_WORKFLOW", ({ hotspotId }) => {
+      this.handleWorkflowInteraction(hotspotId);
     });
 
     // 1. Noćna atmosfera prostorije (zatvoreno biračko mesto posle 20:00)
@@ -183,6 +187,7 @@ export class CountingScene extends Phaser.Scene {
       this.unsubAudioSettings?.();
       this.unsubAudioCue?.();
       this.unsubResetCamera?.();
+      this.unsubAdvanceWorkflow?.();
       this.audio.destroy();
     });
   }
@@ -222,14 +227,14 @@ export class CountingScene extends Phaser.Scene {
     });
   }
 
-  private handleWorkflowInteraction(hotspotId: string, target: Phaser.GameObjects.Sprite) {
+  private handleWorkflowInteraction(hotspotId: string, target?: Phaser.GameObjects.Sprite) {
     if (this.workflowStep >= COUNTING_WORKFLOW_STEPS.length) return;
     const nextStep = nextCountingWorkflowStep(this.workflowStep, hotspotId);
     if (nextStep === this.workflowStep) {
       this.workflowStatus?.setColor("#fbbf24").setText(
         `Tok rada: ${this.workflowStep + 1}/6 · prvo: ${COUNTING_WORKFLOW_STEPS[this.workflowStep].label}`,
       );
-      if (!this.reducedMotion) this.tweens.add({ targets: target, x: target.x + 3, duration: 70, yoyo: true, repeat: 2 });
+      if (!this.reducedMotion && target) this.tweens.add({ targets: target, x: target.x + 3, duration: 70, yoyo: true, repeat: 2 });
       return;
     }
     this.workflowStep = nextStep;
@@ -240,7 +245,7 @@ export class CountingScene extends Phaser.Scene {
         `Tok rada: ${this.workflowStep + 1}/6 · ${COUNTING_WORKFLOW_STEPS[this.workflowStep].label}`,
       );
     }
-    if (!this.reducedMotion) this.tweens.add({ targets: target, scaleX: target.scaleX * 1.12, scaleY: target.scaleY * 1.12, duration: 140, yoyo: true });
+    if (!this.reducedMotion && target) this.tweens.add({ targets: target, scaleX: target.scaleX * 1.12, scaleY: target.scaleY * 1.12, duration: 140, yoyo: true });
     this.refreshWorkflowPresentation();
   }
 

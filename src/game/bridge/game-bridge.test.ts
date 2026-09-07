@@ -44,4 +44,14 @@ describe("Milestone 1: GameBridge instance-scoped event bus", () => {
     bridge.emit("WORLD_READY", { width: 1024, height: 576 });
     expect(handler).not.toHaveBeenCalled();
   });
+
+  it("prosleđuje A11y komandu za napredovanje kroz sto za prebrojavanje", () => {
+    const bridge = createGameBridge();
+    const handler = vi.fn();
+
+    bridge.on("ADVANCE_COUNTING_WORKFLOW", handler);
+    bridge.emit("ADVANCE_COUNTING_WORKFLOW", { hotspotId: "counting-unused" });
+
+    expect(handler).toHaveBeenCalledWith({ hotspotId: "counting-unused" });
+  });
 });
