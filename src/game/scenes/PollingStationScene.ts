@@ -47,6 +47,7 @@ export class PollingStationScene extends Phaser.Scene {
   private acceptingNewVoters = false;
   private incidentVisuals = new Map<string, IncidentVisual>();
   private unsubIncidentPresentations?: () => void;
+  private unsubFocusLocation?: () => void;
 
   constructor() {
     super({ key: "PollingStationScene" });
@@ -103,6 +104,10 @@ export class PollingStationScene extends Phaser.Scene {
         this.createIncidentVisual(incident.instanceId, incident.presentation);
       }
     });
+    this.unsubFocusLocation = this.bridge?.on("FOCUS_LOCATION", ({ locationId, x, y }) => {
+      const point = x !== undefined && y !== undefined ? { x, y } : this.getLocationFocusPoint(locationId);
+      this.cameras.main.pan(point.x, point.y, 450, "Sine.easeInOut");
+    });
 
     this.unsubSnapshot = this.bridge?.on("REQUEST_WORLD_SNAPSHOT", () => {
       const activeVoters = this.npcManager.getAllActiveVoters().map((v) => {
@@ -153,6 +158,7 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubRestore?.();
       this.unsubPhase?.();
       this.unsubIncidentPresentations?.();
+      this.unsubFocusLocation?.();
     });
 
     this.events.on("destroy", () => {
@@ -162,6 +168,7 @@ export class PollingStationScene extends Phaser.Scene {
       this.unsubRestore?.();
       this.unsubPhase?.();
       this.unsubIncidentPresentations?.();
+      this.unsubFocusLocation?.();
     });
 
     // 1. Pod biračkog mesta
@@ -362,9 +369,22 @@ export class PollingStationScene extends Phaser.Scene {
     this.incidentVisuals.set(incidentId, { container, incidentId, presentation });
   }
 
+  private getLocationFocusPoint(locationId: string): Point2D {
+    const points: Record<string, Point2D> = {
+      entrance: { x: 50, y: 95 },
+      "uv-station": { x: 150, y: 160 },
+      "voter-roll-desk": { x: 320, y: 160 },
+      "voting-booths": { x: 760, y: 150 },
+      "ballot-box-station": { x: 760, y: 340 },
+      "observer-area": { x: 500, y: 480 },
+    };
+    return points[locationId] ?? { x: 500, y: 300 };
+  }
+
   private createVoterVisual(entity: ActiveVoterEntity, savedPosition?: Partial<Point2D>) {
     const startPos = savedPosition?.x !== undefined && savedPosition.y !== undefined ? savedPosition as Point2D : STATION_WAYPOINTS.entrance;
     const container = this.add.container(startPos.x, startPos.y);
+    container.setDepth(startPos.y);
 
     const sprite = this.add.sprite(0, 0, "npc-avatar");
     sprite.setInteractive({ useHandCursor: true });
@@ -385,6 +405,16 @@ export class PollingStationScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     container.add([sprite, label]);
+
+    // Subtle waiting/idle motion: visual feedback only, never simulation state.
+    this.tweens.add({
+      targets: sprite,
+      y: -2,
+      duration: entity.currentStation === "queue" ? 900 : 1200,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
 
     // Klik na birača omogućava inspekciju
     sprite.on("pointerdown", () => {

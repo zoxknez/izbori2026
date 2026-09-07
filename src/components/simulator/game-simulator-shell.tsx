@@ -482,7 +482,7 @@ export function GameSimulatorShell({
               , {resumableSave.actionLog.length} zabeleženih akcija).
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-1 flex-wrap items-center gap-2">
             <button
               type="button"
               data-testid="resume-game-button"
@@ -753,9 +753,22 @@ export function GameSimulatorShell({
             <span className="text-xs font-bold text-amber-500">
               Uočena situacija na biračkom mestu ({context.activeIncidents.length}):
             </span>
-            <span className="text-xs font-medium text-ink">
-              {context.activeIncidents[0].binding.locationId} (Događaj {context.activeIncidents[0].eventId})
-            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {context.activeIncidents.map((incident) => (
+                <button
+                  key={incident.instanceId}
+                  type="button"
+                  onClick={() => {
+                    setSelectedHotspot({ hotspotId: incident.binding.hotspotTarget, locationId: incident.locationId, title: `Situacija: ${incident.eventId}` });
+                    send({ type: "SELECT_HOTSPOT", hotspotId: incident.binding.hotspotTarget });
+                    bridge.emit("FOCUS_LOCATION", { locationId: incident.locationId });
+                  }}
+                  className="rounded-lg border border-amber-500/30 bg-surface/70 px-2 py-1 text-[11px] font-semibold text-ink hover:border-amber-400 hover:text-amber-300"
+                >
+                  {incident.binding.locationId} · {incident.eventId}
+                </button>
+              ))}
+            </div>
           </div>
 
           <button
@@ -768,6 +781,7 @@ export function GameSimulatorShell({
                 title: `Situacija: ${inc.eventId}`,
               });
               send({ type: "SELECT_HOTSPOT", hotspotId: inc.binding.hotspotTarget });
+              bridge.emit("FOCUS_LOCATION", { locationId: inc.locationId });
             }}
             className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-400 transition hover:bg-amber-500/30"
           >
