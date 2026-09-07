@@ -2,6 +2,7 @@ import { setup, assign } from "xstate";
 import type { SimulationState } from "@/lib/domain/simulator/types";
 import {
   createSimulationState,
+  conditionMatches,
   resolveChoice,
 } from "@/lib/domain/simulator/engine";
 import { simulationEvents } from "@/lib/domain/simulator/seed-events";
@@ -783,9 +784,16 @@ function processTickLogic(
     if (binding.trigger.type === "time" && binding.trigger.simulationTime) {
       const triggerMs = timeStringToMs(binding.trigger.simulationTime);
       const inInterval = oldMs < triggerMs && triggerMs <= newMs;
+      const authoredEvent = simulationEvents.find((event) => event.id === binding.eventId);
 
       if (
         inInterval &&
+        authoredEvent &&
+        conditionMatches(authoredEvent.conditions, {
+          flags: updatedDomain.flags,
+          phase: updatedDomain.phase,
+          role: updatedDomain.role,
+        }) &&
         (!binding.roleFilter || binding.roleFilter.includes(updatedDomain.role)) &&
         !remainingIncidents.some((i) => i.eventId === binding.eventId) &&
         !updatedDomain.history.some((h) => h.eventId === binding.eventId)

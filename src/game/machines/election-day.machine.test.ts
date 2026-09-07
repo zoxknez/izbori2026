@@ -71,6 +71,18 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     actor.stop();
   });
 
+  it("live scheduler ne prikazuje authored incident ako njegov uslov nije ispunjen", () => {
+    const machine = createElectionDayMachine({ role: "clan_odbora", startTime: "06:00" });
+    const actor = createActor(machine);
+    actor.start();
+
+    // E28 ima smisla samo kada je ranije evidentirano kašnjenje otvaranja.
+    actor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 72_720_000 }); // 20:12
+
+    expect(actor.getSnapshot().context.activeIncidents.some((incident) => incident.eventId === "E28")).toBe(false);
+    actor.stop();
+  });
+
   it("ADD_EVIDENCE dodaje strukturirani dokaz i beleži unos u actionLog", () => {
     const machine = createElectionDayMachine({ role: "posmatrac" });
     const actor = createActor(machine);
