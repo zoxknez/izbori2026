@@ -113,6 +113,14 @@ export function EvidenceTray({
     setIsCreating(false);
   };
 
+  const completenessItems = [
+    { label: "Vreme", complete: true },
+    { label: "Lokacija", complete: Boolean(locationId) },
+    { label: "Činjenice", complete: facts.length > 0 },
+    { label: "Svedoci", complete: selectedWitnesses.length > 0 },
+  ];
+  const completenessCount = completenessItems.filter((item) => item.complete).length;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
       <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-3xl border border-border bg-surface shadow-2xl">
@@ -142,6 +150,37 @@ export function EvidenceTray({
             <div className="flex flex-col gap-4">
               <div className="rounded-2xl border border-brand/20 bg-brand/5 p-3 text-xs text-brand">
                 💡 <strong>Važna proceduralna razlika:</strong> Razdvoj ono što si lično video (činjenice) od sopstvenih pretpostavki ili motiva lica. Kvalitet dokaza u prigovoru zavisi od ove razlike.
+              </div>
+
+              <div
+                className="rounded-2xl border border-border bg-surface-2/60 p-3"
+                aria-label={`Kompletnost zapisa: ${completenessCount} od ${completenessItems.length}`}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs font-bold text-ink">Kontrolna lista zapisa</span>
+                  <span className={cn(
+                    "font-mono text-[11px] font-bold",
+                    completenessCount === completenessItems.length ? "text-emerald-400" : "text-amber-400",
+                  )}>
+                    {completenessCount}/{completenessItems.length} kompletno
+                  </span>
+                </div>
+                <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+                  {completenessItems.map((item) => (
+                    <div
+                      key={item.label}
+                      className={cn(
+                        "flex items-center gap-1.5 rounded-lg border px-2 py-1.5 text-[11px] font-semibold",
+                        item.complete
+                          ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-300"
+                          : "border-border bg-surface text-ink-muted",
+                      )}
+                    >
+                      {item.complete ? <CheckCircle2 className="h-3.5 w-3.5" /> : <span className="h-3.5 w-3.5 rounded-full border border-current" />}
+                      {item.label}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Lokacija i vreme */}

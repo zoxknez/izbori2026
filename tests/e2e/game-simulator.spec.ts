@@ -60,6 +60,9 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     await expect(evidenceBtn).toBeVisible();
     await evidenceBtn.click();
     await expect(page.getByText(/Beležnica dokaza i zapažanja/i)).toBeVisible();
+    await page.getByRole("button", { name: /Nova zabeleška/i }).click();
+    await expect(page.getByText(/2\/4 kompletno/i)).toBeVisible();
+    await page.getByRole("button", { name: /Otkaži/i }).click();
     await page.getByRole("button", { name: /Zatvori beležnicu/i }).click();
 
     // Otvaramo završni debrief smene
