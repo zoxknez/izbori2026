@@ -96,6 +96,12 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     }
     await expect(roleBtn).toContainText(/Posmatrač/i);
 
+    // Nova partija može brzo doći do legalnog početka glasanja, bez skoka na kraj dana.
+    const openingBtn = page.getByTestId("fast-forward-to-opening-button");
+    await expect(openingBtn).toBeVisible();
+    await openingBtn.click();
+    await expect(page.getByTestId("close-polls-button")).toBeVisible();
+
     // Milestone 6: Prebacivanje na fazu prebrojavanja (20:00) po čl. 91, 99 i 100 ZINP
     // Premotavamo do 20:00 (kraj glasanja)
     const ffBtn = page.getByTestId("fast-forward-to-closing-button");

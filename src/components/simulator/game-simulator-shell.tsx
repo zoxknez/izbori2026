@@ -674,6 +674,24 @@ export function GameSimulatorShell({
           <label className="sr-only" htmlFor="simulator-volume">Jačina zvuka</label>
           <input id="simulator-volume" type="range" min="0" max="1" step="0.01" value={audioVolume} onChange={(event) => setAudioVolume(Number(event.target.value))} className="hidden w-16 accent-brand sm:block" />
 
+          {context.currentPhase === "pre_opening" && (
+            <button
+              type="button"
+              data-testid="fast-forward-to-opening-button"
+              onClick={() => {
+                send({ type: "ADVANCE_SIMULATION_TO", targetMs: context.pollSchedule.actualOpenTimeMs });
+                send({ type: "START_VOTING" });
+                setStatusNotification("Premotano do 07:00. Biračko mesto je otvoreno za glasanje.");
+                setTimeout(() => setStatusNotification(null), 3000);
+              }}
+              className="flex h-8 items-center gap-1 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-2.5 text-xs font-bold text-emerald-300 transition-all hover:border-emerald-400 hover:bg-emerald-500/20"
+              title="Premotaj do zvaničnog otvaranja biračkog mesta u 07:00"
+            >
+              <FastForward className="h-3.5 w-3.5" />
+              <span>07:00</span>
+            </button>
+          )}
+
           {context.currentPhase !== "counting" && context.currentPhase !== "closed" && (
             <button
               type="button"
