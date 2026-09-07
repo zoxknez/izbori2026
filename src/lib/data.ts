@@ -11,6 +11,12 @@ import {
 import { asc } from "drizzle-orm";
 import type { Rule } from "@/lib/types";
 import type { RuleRow } from "@/lib/db/schema";
+import { rules as bundledRules } from "@/content/rules";
+import { sources as bundledSources } from "@/content/sources";
+import { criminalArticles as bundledCriminalArticles } from "@/content/criminal-articles";
+import { decisionTrees as bundledDecisionTrees } from "@/content/decision-trees";
+
+const hasDatabase = () => Boolean(process.env.DATABASE_URL);
 
 const VALID_SEVERITIES = new Set<Rule["severity"]>([
   "ponistavanje",
@@ -60,6 +66,7 @@ function toRule(row: RuleRow): Rule {
 }
 
 export const getAllRules = cache(async (): Promise<Rule[]> => {
+  if (!hasDatabase()) return bundledRules;
   const rows = await db.select().from(rulesTable).orderBy(asc(rulesTable.order));
   return rows.map(toRule);
 });
@@ -76,11 +83,13 @@ export const getRulesByIds = cache(async (ids: string[]): Promise<Rule[]> => {
 });
 
 export async function getCriminalArticles() {
+  if (!hasDatabase()) return bundledCriminalArticles;
   const rows = await db.select().from(criminalArticlesTable).orderBy(asc(criminalArticlesTable.order));
   return rows.map((row) => ({ ...row, nijeDokaz: row.nijeDokaz ?? undefined, order: row.order ?? 0 }));
 }
 
 export async function getSources() {
+  if (!hasDatabase()) return bundledSources;
   const rows = await db.select().from(sourcesTable).orderBy(asc(sourcesTable.tier));
   return rows.map((row) => ({
     ...row,
@@ -99,6 +108,7 @@ export async function getSources() {
 }
 
 export const getDecisionTrees = cache(async () => {
+  if (!hasDatabase()) return bundledDecisionTrees;
   const [trees, nodes] = await Promise.all([
     db.select().from(decisionTreesTable).orderBy(asc(decisionTreesTable.order)),
     db.select().from(decisionNodesTable).orderBy(asc(decisionNodesTable.order)),
