@@ -130,6 +130,16 @@ export function GameSimulatorShell({
     void (async () => {
       try {
         const snapshot = actorRef?.getPersistedSnapshot?.();
+        // Freeze one coherent world version before the async WebCrypto hash.
+        const worldForSave = worldSnapshotRef.current ?? worldSnapshot ?? {
+          rngState: context.seed,
+          deterministicCounter: context.deterministicCounter,
+          nextEntityId: context.activeVoterCount,
+          activeVoters: [],
+          queueOrder: [],
+          nextSpawnAtMs: 0,
+          legalInterruptions: context.legalInterruptions,
+        };
         const hash = await computeCanonicalStateHash({
           runId: context.runId,
           seed: context.seed,
@@ -142,7 +152,7 @@ export function GameSimulatorShell({
           activeIncidentIds: context.activeIncidents.map((i) => i.instanceId),
           missedIncidentIds: context.missedIncidents.map((i) => i.instanceId),
           boardProtocol: context.boardProtocol,
-          rngState: worldSnapshotRef.current?.rngState ?? context.seed,
+          rngState: worldForSave.rngState,
         });
 
         const saveObj: GameSaveV2 = {
@@ -156,15 +166,7 @@ export function GameSimulatorShell({
           currentPhase: context.currentPhase,
           machineSnapshot: snapshot,
           domainState: context.domainState,
-          worldSimulation: worldSnapshotRef.current ?? worldSnapshot ?? {
-            rngState: context.seed,
-            deterministicCounter: context.deterministicCounter,
-            nextEntityId: context.activeVoterCount,
-            activeVoters: [],
-            queueOrder: [],
-            nextSpawnAtMs: 0,
-            legalInterruptions: context.legalInterruptions,
-          },
+          worldSimulation: worldForSave,
           pollSchedule: context.pollSchedule,
           actionLog: context.actionLog,
           evidenceNotebook: context.evidenceNotebook,
@@ -205,6 +207,16 @@ export function GameSimulatorShell({
   const handleSaveGame = async () => {
     bridge.emit("REQUEST_WORLD_SNAPSHOT", {});
     const snapshot = actorRef?.getPersistedSnapshot?.();
+    // The same frozen object must feed both the hash and the persisted payload.
+    const worldForSave = worldSnapshotRef.current ?? worldSnapshot ?? {
+      rngState: context.seed,
+      deterministicCounter: context.deterministicCounter,
+      nextEntityId: context.activeVoterCount,
+      activeVoters: [],
+      queueOrder: [],
+      nextSpawnAtMs: 0,
+      legalInterruptions: context.legalInterruptions,
+    };
     const hash = await computeCanonicalStateHash({
       runId: context.runId,
       seed: context.seed,
@@ -217,7 +229,7 @@ export function GameSimulatorShell({
       activeIncidentIds: context.activeIncidents.map((i) => i.instanceId),
       missedIncidentIds: context.missedIncidents.map((i) => i.instanceId),
       boardProtocol: context.boardProtocol,
-      rngState: worldSnapshotRef.current?.rngState ?? context.seed,
+      rngState: worldForSave.rngState,
     });
 
     const saveObj: GameSaveV2 = {
@@ -231,15 +243,7 @@ export function GameSimulatorShell({
       currentPhase: context.currentPhase,
       machineSnapshot: snapshot,
       domainState: context.domainState,
-      worldSimulation: worldSnapshotRef.current ?? worldSnapshot ?? {
-        rngState: context.seed,
-        deterministicCounter: context.deterministicCounter,
-        nextEntityId: context.activeVoterCount,
-        activeVoters: [],
-        queueOrder: [],
-        nextSpawnAtMs: 0,
-        legalInterruptions: context.legalInterruptions,
-      },
+      worldSimulation: worldForSave,
       pollSchedule: context.pollSchedule,
       actionLog: context.actionLog,
       evidenceNotebook: context.evidenceNotebook,
