@@ -2,15 +2,27 @@ import type { SimulationRole } from "./types";
 import type { WorldAction, WorldIncidentBinding } from "./live-types";
 
 export type RolePermission =
-  | "manipulate_materials"       // Rukovanje glasačkim listićima, kutijom, vrećom
-  | "sign_protocol"              // Potpisivanje zapisnika o radu biračkog odbora
-  | "submit_formal_objection"    // Podnošenje formalnog prigovora / primedbe
-  | "record_evidence"            // Unošenje zabeleški u beležnicu dokaza
-  | "inspect_voter_id"           // Provera ličnih isprava birača
-  | "apply_spray_and_uv"         // Rukovanje UV lampom i nevidljivim sprejom
-  | "vote_in_booth"              // Samostalno glasanje iza paravana
-  | "relocate_booths"            // Premeštanje paravana radi zaštite tajnosti
-  | "demand_procedural_pause";   // Zahtevanje kratke pauze za otklanjanje nepravilnosti
+  // Birački odbor (Čl. 98 i 105 ZINP)
+  | "interrupt_voting_for_order"       // Čl. 98: Prekid glasanja radi uspostavljanja reda
+  | "add_board_member_remark"         // Čl. 105: Unos primedbe člana BO u Zapisnik BO
+  | "sign_protocol"                   // Potpisivanje Zapisnika BO
+  | "inspect_voter_id"                // Čl. 93: Provera lične isprave birača
+  | "apply_spray_and_uv"              // Rukovanje UV lampom i sprejom
+  | "manipulate_materials"            // Rukovanje listićima i kutijom
+  | "relocate_booths"                 // Zaštita tajnosti glasanja
+  
+  // Posmatrač (Čl. 168 ZINP)
+  | "request_board_attention"         // Skretanje pažnje predsedniku BO na nepravilnost
+  | "add_observer_record_remark"      // Čl. 168: Unos primedbe u poseban zapisnik posmatrača
+  | "contact_observer_mission"        // Izveštavanje posmatračke misije
+  
+  // Birač (Čl. 148-149 ZINP)
+  | "prepare_voter_legal_remedy"      // Zahtev za poništavanje glasanja (rok 72h, čl. 148-149)
+  | "cast_ballot"                     // Lično glasanje
+  | "protect_ballot_secrecy"          // Odbijanje glasanja ako je paravan izložen
+  
+  // Zajedničko
+  | "record_evidence";                // Unos zapažanja u internu beležnicu dokaza
 
 export interface RoleInfo {
   role: SimulationRole;
@@ -34,14 +46,14 @@ export const ROLE_CONFIGS: Record<SimulationRole, RoleInfo> = {
     coreResponsibilities: [
       "Priprema i provera biračkog mesta pre otvaranja (06:00-07:00)",
       "Provera prazne glasačke kutije i popunjavanje kontrolnog lista sa prvim biračem",
-      "Kontrola ličnih isprava birača i identifikacija u biračkom spisku",
+      "Kontrola ličnih isprava birača i identifikacija u biračkom spisku (član 93 ZINP)",
       "Pravilna primena UV lampe (pre) i spreja (posle glasanja)",
       "Uručenje glasačkih listića i obezbeđivanje potpune tajnosti iza paravana",
       "Održavanje reda u prostoriji i zabrana propagande u krugu od 50 metara",
       "Prebrojavanje glasova i potpisivanje Zapisnika o radu biračkog odbora",
     ],
     strictProhibitions: [
-      "Zabranjeno glasanje bez važeće lične isprave (LK ili pasoš)",
+      "Zabranjeno omogućavanje glasanja bez lične karte ili druge odgovarajuće javne isprave sa fotografijom i JMBG (član 93 ZINP)",
       "Zabranjeno narušavanje tajnosti glasanja ili posmatranje birača iza paravana",
       "Zabranjeno izdavanje listića licu sa već prisutnim tragom spreja",
       "Zabranjeno zadržavanje nezapečaćene glasačke kutije tokom glasanja",
@@ -53,7 +65,8 @@ export const ROLE_CONFIGS: Record<SimulationRole, RoleInfo> = {
       "inspect_voter_id",
       "apply_spray_and_uv",
       "relocate_booths",
-      "demand_procedural_pause",
+      "interrupt_voting_for_order",
+      "add_board_member_remark",
     ],
   },
   posmatrac: {
@@ -62,13 +75,13 @@ export const ROLE_CONFIGS: Record<SimulationRole, RoleInfo> = {
     shortLabel: "Posmatrač",
     badgeColor: "sky",
     summary:
-      "Nezavisni akreditovani posmatrač izborne misije. Prati zakonitost rada biračkog odbora, evidentira činjenice u beležnicu i zahteva unošenje primedbi u zapisnik.",
+      "Nezavisni akreditovani posmatrač izborne misije. Prati zakonitost rada biračkog odbora, evidentira činjenice u beležnicu i unosi primedbe u poseban zapisnik o posmatračima (član 168 ZINP).",
     coreResponsibilities: [
       "Prati pripremu prostorije, proveru kutije i kontrolnog lista",
       "Beleži tok glasanja sa tačnim vremenom, akterima i lokacijom",
       "Razdvaja neposredno uočene činjenice od pretpostavki ili glasina",
       "Skreće pažnju predsedniku biračkog odbora na uočene nepravilnosti",
-      "Zahteva unošenje primedbi u Zapisnik o radu biračkog odbora",
+      "Zahteva unošenje primedbi u poseban zapisnik o prisustvu posmatrača (član 168 ZINP)",
       "Obaveštava koordinacioni centar posmatračke misije",
     ],
     strictProhibitions: [
@@ -78,7 +91,9 @@ export const ROLE_CONFIGS: Record<SimulationRole, RoleInfo> = {
       "Zabranjeno narušavanje neutralnosti posmatračke uloge",
     ],
     permissions: [
-      "submit_formal_objection",
+      "request_board_attention",
+      "add_observer_record_remark",
+      "contact_observer_mission",
       "record_evidence",
     ],
   },
@@ -88,11 +103,11 @@ export const ROLE_CONFIGS: Record<SimulationRole, RoleInfo> = {
     shortLabel: "Birač",
     badgeColor: "emerald",
     summary:
-      "Građanin koji ostvaruje Ustavom zajemčeno biračko pravo. Prolazi zakonsku proceduru glasanja, čuva tajnost svog glasa i zahteva zaštitu svojih prava ako su ugrožena.",
+      "Građanin koji ostvaruje Ustavom zajemčeno biračko pravo. Prolazi zakonsku proceduru glasanja, čuva tajnost svog glasa i zahteva pravnu zaštitu ako su mu prava povređena (članovi 148 i 149 ZINP).",
     coreResponsibilities: [
       "Pristupa biračkom mestu i čeka red na ulazu",
       "Pruža ruku na proveru UV lampom pre preuzimanja materijala",
-      "Prilaže važeći lični dokument (LK ili pasoš) radi identifikacije",
+      "Prilaže ličnu kartu ili drugu odgovarajuću javnu ispravu sa fotografijom i JMBG (član 93 ZINP) radi identifikacije",
       "Potpisuje se u izvod iz biračkog spiska pored svog imena",
       "Omogućava nanošenje spreja na kažiprst desne ruke",
       "Preuzima overeni glasački listić i glasa u tajnosti iza paravana",
@@ -106,9 +121,10 @@ export const ROLE_CONFIGS: Record<SimulationRole, RoleInfo> = {
       "Zabranjeno narušavanje reda na biračkom mestu",
     ],
     permissions: [
-      "submit_formal_objection",
+      "prepare_voter_legal_remedy",
       "record_evidence",
-      "vote_in_booth",
+      "cast_ballot",
+      "protect_ballot_secrecy",
     ],
   },
 };

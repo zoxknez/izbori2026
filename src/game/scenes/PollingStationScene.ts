@@ -30,6 +30,11 @@ export class PollingStationScene extends Phaser.Scene {
   private voterVisuals = new Map<string, VoterVisual>();
   private selectedIndicator?: Phaser.GameObjects.Graphics;
 
+  private unsubClock?: () => void;
+  private unsubSpeed?: () => void;
+  private isSimPaused: boolean = false;
+  private simSpeed: number = 1;
+
   constructor() {
     super({ key: "PollingStationScene" });
   }
@@ -44,6 +49,27 @@ export class PollingStationScene extends Phaser.Scene {
   create() {
     const width = this.scale.width;
     const height = this.scale.height;
+
+    // Slušamo CLOCK_TICK i SPEED_CHANGED iz GameBridge-a
+    this.unsubClock = this.bridge?.on("CLOCK_TICK", (data) => {
+      if (data.paused !== undefined) this.isSimPaused = data.paused;
+      if (data.speed !== undefined) this.simSpeed = data.speed;
+    });
+
+    this.unsubSpeed = this.bridge?.on("SPEED_CHANGED", (data) => {
+      this.simSpeed = data.speed;
+      this.isSimPaused = data.paused;
+    });
+
+    this.events.on("shutdown", () => {
+      this.unsubClock?.();
+      this.unsubSpeed?.();
+    });
+
+    this.events.on("destroy", () => {
+      this.unsubClock?.();
+      this.unsubSpeed?.();
+    });
 
     // 1. Pod biračkog mesta
     this.add.tileSprite(width / 2, height / 2, width - 40, height - 40, "floor-tile");
@@ -129,7 +155,12 @@ export class PollingStationScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number) {
-    this.elapsedTimeMs += delta;
+    if (this.isSimPaused) {
+      return;
+    }
+
+    const effectiveDelta = delta * (this.simSpeed || 1);
+    this.elapsedTimeMs += effectiveDelta;
 
     // Spawnovanje novih birača sa pauzama
     if (this.elapsedTimeMs >= this.nextSpawnTimeMs && this.voterPool.length > 0) {
@@ -141,7 +172,7 @@ export class PollingStationScene extends Phaser.Scene {
     }
 
     // Ažuriranje kretanja i stanja svih stanica
-    const { moves, completed } = this.npcManager.updateStationProgress(delta);
+    const { moves, completed } = this.npcManager.updateStationProgress(effectiveDelta);
 
     // Obrada kretanja
     for (const move of moves) {

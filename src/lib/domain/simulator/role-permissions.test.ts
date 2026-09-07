@@ -17,7 +17,9 @@ describe("Milestone 5: Role Permissions & Differentiation (Član BO, Posmatrač,
     expect(hasRolePermission("clan_odbora", "inspect_voter_id")).toBe(true);
     expect(hasRolePermission("clan_odbora", "apply_spray_and_uv")).toBe(true);
     expect(hasRolePermission("clan_odbora", "relocate_booths")).toBe(true);
-    expect(hasRolePermission("clan_odbora", "vote_in_booth")).toBe(false);
+    expect(hasRolePermission("clan_odbora", "interrupt_voting_for_order")).toBe(true);
+    expect(hasRolePermission("clan_odbora", "add_board_member_remark")).toBe(true);
+    expect(hasRolePermission("clan_odbora", "cast_ballot")).toBe(false);
 
     // 2. Posmatrač: stroga zabrana rukovanja materijalom i mešanja u rad odbora
     expect(hasRolePermission("posmatrac", "manipulate_materials")).toBe(false);
@@ -26,11 +28,14 @@ describe("Milestone 5: Role Permissions & Differentiation (Član BO, Posmatrač,
     expect(hasRolePermission("posmatrac", "apply_spray_and_uv")).toBe(false);
     expect(hasRolePermission("posmatrac", "relocate_booths")).toBe(false);
     expect(hasRolePermission("posmatrac", "record_evidence")).toBe(true);
-    expect(hasRolePermission("posmatrac", "submit_formal_objection")).toBe(true);
+    expect(hasRolePermission("posmatrac", "request_board_attention")).toBe(true);
+    expect(hasRolePermission("posmatrac", "add_observer_record_remark")).toBe(true);
+    expect(hasRolePermission("posmatrac", "contact_observer_mission")).toBe(true);
 
-    // 3. Birač: ostvarivanje ličnog prava glasa i zaštita tajnosti
-    expect(hasRolePermission("birac", "vote_in_booth")).toBe(true);
-    expect(hasRolePermission("birac", "submit_formal_objection")).toBe(true);
+    // 3. Birač: ostvarivanje ličnog prava glasa i pravno sredstvo (čl. 148-149)
+    expect(hasRolePermission("birac", "cast_ballot")).toBe(true);
+    expect(hasRolePermission("birac", "protect_ballot_secrecy")).toBe(true);
+    expect(hasRolePermission("birac", "prepare_voter_legal_remedy")).toBe(true);
     expect(hasRolePermission("birac", "manipulate_materials")).toBe(false);
     expect(hasRolePermission("birac", "inspect_voter_id")).toBe(false);
   });

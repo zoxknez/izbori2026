@@ -27,6 +27,7 @@ export function SimulatorModeSelector() {
   // 2D režim je primarni (preporučeni) doživljaj
   const [mode, setMode] = useState<"classic" | "game_2d">("game_2d");
   const [selectedRole, setSelectedRole] = useState<SimulationRole>("clan_odbora");
+  const [gameMode, setGameMode] = useState<"guided" | "realistic" | "stress">("guided");
 
   return (
     <div className="flex flex-col gap-6">
@@ -48,31 +49,63 @@ export function SimulatorModeSelector() {
               </span>
             </div>
 
-            {/* Brzi izbor uloge kada je aktivan 2D režim */}
+            {/* Brzi izbor uloge i težine simulacije kada je aktivan 2D režim */}
             {mode === "game_2d" && (
-              <div className="flex items-center gap-1.5 rounded-2xl bg-surface-2/80 p-1 border border-border/70">
-                <span className="px-2 text-[11px] font-semibold text-ink-dim hidden md:inline">
-                  Aktivna perspektiva:
-                </span>
-                {(["clan_odbora", "posmatrac", "birac"] as const).map((r) => {
-                  const cfg = ROLE_CONFIGS[r];
-                  const isSel = selectedRole === r;
-                  return (
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Režim težine / pritiska */}
+                <div className="flex items-center gap-1 rounded-2xl bg-surface-2/80 p-1 border border-border/70 text-xs">
+                  <span className="px-2 text-[11px] font-semibold text-ink-dim hidden lg:inline">
+                    Pritisak:
+                  </span>
+                  {(
+                    [
+                      { id: "guided", label: "Vođeni", desc: "Saveti i duže vreme" },
+                      { id: "realistic", label: "Realističan", desc: "ZINP tajminzi" },
+                      { id: "stress", label: "Stres", desc: "Visok pritisak" },
+                    ] as const
+                  ).map((m) => (
                     <button
-                      key={r}
+                      key={m.id}
                       type="button"
-                      onClick={() => setSelectedRole(r)}
+                      onClick={() => setGameMode(m.id)}
                       className={cn(
                         "rounded-xl px-2.5 py-1 text-xs font-semibold transition-all",
-                        isSel
-                          ? "bg-brand text-brand-ink font-bold shadow-sm"
-                          : "text-ink-dim hover:text-ink hover:bg-surface",
+                        gameMode === m.id
+                          ? "bg-surface text-ink font-bold shadow-sm ring-1 ring-border"
+                          : "text-ink-dim hover:text-ink",
                       )}
+                      title={m.desc}
                     >
-                      {cfg.shortLabel}
+                      {m.label}
                     </button>
-                  );
-                })}
+                  ))}
+                </div>
+
+                {/* Perspektiva uloge */}
+                <div className="flex items-center gap-1.5 rounded-2xl bg-surface-2/80 p-1 border border-border/70">
+                  <span className="px-2 text-[11px] font-semibold text-ink-dim hidden md:inline">
+                    Perspektiva:
+                  </span>
+                  {(["clan_odbora", "posmatrac", "birac"] as const).map((r) => {
+                    const cfg = ROLE_CONFIGS[r];
+                    const isSel = selectedRole === r;
+                    return (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => setSelectedRole(r)}
+                        className={cn(
+                          "rounded-xl px-2.5 py-1 text-xs font-semibold transition-all",
+                          isSel
+                            ? "bg-brand text-brand-ink font-bold shadow-sm"
+                            : "text-ink-dim hover:text-ink hover:bg-surface",
+                        )}
+                      >
+                        {cfg.shortLabel}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
@@ -188,7 +221,11 @@ export function SimulatorModeSelector() {
       {mode === "classic" ? (
         <SimulationGame />
       ) : (
-        <DynamicGameSimulatorShell key={selectedRole} initialRole={selectedRole} />
+        <DynamicGameSimulatorShell
+          key={`${selectedRole}-${gameMode}`}
+          initialRole={selectedRole}
+          initialMode={gameMode}
+        />
       )}
     </div>
   );

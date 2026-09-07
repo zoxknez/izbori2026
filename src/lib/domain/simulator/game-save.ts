@@ -1,11 +1,64 @@
 import type { SimulationState } from "@/lib/domain/simulator/types";
-import type { GameActionLogEntry, EvidenceRecord } from "@/game/machines/election-day.machine";
+import type {
+  GameActionLogEntry,
+  EvidenceRecord,
+  PollSchedule,
+  LegalVotingInterruption,
+  BoardProtocol,
+  ObserverPresenceRecord,
+  ElectionDayPhase,
+} from "@/game/machines/election-day.machine";
 import type { CountingSession } from "@/lib/domain/simulator/counting-session";
 import { readOfflineValue, writeOfflineValue } from "@/lib/offline/indexed-db";
 import { simulationEvents } from "@/lib/domain/simulator/seed-events";
 import { createSimulationState, resolveChoice } from "@/lib/domain/simulator/engine";
 
-export const GAME_SAVE_STORAGE_KEY = "game_simulator_v1_active_save";
+export const GAME_SAVE_STORAGE_KEY_V2 = "game_simulator_v2_active_save";
+export const GAME_SAVE_STORAGE_KEY_V1 = "game_simulator_v1_active_save";
+
+export interface SerializedVoterEntity {
+  id: string;
+  name: string;
+  gender: "m" | "z";
+  ageCategory: "young" | "middle" | "senior";
+  walkSpeed: number;
+  currentStation: string;
+  timeAtStationMs: number;
+  assignedBoothIndex?: number;
+  progress: number;
+  x: number;
+  y: number;
+}
+
+export interface WorldSimulationSaveState {
+  rngState: number;
+  nextEntityId: number;
+  activeVoters: SerializedVoterEntity[];
+  queueOrder: string[];
+  nextSpawnAtMs: number;
+  legalInterruptions: LegalVotingInterruption[];
+}
+
+export interface GameSaveV2 {
+  version: 2;
+  runId: string;
+  savedAt: string;
+  seed: number;
+  mode: "guided" | "realistic" | "stress";
+  role: "clan_odbora" | "posmatrac" | "birac";
+  simulationTimeMs: number;
+  currentPhase: ElectionDayPhase;
+  machineSnapshot?: unknown;
+  domainState: SimulationState;
+  worldSimulation: WorldSimulationSaveState;
+  pollSchedule: PollSchedule;
+  actionLog: GameActionLogEntry[];
+  evidenceNotebook: EvidenceRecord[];
+  boardProtocol?: BoardProtocol;
+  observerRecord?: ObserverPresenceRecord;
+  countingSession?: CountingSession;
+  stateHash: string;
+}
 
 export interface GameSaveV1 {
   version: 1;
@@ -20,6 +73,85 @@ export interface GameSaveV1 {
   actionLog: GameActionLogEntry[];
   evidenceNotebook: EvidenceRecord[];
   countingSession?: CountingSession;
+}
+
+/**
+ * Deterministički SHA-256 hash na osnovu kanonski sortiranog JSON representation-a
+ * za verifikaciju integriteta sačuvanog stanja i detekciju desinhronizacije.
+ */
+export async function computeCanonicalStateHash(data: {
+  runId: string;
+  seed: number;
+  simulationTimeMs: number;
+  scores: Record<string, number>;
+  flags: string[];
+  actionLogLength: number;
+  pollSchedule: PollSchedule;
+}): Promise<string> {
+  const canonicalPayload = JSON.stringify({
+    runId: data.runId,
+    seed: data.seed,
+    simulationTimeMs: data.simulationTimeMs,
+    scores: Object.keys(data.scores)
+      .sort()
+      .reduce((acc, k) => {
+        acc[k] = data.scores[k];
+        return acc;
+      }, {} as Record<string, number>),
+    flags: [...data.flags].sort(),
+    actionLogLength: data.actionLogLength,
+    pollSchedule: {
+      scheduledOpenTimeMs: data.pollSchedule.scheduledOpenTimeMs,
+      actualOpenTimeMs: data.pollSchedule.actualOpenTimeMs,
+      scheduledCloseTimeMs: data.pollSchedule.scheduledCloseTimeMs,
+      openingDelayMs: data.pollSchedule.openingDelayMs,
+      qualifyingInterruptionMs: data.pollSchedule.qualifyingInterruptionMs,
+      legalExtensionMs: data.pollSchedule.legalExtensionMs,
+      effectiveCloseTimeMs: data.pollSchedule.effectiveCloseTimeMs,
+      earlyCloseAtMs: data.pollSchedule.earlyCloseAtMs ?? null,
+      resultsPublicationEmbargoUntilMs: data.pollSchedule.resultsPublicationEmbargoUntilMs,
+    },
+  });
+
+  if (typeof crypto !== "undefined" && crypto.subtle) {
+    const msgBuffer = new TextEncoder().encode(canonicalPayload);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  // Node fallback or non-crypto environment: FNV-1a 64-bit hex hash
+  let h1 = 0x811c9dc5;
+  for (let i = 0; i < canonicalPayload.length; i++) {
+    h1 ^= canonicalPayload.charCodeAt(i);
+    h1 = Math.imul(h1, 0x01000193);
+  }
+  return (h1 >>> 0).toString(16).padStart(8, "0");
+}
+
+export function isValidGameSaveV2(data: unknown): data is GameSaveV2 {
+  if (!data || typeof data !== "object") return false;
+  const s = data as Partial<GameSaveV2>;
+  return (
+    s.version === 2 &&
+    typeof s.runId === "string" &&
+    typeof s.savedAt === "string" &&
+    typeof s.seed === "number" &&
+    typeof s.simulationTimeMs === "number" &&
+    (s.mode === "guided" || s.mode === "realistic" || s.mode === "stress") &&
+    (s.role === "clan_odbora" || s.role === "posmatrac" || s.role === "birac") &&
+    typeof s.currentPhase === "string" &&
+    !!s.domainState &&
+    !!s.worldSimulation &&
+    typeof s.worldSimulation.rngState === "number" &&
+    Array.isArray(s.worldSimulation.activeVoters) &&
+    Array.isArray(s.worldSimulation.queueOrder) &&
+    !!s.pollSchedule &&
+    typeof s.pollSchedule.effectiveCloseTimeMs === "number" &&
+    Array.isArray(s.actionLog) &&
+    Array.isArray(s.evidenceNotebook) &&
+    typeof s.stateHash === "string"
+  );
 }
 
 export function isValidGameSaveV1(data: unknown): data is GameSaveV1 {
@@ -43,17 +175,25 @@ export function isValidGameSaveV1(data: unknown): data is GameSaveV1 {
   );
 }
 
-export async function saveGameSession(save: GameSaveV1): Promise<void> {
+export async function saveGameSession(save: GameSaveV2 | GameSaveV1): Promise<void> {
   if (typeof window === "undefined") return;
-  await writeOfflineValue("simulationHistory", GAME_SAVE_STORAGE_KEY, save);
+  if (save.version === 2) {
+    await writeOfflineValue("simulationHistory", GAME_SAVE_STORAGE_KEY_V2, save);
+  } else {
+    await writeOfflineValue("simulationHistory", GAME_SAVE_STORAGE_KEY_V1, save);
+  }
 }
 
-export async function loadGameSession(): Promise<GameSaveV1 | null> {
+export async function loadGameSession(): Promise<GameSaveV2 | GameSaveV1 | null> {
   if (typeof window === "undefined") return null;
   try {
-    const raw = await readOfflineValue<unknown>("simulationHistory", GAME_SAVE_STORAGE_KEY);
-    if (isValidGameSaveV1(raw)) {
-      return raw;
+    const rawV2 = await readOfflineValue<unknown>("simulationHistory", GAME_SAVE_STORAGE_KEY_V2);
+    if (isValidGameSaveV2(rawV2)) {
+      return rawV2;
+    }
+    const rawV1 = await readOfflineValue<unknown>("simulationHistory", GAME_SAVE_STORAGE_KEY_V1);
+    if (isValidGameSaveV1(rawV1)) {
+      return rawV1;
     }
     return null;
   } catch {
@@ -64,7 +204,8 @@ export async function loadGameSession(): Promise<GameSaveV1 | null> {
 export async function clearGameSession(): Promise<void> {
   if (typeof window === "undefined") return;
   try {
-    await writeOfflineValue("simulationHistory", GAME_SAVE_STORAGE_KEY, null);
+    await writeOfflineValue("simulationHistory", GAME_SAVE_STORAGE_KEY_V2, null);
+    await writeOfflineValue("simulationHistory", GAME_SAVE_STORAGE_KEY_V1, null);
   } catch {
     // tiho ignorišemo greške pri brisanju
   }
@@ -98,7 +239,7 @@ export function replaySimulation(
   mode: "guided" | "realistic" | "stress",
   role: "clan_odbora" | "posmatrac" | "birac",
   actionLog: GameActionLogEntry[],
-  expectedFinalDomainState?: SimulationState
+  expectedFinalDomainState?: SimulationState,
 ): ReplayResult {
   const domainMode = mode === "stress" ? "hard" : "guided";
   const initial = createSimulationState(simulationEvents, {

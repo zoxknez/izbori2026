@@ -108,3 +108,71 @@ export interface GameActionLogEntry {
   actorId?: string;
   details?: string;
 }
+
+/**
+ * Raspored rada biračkog mesta prema čl. 91 i 99 ZINP.
+ */
+export interface PollSchedule {
+  scheduledOpenTimeMs: number;              // 07:00 (25_200_000 ms)
+  actualOpenTimeMs: number;                 // zabeleženo vreme otvaranja
+  scheduledCloseTimeMs: number;             // 20:00 (72_000_000 ms)
+  openingDelayMs: number;                   // svako kašnjenje otvaranja produžava glasanje (čl. 91)
+  qualifyingInterruptionMs: number;         // samo prekidi > 1h produžavaju glasanje (čl. 91)
+  legalExtensionMs: number;                 // openingDelayMs + qualifyingInterruptionMs
+  effectiveCloseTimeMs: number;             // scheduledCloseTimeMs + legalExtensionMs
+  earlyCloseAtMs?: number;                  // čl. 91: ako su glasali svi upisani birači
+  actualClosingStartedAtMs?: number;        // trenutak stupanja u 'closing' fazu (čl. 99)
+  resultsPublicationEmbargoUntilMs: number; // uvek fiksno 20:00 (72_000_000 ms)
+}
+
+/**
+ * Pravni prekid glasanja (npr. prekid reda na biračkom mestu po čl. 98 ZINP).
+ * Razlikuje se od virtuelne simulacione pauze (simulationPaused).
+ */
+export interface LegalVotingInterruption {
+  id: string;
+  startedAtMs: number;
+  endedAtMs?: number;
+  durationMs: number;
+  reasonId: string;
+  resumedByRole?: SimulationRole;
+}
+
+/**
+ * Službeni Zapisnik o radu biračkog odbora (član 105 ZINP).
+ * Sadrži rubrike 1-7, verifikaciju kontrolnog lista i primedbe članova BO.
+ */
+export interface BoardProtocol {
+  isSigned: boolean;
+  signedAtMs?: number;
+  signedByMembers: string[];
+  boardMemberRemarks: Array<{
+    member: string;
+    role: string;
+    text: string;
+    timestampMs: number;
+  }>;
+  controlSheetStatus: "valid" | "invalid_missing_signature" | "missing";
+  rubrics: Record<string, number>;
+}
+
+/**
+ * Poseban zapisnik o prisustvu posmatrača (član 168 ZINP).
+ * Nezavisan od službenog Zapisnika BO.
+ */
+export interface ObserverPresenceRecord {
+  observers: Array<{
+    id: string;
+    organization: string;
+    accreditationNumber: string;
+    arrivedAtMs: number;
+    departedAtMs?: number;
+  }>;
+  remarks: Array<{
+    observerId: string;
+    organization: string;
+    text: string;
+    timestampMs: number;
+  }>;
+}
+

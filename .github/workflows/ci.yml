@@ -1,0 +1,65 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  validate:
+    name: Typecheck & Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Vitest Unit & Invariant Tests
+        run: npm run test
+
+  build-and-e2e:
+    name: Build & Playwright E2E
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Freeze bootstrap fixture
+        run: npm run freeze:bootstrap
+        env:
+          CI_BOOTSTRAP_MODE: fixture
+
+      - name: Build Next.js
+        run: npm run build
+        env:
+          AUTH_SECRET: "ci-e2e-dummy-secret-at-least-32-chars-long"
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright E2E Tests (reusing build)
+        run: npx playwright test --config=playwright.ci.config.ts
+        env:
+          AUTH_SECRET: "ci-e2e-dummy-secret-at-least-32-chars-long"

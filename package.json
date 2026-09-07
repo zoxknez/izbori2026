@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "freeze:bootstrap": "tsx scripts/freeze-bootstrap.ts",
     "dataset:snapshot": "tsx scripts/snapshot-dataset.ts",
     "training:coverage": "tsx scripts/check-training-coverage.ts",
     "domain:guards": "tsx scripts/check-domain-guards.ts",

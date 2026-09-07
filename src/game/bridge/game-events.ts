@@ -17,7 +17,14 @@ export interface GameBridgeEventMap {
   WORLD_ACTION_REQUESTED: { worldActionId: string; choiceId: string; eventId?: string };
 
   // Iz XState / Domain layer-a ka Phaseru i Reactu:
-  CLOCK_TICK: { simulationTimeMs: number; timeString: string; deltaMs: number };
+  CLOCK_TICK: {
+    simulationTimeMs: number;
+    timeString: string;
+    deltaMs: number;
+    deltaSimMs?: number;
+    paused?: boolean;
+    speed?: 1 | 2 | 4;
+  };
   SPEED_CHANGED: { speed: 1 | 2 | 4; paused: boolean };
   DOMAIN_STATE_CHANGED: { domainState: SimulationState };
   ACTIVE_INCIDENTS_CHANGED: { incidents: ActiveIncident[] };

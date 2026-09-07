@@ -50,21 +50,23 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     const actor = createActor(machine);
     actor.start();
 
+    // Dozvoljavamo da sat dođe do 06:15 kada E01 nastaje
+    actor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 22_500_000 }); // 06:15
+
     // Reagovanje na plakat u hodniku (E01-a)
     actor.send({
       type: "TRIGGER_WORLD_ACTION",
       eventId: "E01",
       choiceId: "E01-a",
-      worldActionId: "remove_poster_now",
+      worldActionId: "remove_poster_board",
     });
 
     const ctx = actor.getSnapshot().context;
     expect(ctx.domainState.scores.procedure).toBe(3);
     expect(ctx.domainState.scores.documentation).toBe(2);
     expect(ctx.domainState.flags).toContain("propaganda-uklonjena");
-    expect(ctx.actionLog).toHaveLength(1);
-    expect(ctx.actionLog[0].type).toBe("world_action");
-    expect(ctx.actionLog[0].eventId).toBe("E01");
+    expect(ctx.actionLog.filter((a) => a.type === "world_action")).toHaveLength(1);
+    expect(ctx.actionLog.find((a) => a.type === "world_action")?.eventId).toBe("E01");
 
     actor.stop();
   });
@@ -121,6 +123,9 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     const machine = createElectionDayMachine({ role: "posmatrac" });
     const actor = createActor(machine);
     actor.start();
+
+    // Dozvoljavamo da sat dođe do 06:15 kada E01 nastaje
+    actor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 22_500_000 }); // 06:15
 
     // Posmatrač pokušava akciju rezervisana samo za člana odbora (remove_poster_board)
     actor.send({

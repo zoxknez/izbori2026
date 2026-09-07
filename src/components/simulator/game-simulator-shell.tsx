@@ -35,7 +35,9 @@ import {
   saveGameSession,
   loadGameSession,
   clearGameSession,
+  computeCanonicalStateHash,
   type GameSaveV1,
+  type GameSaveV2,
 } from "@/lib/domain/simulator/game-save";
 import { initializeCountingSession } from "@/lib/domain/simulator/counting-session";
 import { WORLD_INCIDENT_BINDINGS } from "@/lib/domain/simulator/incident-binding";
@@ -52,18 +54,20 @@ import { cn } from "@/lib/utils";
 interface GameSimulatorShellProps {
   initialRole?: SimulationRole;
   initialSeed?: number;
+  initialMode?: "guided" | "realistic" | "stress";
 }
 
 export function GameSimulatorShell({
   initialRole = "clan_odbora",
   initialSeed,
+  initialMode = "guided",
 }: GameSimulatorShellProps) {
   // 1. Instance-scoped GameBridge
   const bridge = useMemo(() => createGameBridge(), []);
 
   // Save & Replay stanja
-  const [activeSave, setActiveSave] = useState<GameSaveV1 | null>(null);
-  const [resumableSave, setResumableSave] = useState<GameSaveV1 | null>(null);
+  const [activeSave, setActiveSave] = useState<GameSaveV2 | GameSaveV1 | null>(null);
+  const [resumableSave, setResumableSave] = useState<GameSaveV2 | GameSaveV1 | null>(null);
   const [isReplayOpen, setIsReplayOpen] = useState(false);
   const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
 
@@ -73,9 +77,10 @@ export function GameSimulatorShell({
       createElectionDayMachine({
         role: initialRole,
         seed: initialSeed,
+        mode: initialMode,
         save: activeSave ?? undefined,
       }),
-    [initialRole, initialSeed, activeSave],
+    [initialRole, initialSeed, initialMode, activeSave],
   );
 
   const [state, send] = useActor(machine);
@@ -99,44 +104,93 @@ export function GameSimulatorShell({
     };
   }, [context.runId]);
 
-  // Automatsko perzistiranje toka simulacije u IndexedDB
+  // Automatsko perzistiranje toka simulacije u IndexedDB (periodično ili na promenu akcija/faza, ne na svaki tick sata)
   useEffect(() => {
     if (
-      context.actionLog.length > 0 ||
-      context.evidenceNotebook.length > 0 ||
-      context.countingSession
+      context.actionLog.length === 0 &&
+      context.evidenceNotebook.length === 0 &&
+      !context.countingSession
     ) {
-      const saveObj: GameSaveV1 = {
-        version: 1,
-        runId: context.runId,
-        savedAt: new Date().toISOString(),
-        seed: context.seed,
-        mode: context.mode,
-        role: context.domainState.role,
-        simulationTimeMs: context.simulationTimeMs,
-        currentPhase: context.currentPhase,
-        domainState: context.domainState,
-        actionLog: context.actionLog,
-        evidenceNotebook: context.evidenceNotebook,
-        countingSession: context.countingSession,
-      };
-      void saveGameSession(saveObj);
+      return;
     }
+
+    let isSubscribed = true;
+    void (async () => {
+      try {
+        const hash = await computeCanonicalStateHash({
+          runId: context.runId,
+          seed: context.seed,
+          simulationTimeMs: context.simulationTimeMs,
+          scores: context.domainState.scores,
+          flags: context.domainState.flags,
+          actionLogLength: context.actionLog.length,
+          pollSchedule: context.pollSchedule,
+        });
+
+        const saveObj: GameSaveV2 = {
+          version: 2,
+          runId: context.runId,
+          savedAt: new Date().toISOString(),
+          seed: context.seed,
+          mode: context.mode,
+          role: context.domainState.role,
+          simulationTimeMs: context.simulationTimeMs,
+          currentPhase: context.currentPhase,
+          domainState: context.domainState,
+          worldSimulation: {
+            rngState: context.deterministicCounter,
+            nextEntityId: context.activeVoterCount,
+            activeVoters: [],
+            queueOrder: [],
+            nextSpawnAtMs: 0,
+            legalInterruptions: context.legalInterruptions,
+          },
+          pollSchedule: context.pollSchedule,
+          actionLog: context.actionLog,
+          evidenceNotebook: context.evidenceNotebook,
+          boardProtocol: context.boardProtocol,
+          observerRecord: context.observerRecord,
+          countingSession: context.countingSession,
+          stateHash: hash,
+        };
+
+        if (isSubscribed) {
+          await saveGameSession(saveObj);
+        }
+      } catch {
+        // tiho ignorišemo greške u autosave-u
+      }
+    })();
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [
     context.runId,
     context.seed,
     context.mode,
-    context.domainState,
-    context.simulationTimeMs,
+    context.domainState.role,
     context.currentPhase,
-    context.actionLog,
-    context.evidenceNotebook,
+    context.actionLog.length,
+    context.evidenceNotebook.length,
     context.countingSession,
+    context.boardProtocol,
+    context.observerRecord,
   ]);
 
   const handleSaveGame = async () => {
-    const saveObj: GameSaveV1 = {
-      version: 1,
+    const hash = await computeCanonicalStateHash({
+      runId: context.runId,
+      seed: context.seed,
+      simulationTimeMs: context.simulationTimeMs,
+      scores: context.domainState.scores,
+      flags: context.domainState.flags,
+      actionLogLength: context.actionLog.length,
+      pollSchedule: context.pollSchedule,
+    });
+
+    const saveObj: GameSaveV2 = {
+      version: 2,
       runId: context.runId,
       savedAt: new Date().toISOString(),
       seed: context.seed,
@@ -145,9 +199,21 @@ export function GameSimulatorShell({
       simulationTimeMs: context.simulationTimeMs,
       currentPhase: context.currentPhase,
       domainState: context.domainState,
+      worldSimulation: {
+        rngState: context.deterministicCounter,
+        nextEntityId: context.activeVoterCount,
+        activeVoters: [],
+        queueOrder: [],
+        nextSpawnAtMs: 0,
+        legalInterruptions: context.legalInterruptions,
+      },
+      pollSchedule: context.pollSchedule,
       actionLog: context.actionLog,
       evidenceNotebook: context.evidenceNotebook,
+      boardProtocol: context.boardProtocol,
+      observerRecord: context.observerRecord,
       countingSession: context.countingSession,
+      stateHash: hash,
     };
     await saveGameSession(saveObj);
     setSaveFeedback("Sačuvano!");
