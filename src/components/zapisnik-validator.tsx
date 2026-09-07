@@ -17,7 +17,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { validateCounting } from "@/lib/domain/results-validator";
+import { validateCounting, validateRecordForensics, type RecordForensicsInput } from "@/lib/domain/results-validator";
 
 interface ListaGlasova {
   id: string;
@@ -93,6 +93,10 @@ export function ZapisnikValidator() {
     { id: "2", naziv: "Lista 2", glasova: "" },
   ]);
   const [copied, setCopied] = useState(false);
+  const [forensics, setForensics] = useState<RecordForensicsInput>({
+    recordPresent: null, signedByAtLeastThree: null, controlListPresent: null, controlListCompleted: null,
+    controlListSignedByFirstVoter: null, controlListSignedByBoardMember: null, interruptedAndNotResumed: null,
+  });
 
   const values = useMemo(
     () => ({
@@ -130,6 +134,7 @@ export function ZapisnikValidator() {
   const isAnnulmentFail = validation.isAnnulmentFail;
   const isCalculationFail = validation.isCalculationFail;
   const isEverythingValid = validation.isEverythingValid;
+  const forensicsResult = useMemo(() => validateRecordForensics(forensics, validation), [forensics, validation]);
 
   function loadValidDemo() {
     setR("1000");
@@ -142,6 +147,7 @@ export function ZapisnikValidator() {
       { id: "1", naziv: "Lista 1", glasova: "385" },
       { id: "2", naziv: "Lista 2", glasova: "250" },
     ]);
+    setForensics({ recordPresent: null, signedByAtLeastThree: null, controlListPresent: null, controlListCompleted: null, controlListSignedByFirstVoter: null, controlListSignedByBoardMember: null, interruptedAndNotResumed: null });
   }
 
   function loadAnnulmentDemo() {
@@ -689,6 +695,25 @@ export function ZapisnikValidator() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border/80 bg-surface/70 p-4 sm:p-5">
+          <div className="flex items-start gap-3">
+            <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-brand" />
+            <div><h3 className="text-sm font-bold text-ink">Potpuna kontrola zapisnika</h3><p className="mt-1 text-xs leading-relaxed text-ink-dim">Označi samo činjenice koje možeš proveriti. Klasifikacija je edukativna; odluku donosi nadležna izborna komisija.</p></div>
+          </div>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            {([
+              ["recordPresent", "Zapisnik je dostavljen"], ["signedByAtLeastThree", "Zapisnik su potpisala najmanje tri člana"],
+              ["controlListPresent", "Kontrolni list je pronađen u kutiji"], ["controlListCompleted", "Kontrolni list je popunjen"],
+              ["controlListSignedByFirstVoter", "Kontrolni list je potpisao prvi birač"], ["controlListSignedByBoardMember", "Kontrolni list je potpisao član BO"],
+            ] as Array<[Exclude<keyof RecordForensicsInput, "interruptedAndNotResumed">, string]>).map(([key, label]) => <div key={key} className="rounded-xl border border-border/70 bg-surface-2/50 p-3"><p className="text-xs text-ink-dim">{label}</p><div className="mt-2 flex gap-1.5">{([[true, "Da"], [false, "Ne"], [null, "Ne znam"]] as const).map(([value, text]) => <button key={text} type="button" onClick={() => setForensics((current) => ({ ...current, [key]: value }))} className={cn("rounded-md border px-2 py-1 text-[11px] font-semibold", forensics[key] === value ? "border-brand bg-brand/15 text-brand" : "border-border/80 text-ink-faint hover:text-ink")}>{text}</button>)}</div></div>)}
+            <div className="rounded-xl border border-border/70 bg-surface-2/50 p-3"><p className="text-xs text-ink-dim">Glasanje je prekinuto i nije nastavljeno</p><div className="mt-2 flex gap-1.5">{([[true, "Da"], [false, "Ne"], [null, "Ne znam"]] as const).map(([value, text]) => <button key={text} type="button" onClick={() => setForensics((current) => ({ ...current, interruptedAndNotResumed: value }))} className={cn("rounded-md border px-2 py-1 text-[11px] font-semibold", forensics.interruptedAndNotResumed === value ? "border-brand bg-brand/15 text-brand" : "border-border/80 text-ink-faint hover:text-ink")}>{text}</button>)}</div></div>
+          </div>
+          <div className={cn("mt-4 rounded-xl border p-3", forensicsResult.status === "annulment" ? "border-sev-ponistavanje/40 bg-sev-ponistavanje/10" : forensicsResult.status === "result_undetermined" ? "border-sev-teska/40 bg-sev-teska/10" : forensicsResult.status === "heavy_error" ? "border-sev-proveri/40 bg-sev-proveri/10" : "border-sev-dozvoljeno/30 bg-sev-dozvoljeno/5")}>
+            <p className="text-xs font-bold text-ink">{forensicsResult.title}{forensicsResult.article ? ` · ${forensicsResult.article}` : ""}</p>
+            {forensicsResult.findings.map((finding) => <p className="mt-1 text-[11px] leading-relaxed text-ink-dim" key={finding}>{finding}</p>)}
           </div>
         </div>
       </div>

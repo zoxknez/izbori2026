@@ -11,6 +11,8 @@ const routes = [
   "/izvori",
   "/trening/kviz",
   "/izborni-dan",
+  "/posle-glasanja",
+  "/uloge",
 ];
 
 test.describe("public application smoke", () => {
@@ -118,4 +120,19 @@ test.describe("public application smoke", () => {
     const invalidPublish = await page.request.post("/api/admin/publish", { data: { snapshot: { schemaVersion: 1 } } });
     expect(invalidPublish.status()).toBe(401);
   });
+});
+
+test("svako objavljeno pravilo ima dostupnu detaljnu rutu", async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.goto("/pravila");
+  await page.getByRole("button", { name: "Sve", exact: true }).click();
+  const hrefs = await page.locator('a[href^="/pravila/"]').evaluateAll((links) =>
+    [...new Set(links.map((link) => link.getAttribute("href")).filter((href): href is string => Boolean(href)))],
+  );
+  expect(hrefs.length).toBeGreaterThan(60);
+
+  for (const href of hrefs) {
+    const response = await page.request.get(href);
+    expect(response.ok(), `${href} must render successfully`).toBeTruthy();
+  }
 });

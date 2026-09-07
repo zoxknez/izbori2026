@@ -78,7 +78,15 @@ export const sources: SourceEntry[] = [
     tier: 3,
     type: "observer_report",
     label: "CRTA: građanske posmatračke misije",
-    url: "https://crta.rs/",
-    description: "Akreditovana posmatračka organizacija koja prati i prijavljuje izborne nepravilnosti, uključujući slučajeve tipa „bugarski voz“.",
+    url: "https://crta.rs/izvestaj-o-izbornom-danu-posmatracke-misije-crta/",
+    description: "MONITORING, ne propis: izveštaj akreditovane posmatračke misije koristi se kao kontekst za scenario-biblioteku, a ne kao izvor pravnog pravila.",
+  },
+  {
+    id: "cesid-pravni-sporovi-2026",
+    tier: 3,
+    type: "observer_report",
+    label: "CeSID: rešavanje izbornih sporova, lokalni izbori 2026",
+    url: "https://www.cesid.rs/novosti/resavanje-izbornih-sporova-lokalni-izbori-2026/",
+    description: "MONITORING, ne propis: analiza sadržaja prigovora i dokaza; koristi se za edukaciju o kvalitetu dokumentovanja.",
   },
 ];

@@ -39,13 +39,13 @@ const STEPS = [
   {
     step: 3,
     title: "Provera identiteta i UV lampa",
-    desc: "Poverenici proveravaju ličnu kartu ili pasoš birača sa fotografijom i JMBG. UV lampom se proverava desni kažiprst da birač već nije glasao, a zatim se sprejiše nakon potpisa.",
+    desc: "Poverenici utvrđuju identitet ličnom kartom ili drugom odgovarajućom javnom ispravom sa fotografijom i JMBG. UV lampom proveravaju da birač već nije glasao, a zatim ga obeležavaju sprejom.",
     icon: ShieldCheck,
   },
   {
     step: 4,
     title: "Potpisivanje službene Potvrde o glasanju",
-    desc: "Birač se svojeručno potpisuje u izvod iz biračkog spiska i na posebnu Potvrdu o biračkom pravu za glasanje van biračkog mesta. Bez ovog potpisa, glas je nevažeći!",
+    desc: "Birač svojeručno potpisuje Potvrdu o izbornom pravu za glasanje van biračkog mesta. Po povratku poverenika, birački odbor zaokružuje njegov redni broj u izvodu i uz potpis stavlja napomenu da je glasao van biračkog mesta.",
     icon: FileCheck,
   },
   {
@@ -159,7 +159,7 @@ export default async function VanBirackogMestaPage() {
 
               <div>
                 <div className="inline-flex items-center gap-1.5 rounded-full border border-sev-ponistavanje/40 bg-sev-ponistavanje/15 px-3 py-0.5 text-xs font-bold text-sev-ponistavanje">
-                  ZLATNO PRAVILO · Član 73. ZINP
+                  ZLATNO PRAVILO · Član 96. ZINP
                 </div>
                 <h2 className="mt-2 text-xl sm:text-2xl font-black tracking-tight text-ink">
                   Bez potpisane potvrde - listić se NE UZIMA U OBZIR!

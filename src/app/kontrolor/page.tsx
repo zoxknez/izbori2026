@@ -54,7 +54,7 @@ export default async function KontrolorPage() {
 
             <p className="text-base leading-relaxed text-ink-dim sm:text-lg">
               Sve što član biračkog odbora (u stalnom ili proširenom sastavu) i posmatrač moraju da znaju
-              na dan izbora: od otvaranja u 06:00, preko toka glasanja i brojanja, do potpisivanja zapisnika.
+              na dan izbora: odbor stiže jedan čas pre otvaranja, glasanje traje od 07:00 do 20:00, a zatim sledi brojanje i zapisnik.
             </p>
 
             {/* Quick anchors bar */}

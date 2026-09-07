@@ -227,7 +227,7 @@ export default async function HomePage() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-lg sm:text-xl font-bold tracking-tight text-ink leading-none">{annulmentCount}</p>
-                      <p className="mt-1 text-xs text-ink-dim truncate">poništavanje BM</p>
+                      <p className="mt-1 text-xs text-ink-dim truncate">kritičnih scenarija</p>
                     </div>
                   </div>
 
@@ -238,7 +238,7 @@ export default async function HomePage() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-lg sm:text-xl font-bold tracking-tight text-ink leading-none">{criminalCount}</p>
-                      <p className="mt-1 text-xs text-ink-dim truncate">krivična dela</p>
+                      <p className="mt-1 text-xs text-ink-dim truncate">situacija sa KD oznakom</p>
                     </div>
                   </div>
 
@@ -341,7 +341,7 @@ export default async function HomePage() {
                 Zakonski razlozi za poništavanje glasanja
               </h2>
               <p className="mt-2.5 text-sm leading-relaxed text-ink-dim">
-                Za ove nepravilnosti zakon propisuje postupak poništavanja po službenoj dužnosti. O odluci
+                Ovih {annulmentCount} kritičnih scenarija razrađuju četiri zakonska osnova iz člana 116. O odluci
                 odlučuje nadležna izborna komisija na osnovu utvrđenih činjenica, nezavisno od namere.
               </p>
               <div className="mt-6">
@@ -349,7 +349,7 @@ export default async function HomePage() {
                   href="/pravila?ponistavanje=1"
                   className="inline-flex items-center gap-2 rounded-xl bg-sev-ponistavanje/20 border border-sev-ponistavanje/40 px-5 py-2.5 text-xs font-semibold text-sev-ponistavanje hover:bg-sev-ponistavanje hover:text-canvas transition-colors"
                 >
-                  Pogledaj svih {annulmentCount} razloga za poništavanje
+                  Pogledaj svih {annulmentCount} kritičnih scenarija
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>

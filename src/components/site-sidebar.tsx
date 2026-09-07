@@ -13,6 +13,8 @@ import {
   Gavel,
   HelpCircle,
   MapPinned,
+  ListChecks,
+  Users,
   Clock,
   X,
   Lock,
@@ -85,6 +87,12 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
         icon: MapPinned,
       },
       {
+        href: "/posle-glasanja",
+        label: "Posle glasanja",
+        badge: "Kontrola",
+        icon: ListChecks,
+      },
+      {
         href: "/mit-ili-cinjenica",
         label: "Mit ili činjenica",
         badge: "Kviz",
@@ -100,6 +108,11 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
         label: "Rokovi i prigovori",
         badge: "72h",
         icon: Clock,
+      },
+      {
+        href: "/uloge",
+        label: "Uloge na BM",
+        icon: Users,
       },
       {
         href: "/izvori",

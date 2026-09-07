@@ -17,7 +17,7 @@ export default function PrijaviPage() {
       <div className="max-w-3xl">
         <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/5 px-3 py-1 text-xs font-semibold text-brand">
           <FileText className="h-3.5 w-3.5" />
-          <span>Službeni alat za kontrolore i birače</span>
+          <span>Nezavisni generator hronologije incidenta</span>
         </div>
         <h1 className="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl text-ink">
           Generator hronologije incidenta

@@ -73,7 +73,7 @@ export default async function VidimProblemPage() {
               Primedba u Zapisnik
             </h3>
             <p className="mt-1 text-xs leading-relaxed text-ink-dim">
-              Izborna komisija priznaje samo ono što je uneto u zvanični Zapisnik o radu biračkog odbora pre potpisivanja.
+              Primedba u zapisniku je važan dokazni trag, ali nije jedini dokaz. Za zahtev se navode tačan opis radnje, ko ju je i kada preduzeo, činjenice i dokazi.
             </p>
           </div>
         </div>

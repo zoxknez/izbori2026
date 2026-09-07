@@ -16,6 +16,8 @@ const staticRoutes = [
   "/izvori",
   "/trening/kviz",
   "/izborni-dan",
+  "/posle-glasanja",
+  "/uloge",
   "/offline",
 ];
 

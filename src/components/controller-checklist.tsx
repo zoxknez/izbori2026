@@ -31,7 +31,7 @@ const CHECKLIST_ITEMS: ChecklistItem[] = [
     id: "pre_1",
     phase: "pre",
     title: "Prisustvo i provera kvoruma",
-    desc: "Birački odbor mora biti u punom sastavu u 06:00. Proveri akreditacije svih prisutnih lica.",
+    desc: "Birački odbor mora biti na biračkom mestu jedan čas pre otvaranja (uobičajeno 06:00 za glasanje 07:00–20:00). Član i njegov zamenik mogu biti zajedno ili se smenjivati.",
   },
   {
     id: "pre_2",
@@ -88,7 +88,7 @@ const CHECKLIST_ITEMS: ChecklistItem[] = [
     id: "vote_2",
     phase: "glasanje",
     title: "Utvrđivanje identiteta važećim dokumentom",
-    desc: "Lična karta ili pasoš sa slikom i JMBG. Vozačka dozvola i zdravstvena knjižica nisu dovoljne.",
+    desc: "Lična karta ili druga odgovarajuća javna isprava sa fotografijom i JMBG (npr. putna isprava ili vojna legitimacija), prema uputstvu RIK-a.",
   },
   {
     id: "vote_3",

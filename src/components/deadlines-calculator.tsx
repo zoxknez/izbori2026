@@ -144,7 +144,7 @@ export function DeadlinesCalculator() {
                   3. Rok za žalbu Upravnom sudu
                 </span>
                 <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-bold text-ink-dim">
-                  72 časa od prijema rešenja
+                  72 časa od objavljivanja rešenja RIK-a
                 </span>
               </div>
               <p className="mt-1 text-sm font-bold text-ink">

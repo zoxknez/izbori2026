@@ -1,13 +1,13 @@
 import type { Rule } from "@/lib/types";
+import { LEGAL_REFS, ZINP_LAW, ZINP_URL } from "@/content/legal-references";
 
-const ZINP = "Zakon o izboru narodnih poslanika";
-const ZINP_URL = "https://www.rik.parlament.gov.rs/tekst/sr/61/zakoni.php";
-const ZINP_TOK = { law: ZINP, article: "čl. 87-99 (opšti tok glasanja)", url: ZINP_URL };
+const ZINP = ZINP_LAW;
+const ZINP_TOK = LEGAL_REFS.voting;
 const ZINP_89 = { law: ZINP, article: "čl. 89", url: ZINP_URL };
-const ZINP_93 = { law: ZINP, article: "čl. 93", url: ZINP_URL };
-const ZINP_96 = { law: ZINP, article: "čl. 96 · glasanje van biračkog mesta", url: ZINP_URL };
+const ZINP_93 = LEGAL_REFS.identity;
+const ZINP_96 = LEGAL_REFS.homeVoting;
 const ZINP_102 = { law: ZINP, article: "čl. 102 · utvrđivanje broja birača koji su glasali", url: ZINP_URL };
-const ZINP_116 = { law: ZINP, article: "čl. 116 · poništavanje po službenoj dužnosti", url: ZINP_URL };
+const ZINP_116 = LEGAL_REFS.annulment;
 const KZ = "Krivični zakonik Republike Srbije";
 const KZ_URL = "https://reg.pravno-informacioni-sistem.rs/api/viewdoc?doctype=reg&regactid=437844&uuid=f9f75050-d16f-484a-acad-4be0f1a5bcf5";
 const KZ_157 = { law: KZ, article: "čl. 157 · Zloupotreba prava glasanja", url: KZ_URL };
@@ -1104,7 +1104,7 @@ export const rules: Rule[] = [
     observerActions: ["Zahtevati unos primedbe u sopstveni zapisnik posmatrača"],
     evidenceChecklist: ["Vreme", "Ko je sprečio", "Kako"],
     doNotDo: [],
-    lawReferences: [ZINP_TOK],
+    lawReferences: [LEGAL_REFS.observer],
     sourceUrls: [],
     relatedSlugs: ["nepoznata-osoba-bez-legitimacije"],
     order: 44,
@@ -1126,7 +1126,7 @@ export const rules: Rule[] = [
     observerActions: ["Poštuj zabrane korišćenja telefona i komunikacije na biračkom mestu"],
     evidenceChecklist: [],
     doNotDo: [],
-    lawReferences: [ZINP_TOK],
+    lawReferences: [LEGAL_REFS.observer],
     sourceUrls: [],
     relatedSlugs: [],
     order: 45,
@@ -1366,7 +1366,7 @@ export const rules: Rule[] = [
   // ---------------- ZATVARANJE ----------------
   {
     id: "Z01",
-    slug: "izbacivanje-birača-u-redu",
+    slug: "izbacivanje-biraca-u-redu",
     naziv: "Birači u redu u 20:00 ne dobijaju priliku da glasaju",
     kategorija: "zatvaranje",
     severity: "teska_nepravilnost",
