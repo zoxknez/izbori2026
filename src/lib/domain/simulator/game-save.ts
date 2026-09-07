@@ -326,10 +326,12 @@ export function replaySimulation(
 
   let isDeterministicParity = true;
   if (expectedFinalDomainState) {
+    const decisionHistory = (state: SimulationState) =>
+      state.history.map(({ eventId, choiceId }) => ({ eventId, choiceId }));
     isDeterministicParity =
       JSON.stringify(current.scores) === JSON.stringify(expectedFinalDomainState.scores) &&
-      current.flags.length === expectedFinalDomainState.flags.length &&
-      current.history.length === expectedFinalDomainState.history.length;
+      JSON.stringify([...current.flags].sort()) === JSON.stringify([...expectedFinalDomainState.flags].sort()) &&
+      JSON.stringify(decisionHistory(current)) === JSON.stringify(decisionHistory(expectedFinalDomainState));
   }
 
   return {

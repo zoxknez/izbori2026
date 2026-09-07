@@ -67,8 +67,8 @@ export class PollingStationScene extends Phaser.Scene {
       }
     });
 
-    this.unsubPhase = this.bridge?.on("PHASE_CHANGED", ({ phase }) => {
-      this.acceptingNewVoters = phase === "voting";
+    this.unsubPhase = this.bridge?.on("PHASE_CHANGED", ({ acceptingNewVoters }) => {
+      this.acceptingNewVoters = acceptingNewVoters;
     });
 
     this.unsubSpeed = this.bridge?.on("SPEED_CHANGED", (data) => {
@@ -106,12 +106,15 @@ export class PollingStationScene extends Phaser.Scene {
       if (data.rngState !== undefined) {
         this.rng.setState(data.rngState);
       }
+      if (data.nextSpawnAtMs !== undefined) this.nextSpawnTimeMs = data.nextSpawnAtMs;
       if (data.activeVoters) {
-        this.npcManager.restoreVoters(data.activeVoters as Parameters<NPCStationManager["restoreVoters"]>[0], data.queueOrder ?? [], data.completedVoterIds ?? []);
+        const savedVoters = data.activeVoters as Array<Parameters<NPCStationManager["restoreVoters"]>[0][number] & { x?: number; y?: number }>;
+        this.npcManager.restoreVoters(savedVoters, data.queueOrder ?? [], data.completedVoterIds ?? []);
         this.voterPool = (data.voterPool ?? []) as VoterProfile[];
         for (const visual of this.voterVisuals.values()) visual.container.destroy();
         this.voterVisuals.clear();
-        for (const entity of this.npcManager.getAllActiveVoters()) this.createVoterVisual(entity);
+        const positionById = new Map(savedVoters.map((v) => [v.profile.id, { x: v.x, y: v.y }]));
+        for (const entity of this.npcManager.getAllActiveVoters()) this.createVoterVisual(entity, positionById.get(entity.profile.id));
       }
     });
 
@@ -305,8 +308,8 @@ export class PollingStationScene extends Phaser.Scene {
     this.createVoterVisual(entity);
   }
 
-  private createVoterVisual(entity: ActiveVoterEntity) {
-    const startPos = STATION_WAYPOINTS.entrance;
+  private createVoterVisual(entity: ActiveVoterEntity, savedPosition?: Partial<Point2D>) {
+    const startPos = savedPosition?.x !== undefined && savedPosition.y !== undefined ? savedPosition as Point2D : STATION_WAYPOINTS.entrance;
     const container = this.add.container(startPos.x, startPos.y);
 
     const sprite = this.add.sprite(0, 0, "npc-avatar");

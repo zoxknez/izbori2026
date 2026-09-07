@@ -10,10 +10,13 @@ export async function GET(_request: Request, { params }: { params: Promise<{ ver
   // CI and a fresh public deployment intentionally work from the checked-in,
   // checksum-verified offline snapshot until an administrative database exists.
   if (!process.env.DATABASE_URL) {
+    if (version !== "current" && version !== "bootstrap") {
+      return NextResponse.json({ error: "Tražena verzija dataseta nije dostupna bez baze." }, { status: 404 });
+    }
     const raw = await readFile(join(process.cwd(), "public", "offline-data", "bootstrap", "snapshot.json"), "utf8");
     const snapshot = JSON.parse(raw) as { filename: string; payload: unknown; sha256: string; size?: number };
     return NextResponse.json({
-      version: version === "current" ? "bootstrap" : version,
+      version: "bootstrap",
       manifestHash: snapshot.sha256,
       updatePriority: "bootstrap",
       legalReviewDate: null,

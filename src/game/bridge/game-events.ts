@@ -48,7 +48,10 @@ export interface GameBridgeEventMap {
   SPEED_SET: { speed: 1 | 2 | 4 };
   RESET_REQUESTED: { seed?: number };
   SWITCH_SCENE: { sceneKey: "PollingStationScene" | "CountingScene" };
-  PHASE_CHANGED: { phase: "voting" | "counting" };
+  PHASE_CHANGED: {
+    phase: "pre_opening" | "voting" | "closing" | "counting" | "protocol" | "handover" | "debrief" | "closed";
+    acceptingNewVoters: boolean;
+  };
   REQUEST_WORLD_SNAPSHOT: Record<string, never>;
   RESTORE_WORLD_STATE: {
     rngState: number;

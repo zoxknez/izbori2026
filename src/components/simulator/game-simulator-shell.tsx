@@ -142,7 +142,7 @@ export function GameSimulatorShell({
           activeIncidentIds: context.activeIncidents.map((i) => i.instanceId),
           missedIncidentIds: context.missedIncidents.map((i) => i.instanceId),
           boardProtocol: context.boardProtocol,
-          rngState: context.deterministicCounter,
+          rngState: worldSnapshotRef.current?.rngState ?? context.seed,
         });
 
         const saveObj: GameSaveV2 = {
@@ -215,7 +215,7 @@ export function GameSimulatorShell({
       activeIncidentIds: context.activeIncidents.map((i) => i.instanceId),
       missedIncidentIds: context.missedIncidents.map((i) => i.instanceId),
       boardProtocol: context.boardProtocol,
-      rngState: context.deterministicCounter,
+      rngState: worldSnapshotRef.current?.rngState ?? context.seed,
     });
 
     const saveObj: GameSaveV2 = {
@@ -298,9 +298,10 @@ export function GameSimulatorShell({
       speed: context.speed,
     });
     bridge.emit("PHASE_CHANGED", {
-      phase: context.currentPhase === "voting" ? "voting" : "counting",
+      phase: context.currentPhase,
+      acceptingNewVoters: context.currentPhase === "voting",
     });
-  }, [bridge, context.simulationTimeMs, context.paused, context.systemPaused, context.speed]);
+  }, [bridge, context.currentPhase, context.simulationTimeMs, context.paused, context.systemPaused, context.speed]);
 
   useEffect(() => {
     const unsubWorldReady = bridge.on("WORLD_READY", () => {
@@ -410,7 +411,7 @@ export function GameSimulatorShell({
     send({
       type: "ADD_EVIDENCE",
       record: {
-        id: `ev-${Date.now()}`,
+        id: `ev-${context.runId}-${context.deterministicCounter + 1}`,
         simulationTimeMs: context.simulationTimeMs,
         timestamp: clockString,
         locationId: selectedHotspot.locationId,

@@ -50,6 +50,11 @@ test.describe("public application smoke", () => {
     ]));
   });
 
+  test("offline fallback ne predstavlja bootstrap kao istorijsku verziju", async ({ page }) => {
+    const response = await page.request.get("/api/offline-dataset/2026.08.15");
+    expect(response.status()).toBe(404);
+  });
+
   test("offline shell i service worker su dostupni", async ({ page }) => {
     const [worker, offline] = await Promise.all([
       page.request.get("/sw.js"),

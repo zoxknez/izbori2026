@@ -818,7 +818,7 @@ function processTickLogic(
 
 /**
  * Deterministički scheduler za vremenske skokove koji obrađuje kaskadne događaje
- * hronološki redom do tačke mirovanja (run-to-quiescence) uz sortiranje po prioritetu.
+ * hronološki redom, uključujući timeout-e koji nastanu tokom samog skoka.
  */
 function advanceSimulationInternal(
   context: ElectionGameContext,
@@ -860,8 +860,15 @@ function advanceSimulationInternal(
   let cursor = currentCtx.simulationTimeMs;
 
   while (cursor < targetMs) {
-    // Sledeća tačka interesa ili redovni korak od 1 minut
-    const nextInterest = points.find((p) => p.timeMs > cursor && p.timeMs <= targetMs);
+    // Sledeća statična tačka interesa ili dinamički timeout aktivnog incidenta.
+    const staticInterest = points.find((p) => p.timeMs > cursor && p.timeMs <= targetMs);
+    const timeoutMs = currentCtx.activeIncidents
+      .map((incident) => incident.expiresAtSimulationTimeMs)
+      .filter((time): time is number => time !== undefined && time > cursor && time <= targetMs)
+      .sort((a, b) => a - b)[0];
+    const nextInterest = timeoutMs !== undefined && (!staticInterest || timeoutMs <= staticInterest.timeMs)
+      ? { timeMs: timeoutMs, priority: SchedulerPriority.INCIDENT_TIMEOUT, type: "incident-timeout" }
+      : staticInterest;
     const nextStep = nextInterest ? nextInterest.timeMs : Math.min(cursor + STEP_MS, targetMs);
     const deltaMs = nextStep - cursor;
 
