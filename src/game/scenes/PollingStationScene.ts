@@ -14,6 +14,7 @@ import {
 import type { VoterProfile } from "@/game/machines/voter.machine";
 import type { WorldIncidentPresentation } from "@/game/world/world-incident-presentation";
 import type { EvidenceRecord } from "@/lib/domain/simulator/live-types";
+import { getLogicalMovementPosition, isLogicalMovementComplete, type LogicalMovement } from "@/game/world/logical-movement";
 
 interface VoterVisual {
   container: Phaser.GameObjects.Container;
@@ -56,6 +57,7 @@ export class PollingStationScene extends Phaser.Scene {
   private unsubFocusLocation?: () => void;
   private unsubEvidenceMarkers?: () => void;
   private evidenceMarkerVisuals = new Map<string, EvidenceMarkerVisual>();
+  private logicalMovements = new Map<string, LogicalMovement>();
 
   constructor() {
     super({ key: "PollingStationScene" });
@@ -130,6 +132,7 @@ export class PollingStationScene extends Phaser.Scene {
     });
 
     this.unsubSnapshot = this.bridge?.on("REQUEST_WORLD_SNAPSHOT", () => {
+      this.renderLogicalMovements();
       const activeVoters = this.npcManager.getAllActiveVoters().map((v) => {
         const visual = this.voterVisuals.get(v.profile.id);
         return {
@@ -144,6 +147,8 @@ export class PollingStationScene extends Phaser.Scene {
         };
       });
       this.bridge?.emit("WORLD_STATE_SNAPSHOT", {
+        // Snapshot always reflects the same simulation instant as the logical world.
+        // Rendering is derived just before the payload is captured.
         rngState: this.rng.getState(),
         deterministicCounter: this.elapsedTimeMs,
         activeVoters,
@@ -161,6 +166,7 @@ export class PollingStationScene extends Phaser.Scene {
       }
       if (data.nextSpawnAtMs !== undefined) this.nextSpawnTimeMs = data.nextSpawnAtMs;
       if (data.activeVoters) {
+        this.logicalMovements.clear();
         const savedVoters = data.activeVoters as Array<Parameters<NPCStationManager["restoreVoters"]>[0][number] & { x?: number; y?: number }>;
         this.npcManager.restoreVoters(savedVoters, data.queueOrder ?? [], data.completedVoterIds ?? []);
         this.voterPool = (data.voterPool ?? []) as VoterProfile[];
@@ -308,12 +314,11 @@ export class PollingStationScene extends Phaser.Scene {
         entity.profile.walkSpeed,
       );
 
-      this.tweens.add({
-        targets: visual.container,
-        x: targetPoint.x,
-        y: targetPoint.y,
-        duration,
-        ease: "Linear",
+      this.logicalMovements.set(move.voterId, {
+        from: { x: visual.container.x, y: visual.container.y },
+        to: targetPoint,
+        startedAtSimulationMs: this.elapsedTimeMs,
+        durationSimulationMs: duration,
       });
     }
 
@@ -328,20 +333,25 @@ export class PollingStationScene extends Phaser.Scene {
           const dx = Math.abs(visual.container.x - slot.x);
           const dy = Math.abs(visual.container.y - slot.y);
           if (dx > 3 || dy > 3) {
-            this.tweens.add({
-              targets: visual.container,
-              x: slot.x,
-              y: slot.y,
-              duration: 400,
-              ease: "Sine.easeOut",
-            });
+            const current = this.logicalMovements.get(entity.profile.id);
+            if (!current || current.to.x !== slot.x || current.to.y !== slot.y) {
+              this.logicalMovements.set(entity.profile.id, {
+                from: { x: visual.container.x, y: visual.container.y },
+                to: slot,
+                startedAtSimulationMs: this.elapsedTimeMs,
+                durationSimulationMs: 400,
+              });
+            }
           }
         }
       }
     }
 
+    this.renderLogicalMovements();
+
     // Uklanjanje završenih birača
     for (const completedId of completed) {
+      this.logicalMovements.delete(completedId);
       const visual = this.voterVisuals.get(completedId);
       if (visual) {
         this.tweens.add({
@@ -361,6 +371,22 @@ export class PollingStationScene extends Phaser.Scene {
       activeVoterCount: this.npcManager.getAllActiveVoters().length,
       queueLength: this.npcManager.getQueueLength(),
     });
+  }
+
+  /** Derives render position from the authoritative simulation clock. */
+  private renderLogicalMovements() {
+    for (const [voterId, movement] of this.logicalMovements) {
+      const visual = this.voterVisuals.get(voterId);
+      if (!visual) {
+        this.logicalMovements.delete(voterId);
+        continue;
+      }
+      const position = getLogicalMovementPosition(movement, this.elapsedTimeMs);
+      visual.container.x = position.x;
+      visual.container.y = position.y;
+      visual.container.setDepth(visual.container.y);
+      if (isLogicalMovementComplete(movement, this.elapsedTimeMs)) this.logicalMovements.delete(voterId);
+    }
   }
 
   private spawnNextVoter() {
