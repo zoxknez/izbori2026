@@ -787,20 +787,29 @@ export function GameSimulatorShell({
               {context.mode === "guided" ? "Vođeni fokus" : context.mode === "realistic" ? "Realni pritisak" : "Stres: više problema"}
             </span>
             <div className="flex flex-wrap gap-1.5">
-              {context.activeIncidents.map((incident) => (
-                <button
-                  key={incident.instanceId}
-                  type="button"
-                  onClick={() => {
-                    setSelectedHotspot({ hotspotId: incident.binding.hotspotTarget, locationId: incident.locationId, title: `Situacija: ${incident.eventId}` });
-                    send({ type: "SELECT_HOTSPOT", hotspotId: incident.binding.hotspotTarget });
-                    bridge.emit("FOCUS_LOCATION", { locationId: incident.locationId });
-                  }}
-                  className="rounded-lg border border-amber-500/30 bg-surface/70 px-2 py-1 text-[11px] font-semibold text-ink hover:border-amber-400 hover:text-amber-300"
-                >
-                  {incident.binding.locationId} · {incident.eventId}
-                </button>
-              ))}
+              {context.activeIncidents.map((incident) => {
+                const remainingSeconds = incident.expiresAtSimulationTimeMs === undefined
+                  ? null
+                  : Math.max(0, Math.ceil((incident.expiresAtSimulationTimeMs - context.simulationTimeMs) / 1000));
+                return (
+                  <button
+                    key={incident.instanceId}
+                    type="button"
+                    title={remainingSeconds === null ? "Incident je aktivan dok se ne obradi" : `Preostalo vreme za reakciju: ${remainingSeconds} sekundi`}
+                    onClick={() => {
+                      setSelectedHotspot({ hotspotId: incident.binding.hotspotTarget, locationId: incident.locationId, title: `Situacija: ${incident.eventId}` });
+                      send({ type: "SELECT_HOTSPOT", hotspotId: incident.binding.hotspotTarget });
+                      bridge.emit("FOCUS_LOCATION", { locationId: incident.locationId });
+                    }}
+                    className="inline-flex items-center gap-2 rounded-lg border border-amber-500/30 bg-surface/70 px-2 py-1 text-[11px] font-semibold text-ink hover:border-amber-400 hover:text-amber-300"
+                  >
+                    <span>{incident.binding.locationId} · {incident.eventId}</span>
+                    <span className={cn("font-mono text-[10px]", remainingSeconds !== null && remainingSeconds <= 10 ? "text-rose-400" : "text-amber-300")}>
+                      {remainingSeconds === null ? "praćenje" : `⏱ ${remainingSeconds}s`}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 

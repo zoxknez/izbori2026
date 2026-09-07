@@ -27,6 +27,7 @@ interface IncidentVisual {
   container: Phaser.GameObjects.Container;
   incidentId: string;
   presentation: WorldIncidentPresentation;
+  resolvedLabel?: Phaser.GameObjects.Text;
 }
 
 interface EvidenceMarkerVisual {
@@ -113,6 +114,13 @@ export class PollingStationScene extends Phaser.Scene {
             this.incidentVisuals.delete(instanceId);
           } else {
             visual.container.setAlpha(0.35);
+            if (!visual.resolvedLabel) {
+              visual.resolvedLabel = this.add.text(0, 42, "✓ razrešeno · ostaje u debriefu", {
+                fontSize: "9px", color: "#a7f3d0", fontFamily: "sans-serif", fontStyle: "bold",
+                backgroundColor: "rgba(6, 78, 59, 0.92)", padding: { x: 4, y: 2 },
+              }).setOrigin(0.5);
+              visual.container.add(visual.resolvedLabel);
+            }
           }
         }
       }
