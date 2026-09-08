@@ -36,6 +36,18 @@ test("public routes have one h1, main landmark and no missing image alt", async 
   }
 });
 
+test("mobile public layouts do not overflow horizontally", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+
+  for (const route of ["/", "/validator", "/izvori", "/trening/kviz", "/izborni-dan"]) {
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+    await expect.poll(
+      () => page.evaluate(() => Math.max(document.body.scrollWidth, document.documentElement.scrollWidth)),
+      { message: `${route} must fit the mobile viewport` },
+    ).toBeLessThanOrEqual(390);
+  }
+});
+
 test("global search finds an incident through the indexed aliases", async ({ page }) => {
   await page.goto("/");
   const searchInput = page.getByPlaceholder(/Brza pretraga|Pretraži/i);

@@ -224,9 +224,9 @@ export function ZapisnikValidator() {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-12 items-start">
+    <div className="grid min-w-0 gap-8 lg:grid-cols-12 items-start">
       {/* LEFT COLUMN: Data Entry Form (7 cols) */}
-      <div className="space-y-6 lg:col-span-7">
+      <div className="min-w-0 space-y-6 lg:col-span-7">
         <div className="rounded-3xl border border-border/80 bg-surface/80 p-5 sm:p-7 shadow-xl backdrop-blur-md">
           {/* Header and demo presets */}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-soft pb-5">
@@ -415,7 +415,7 @@ export function ZapisnikValidator() {
       </div>
 
       {/* RIGHT COLUMN: Diagnostic Results & Verdict (5 cols) */}
-      <div className="space-y-4 lg:col-span-5 lg:sticky lg:top-20">
+      <div className="min-w-0 space-y-4 lg:col-span-5 lg:sticky lg:top-20">
         {/* 1. Executive Verdict Banner */}
         <div
           className={cn(

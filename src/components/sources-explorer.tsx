@@ -141,11 +141,11 @@ export function SourcesExplorer({ sources }: { sources: SourceEntry[] }) {
                   </div>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid min-w-0 gap-3 sm:grid-cols-2">
                   {items.map((s) => (
                     <Card
                       key={s.id}
-                      className="group flex flex-col justify-between border-border bg-surface p-4 transition-all hover:border-brand hover:shadow-sm"
+                      className="group min-w-0 flex flex-col justify-between border-border bg-surface p-4 transition-all hover:border-brand hover:shadow-sm"
                     >
                       <div>
                         <div className="flex items-start justify-between gap-3">
