@@ -41,6 +41,8 @@ export interface WorldSimulationSaveState {
   legalInterruptions: LegalVotingInterruption[];
   voterPool?: unknown[];
   completedVoterIds?: string[];
+  /** Presentation-only progress for resuming the physical counting table. */
+  countingWorkflowStep?: number;
 }
 
 export interface GameSaveV2 {

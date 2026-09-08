@@ -180,6 +180,7 @@ export class PollingStationScene extends Phaser.Scene {
         };
       });
       this.bridge?.emit("WORLD_STATE_SNAPSHOT", {
+        source: "polling",
         // Snapshot always reflects the same simulation instant as the logical world.
         // Rendering is derived just before the payload is captured.
         rngState: this.rng.getState(),

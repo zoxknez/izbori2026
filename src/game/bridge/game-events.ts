@@ -22,6 +22,7 @@ export interface GameBridgeEventMap {
   WORLD_ACTION_REQUESTED: { worldActionId: string; choiceId: string; eventId?: string };
   NPC_METRICS_UPDATED: { activeVoterCount: number; queueLength: number };
   WORLD_STATE_SNAPSHOT: {
+    source?: "polling" | "counting";
     rngState: number;
     deterministicCounter?: number;
     activeVoters: unknown[];
@@ -30,6 +31,8 @@ export interface GameBridgeEventMap {
     nextEntityId: number;
     voterPool?: unknown[];
     completedVoterIds?: string[];
+    /** Presentation-only progress of the physical counting table workflow. */
+    countingWorkflowStep?: number;
   };
 
   // Iz XState / Domain layer-a ka Phaseru i Reactu:
@@ -64,6 +67,7 @@ export interface GameBridgeEventMap {
   SWITCH_SCENE: { sceneKey: "PollingStationScene" | "CountingScene" };
   /** A11y/touch equivalent of selecting a numbered item at the counting table. */
   ADVANCE_COUNTING_WORKFLOW: { hotspotId: string };
+  COUNTING_WORKFLOW_CHANGED: { step: number };
   PHASE_CHANGED: {
     phase: "pre_opening" | "voting" | "closing" | "counting" | "protocol" | "handover" | "debrief" | "closed";
     acceptingNewVoters: boolean;
@@ -77,6 +81,7 @@ export interface GameBridgeEventMap {
     nextEntityId?: number;
     voterPool?: unknown[];
     completedVoterIds?: string[];
+    countingWorkflowStep?: number;
   };
 }
 

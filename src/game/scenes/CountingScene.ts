@@ -21,6 +21,8 @@ export class CountingScene extends Phaser.Scene {
   private unsubAudioCue?: () => void;
   private unsubResetCamera?: () => void;
   private unsubAdvanceWorkflow?: () => void;
+  private unsubRequestWorldSnapshot?: () => void;
+  private unsubRestoreWorldState?: () => void;
   private reducedMotion = false;
 
   constructor() {
@@ -43,6 +45,18 @@ export class CountingScene extends Phaser.Scene {
     });
     this.unsubAdvanceWorkflow = this.bridge?.on("ADVANCE_COUNTING_WORKFLOW", ({ hotspotId }) => {
       this.handleWorkflowInteraction(hotspotId);
+    });
+    this.unsubRequestWorldSnapshot = this.bridge?.on("REQUEST_WORLD_SNAPSHOT", () => {
+      this.emitWorldSnapshot();
+    });
+    this.unsubRestoreWorldState = this.bridge?.on("RESTORE_WORLD_STATE", ({ countingWorkflowStep }) => {
+      if (typeof countingWorkflowStep !== "number") return;
+      this.workflowStep = Phaser.Math.Clamp(
+        Math.trunc(countingWorkflowStep),
+        0,
+        COUNTING_WORKFLOW_STEPS.length,
+      );
+      this.refreshWorkflowPresentation();
     });
 
     // 1. Noćna atmosfera prostorije (zatvoreno biračko mesto posle 20:00)
@@ -188,6 +202,8 @@ export class CountingScene extends Phaser.Scene {
       this.unsubAudioCue?.();
       this.unsubResetCamera?.();
       this.unsubAdvanceWorkflow?.();
+      this.unsubRequestWorldSnapshot?.();
+      this.unsubRestoreWorldState?.();
       this.audio.destroy();
     });
   }
@@ -247,6 +263,19 @@ export class CountingScene extends Phaser.Scene {
     }
     if (!this.reducedMotion && target) this.tweens.add({ targets: target, scaleX: target.scaleX * 1.12, scaleY: target.scaleY * 1.12, duration: 140, yoyo: true });
     this.refreshWorkflowPresentation();
+    this.bridge?.emit("COUNTING_WORKFLOW_CHANGED", { step: this.workflowStep });
+  }
+
+  private emitWorldSnapshot() {
+    this.bridge?.emit("WORLD_STATE_SNAPSHOT", {
+      source: "counting",
+      rngState: 0,
+      activeVoters: [],
+      queueOrder: [],
+      nextSpawnAtMs: 0,
+      nextEntityId: 0,
+      countingWorkflowStep: this.workflowStep,
+    });
   }
 
   private refreshWorkflowPresentation() {

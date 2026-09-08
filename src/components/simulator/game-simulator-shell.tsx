@@ -410,8 +410,32 @@ export function GameSimulatorShell({
     });
 
     const unsubWorldSnapshot = bridge.on("WORLD_STATE_SNAPSHOT", (data) => {
-      const next = { ...data, legalInterruptions: legalInterruptionsRef.current };
-      worldSnapshotRef.current = next;
+      const { source, ...snapshotData } = data;
+      const next = { ...snapshotData, legalInterruptions: legalInterruptionsRef.current };
+      const previous = worldSnapshotRef.current;
+      if (source === "counting") {
+        worldSnapshotRef.current = previous
+          ? { ...previous, countingWorkflowStep: data.countingWorkflowStep }
+          : {
+              ...next,
+              rngState: contextRef.current.seed,
+              activeVoters: [],
+              queueOrder: [],
+              nextSpawnAtMs: 0,
+              nextEntityId: 0,
+            };
+        return;
+      }
+      worldSnapshotRef.current = {
+        ...next,
+        countingWorkflowStep: previous?.countingWorkflowStep ?? data.countingWorkflowStep,
+      };
+    });
+
+    const unsubCountingWorkflow = bridge.on("COUNTING_WORKFLOW_CHANGED", () => {
+      void persistGame().catch(() => {
+        // The next periodic snapshot/autosave remains the fallback.
+      });
     });
 
     const unsubClick = bridge.on("HOTSPOT_CLICKED", (data) => {
@@ -451,6 +475,7 @@ export function GameSimulatorShell({
     return () => {
       unsubWorldReady();
       unsubWorldSnapshot();
+      unsubCountingWorkflow();
       unsubClick();
       unsubNpcMetrics();
       clearInterval(intervalId);
