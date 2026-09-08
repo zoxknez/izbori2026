@@ -227,6 +227,17 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     await expect(replayModal).not.toBeVisible();
     await expect(replayBtn).toBeFocused();
 
+    // Regression: selecting a saved run must rehydrate the XState actor from
+    // that run, rather than restarting the default 06:00 actor.
+    const resumePage = await page.context().newPage();
+    await resumePage.goto("/izborni-dan");
+    await resumePage.getByRole("button", { name: /2D Biračko mesto/i }).click();
+    await expect(resumePage.getByTestId("resumable-save-banner")).toBeVisible({ timeout: 15_000 });
+    await resumePage.getByTestId("resume-game-button").click();
+    await expect(resumePage.getByTestId("counting-workspace-banner")).toBeVisible({ timeout: 15_000 });
+    await expect(resumePage.getByText(/Prebrojavanje i Zapisnik \(20:00\+\)/i)).toBeVisible();
+    await resumePage.close();
+
     // Nema fatalnih grešaka na stranici
     expect(errors.filter((e) => !e.includes("download the React DevTools"))).toHaveLength(0);
   });

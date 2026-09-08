@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useActor } from "@xstate/react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { createActor } from "xstate";
 import {
   Clock,
   Eye,
@@ -100,12 +100,34 @@ export function GameSimulatorShell({
     [initialRole, initialSeed, initialMode, activeSave],
   );
 
-  const [state, send, actorRef] = useActor(
-    machine,
-    activeSave && "machineSnapshot" in activeSave && activeSave.machineSnapshot
-      ? { snapshot: activeSave.machineSnapshot as never }
-      : undefined,
+  // @xstate/react intentionally rehydrates a replaced logic from the previous
+  // actor. That is useful for ordinary hot replacement, but wrong when the
+  // player explicitly selects a different persisted session. Create the actor
+  // from the selected save snapshot so resume really restores that session.
+  const actorRef = useMemo(
+    () =>
+      createActor(
+        machine,
+        activeSave && "machineSnapshot" in activeSave && activeSave.machineSnapshot
+          ? { snapshot: activeSave.machineSnapshot as never }
+          : undefined,
+      ),
+    [activeSave, machine],
   );
+  const actorSubscribe = useCallback(
+    (onStoreChange: () => void) => actorRef.subscribe(onStoreChange).unsubscribe,
+    [actorRef],
+  );
+  const actorSnapshot = useCallback(() => actorRef.getSnapshot(), [actorRef]);
+  const state = useSyncExternalStore(actorSubscribe, actorSnapshot, actorSnapshot);
+  const send = actorRef.send;
+
+  useEffect(() => {
+    actorRef.start();
+    return () => {
+      actorRef.stop();
+    };
+  }, [actorRef]);
   const context = state.context;
   const contextRef = useRef(context);
   const activeSaveRef = useRef<GameSaveV2 | GameSaveV1 | null>(activeSave);
