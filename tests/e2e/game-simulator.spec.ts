@@ -69,12 +69,19 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     await evidenceBtn.click();
     const evidenceDialog = page.getByRole("dialog", { name: /Beležnica dokaza i zapažanja/i });
     await expect(evidenceDialog).toBeVisible();
+    const evidenceCloseButton = evidenceDialog.getByRole("button", { name: /Zatvori beležnicu/i });
+    await expect(evidenceCloseButton).toBeFocused();
+    await page.keyboard.press("Shift+Tab");
+    await expect.poll(() => page.evaluate(() => document.activeElement?.closest('[role="dialog"]')?.getAttribute("aria-labelledby"))).toBe("evidence-tray-title");
+    await page.keyboard.press("Tab");
+    await expect(evidenceCloseButton).toBeFocused();
     await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe("hidden");
     await page.getByRole("button", { name: /Nova zabeleška/i }).click();
     await expect(page.getByText(/2\/4 kompletno/i)).toBeVisible();
     await page.getByRole("button", { name: /Otkaži/i }).click();
     await page.getByRole("button", { name: /Zatvori beležnicu/i }).click();
     await expect(evidenceDialog).not.toBeVisible();
+    await expect(evidenceBtn).toBeFocused();
     await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe("");
 
     // Otvaramo završni debrief smene
@@ -83,8 +90,10 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     await debriefBtn.click();
     const debriefDialog = page.getByRole("dialog", { name: /Debrief smene i odložene posledice/i });
     await expect(debriefDialog).toBeVisible();
+    await expect(debriefDialog.getByRole("button", { name: /Zatvori debrief smene/i })).toBeFocused();
     await page.keyboard.press("Escape");
     await expect(debriefDialog).not.toBeVisible();
+    await expect(debriefBtn).toBeFocused();
 
     // Otvaramo vodič kroz uloge i menjamo ulogu u Posmatrača
     const roleBtn = page.getByTestId("role-selector-button");
@@ -92,6 +101,7 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     await roleBtn.click();
     const roleModal = page.getByTestId("role-guidance-modal");
     await expect(roleModal).toBeVisible();
+    await expect(roleModal.getByRole("button", { name: /Izađi iz vodiča kroz uloge/i })).toBeFocused();
     await expect(page.getByText(/Pravni položaj i uloga u simulaciji/i)).toBeVisible();
 
     // Izaberi ulogu Posmatrač unutar modala i aktiviraj je
@@ -200,12 +210,14 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     const replayModal = page.getByTestId("replay-modal");
     await expect(replayModal).toBeVisible();
     await expect(replayModal).toHaveAttribute("role", "dialog");
+    await expect(replayModal.getByRole("button", { name: /Izađi iz replay-a/i })).toBeFocused();
     await expect(replayModal.getByText(/Replay & Revizija toka glasanja/i)).toBeVisible();
     await expect(replayModal.getByText(/Domain replay paritet potvrđen/i)).toBeVisible();
 
     // Zatvaramo Replay modal
     await replayModal.getByRole("button", { name: "Zatvori" }).click();
     await expect(replayModal).not.toBeVisible();
+    await expect(replayBtn).toBeFocused();
 
     // Nema fatalnih grešaka na stranici
     expect(errors.filter((e) => !e.includes("download the React DevTools"))).toHaveLength(0);

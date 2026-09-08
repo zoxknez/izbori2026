@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   X,
   RotateCcw,
@@ -20,6 +20,7 @@ import {
 } from "@/lib/domain/simulator/types";
 import type { GameActionLogEntry } from "@/lib/domain/simulator/live-types";
 import { replaySimulation, type ReplayResult } from "@/lib/domain/simulator/game-save";
+import { useDialogFocus } from "@/components/ui/use-dialog-focus";
 
 interface ReplayModalProps {
   isOpen: boolean;
@@ -42,22 +43,8 @@ export function ReplayModal({
 }: ReplayModalProps) {
   const [selectedStepIndex, setSelectedStepIndex] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen, onClose]);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(isOpen, dialogRef, onClose);
 
   const replayResult: ReplayResult = useMemo(() => {
     if (!isOpen) {
@@ -105,6 +92,8 @@ export function ReplayModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="replay-modal-title"
+      ref={dialogRef}
+      tabIndex={-1}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
     >
       <div className="flex max-h-[90vh] w-full max-w-3xl flex-col rounded-3xl border border-border bg-surface p-6 shadow-2xl overflow-y-auto">
@@ -148,6 +137,7 @@ export function ReplayModal({
             <button
               type="button"
               onClick={onClose}
+              data-dialog-initial-focus
               className="rounded-xl p-2 text-ink-dim hover:bg-surface-2 hover:text-ink"
               aria-label="Izađi iz replay-a"
             >

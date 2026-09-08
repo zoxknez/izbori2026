@@ -243,6 +243,8 @@ nijedna stvarna posledica i nijedan misconception mehanizam.
   dok se novi save-ovi i svaki save sa integrity hash-om odbijaju ako je payload promenjen.
 - Responsive audit na 320, 390 i 768 px pokriva ključne javne rute i proverava stvarni
   `scrollWidth`, ne samo prisustvo CSS klasa.
+- Svi simulator i admin dijalozi sada imaju početni fokus, `Tab`/`Shift+Tab` trap i vraćanje fokusa
+  na kontrolu koja ih je otvorila; ovo je pokriveno E2E proverom kroz beležnicu, debrief, uloge i replay.
 
 ### Provere
 

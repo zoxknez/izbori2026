@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -21,6 +21,7 @@ import {
 import { ROLE_CONFIGS } from "@/lib/domain/simulator/role-permissions";
 import { cn } from "@/lib/utils";
 import type { BoardProtocol, ObserverPresenceRecord } from "@/game/machines/election-day.machine";
+import { useDialogFocus } from "@/components/ui/use-dialog-focus";
 
 interface CountingProtocolModalProps {
   isOpen: boolean;
@@ -48,22 +49,8 @@ export function CountingProtocolModal({
   const [activeTab, setActiveTab] = useState<"numbers" | "forensics" | "objections">("numbers");
   const [objectionText, setObjectionText] = useState("");
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen, onClose]);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(isOpen, dialogRef, onClose);
 
   // Stroga evaluacija isključivo kroz domenski results-validator
   const evaluation = useMemo(() => evaluateCountingSession(session), [session]);
@@ -114,6 +101,8 @@ export function CountingProtocolModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="counting-protocol-title"
+      ref={dialogRef}
+      tabIndex={-1}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 sm:p-4 backdrop-blur-md"
     >
       <div className="flex max-h-[92vh] w-full max-w-4xl flex-col rounded-3xl border border-border bg-surface p-5 sm:p-6 shadow-2xl overflow-y-auto">
@@ -142,6 +131,7 @@ export function CountingProtocolModal({
             <button
               type="button"
               onClick={onClose}
+              data-dialog-initial-focus
               className="rounded-xl p-2 text-ink-dim hover:bg-surface-2 hover:text-ink"
               aria-label="Izađi iz zapisnika"
             >

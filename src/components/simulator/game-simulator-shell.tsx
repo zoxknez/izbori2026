@@ -59,6 +59,7 @@ import { cn } from "@/lib/utils";
 import { getWorldIncidentPresentation } from "@/game/world/world-incident-presentation";
 import { SIMULATION_MODE_PROFILES } from "@/game/config/simulation-mode-profile";
 import { buildDebriefTimeline } from "@/lib/domain/simulator/debrief-timeline";
+import { useDialogFocus } from "@/components/ui/use-dialog-focus";
 
 interface GameSimulatorShellProps {
   initialRole?: SimulationRole;
@@ -271,25 +272,12 @@ export function GameSimulatorShell({
   const [statusNotification, setStatusNotification] = useState<string | null>(null);
   const [audioMuted, setAudioMuted] = useState(false);
   const [audioVolume, setAudioVolume] = useState(0.12);
-
-  useEffect(() => {
-    if (!isRoleModalOpen && !isDebriefOpen) return;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsRoleModalOpen(false);
-        setIsDebriefOpen(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isDebriefOpen, isRoleModalOpen]);
+  const roleDialogRef = useRef<HTMLDivElement>(null);
+  const debriefDialogRef = useRef<HTMLDivElement>(null);
+  const closeRoleDialog = useCallback(() => setIsRoleModalOpen(false), []);
+  const closeDebriefDialog = useCallback(() => setIsDebriefOpen(false), []);
+  useDialogFocus(isRoleModalOpen, roleDialogRef, closeRoleDialog);
+  useDialogFocus(isDebriefOpen, debriefDialogRef, closeDebriefDialog);
 
   const normalizedIncidentCursor = context.activeIncidents.length === 0
     ? 0
@@ -1177,6 +1165,8 @@ export function GameSimulatorShell({
           role="dialog"
           aria-modal="true"
           aria-labelledby="role-guidance-title"
+          ref={roleDialogRef}
+          tabIndex={-1}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
         >
           <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-3xl border border-border bg-surface p-6 shadow-2xl overflow-y-auto">
@@ -1188,6 +1178,7 @@ export function GameSimulatorShell({
               <button
                 type="button"
                 onClick={() => setIsRoleModalOpen(false)}
+                data-dialog-initial-focus
                 className="rounded-xl p-2 text-ink-dim hover:bg-surface-2 hover:text-ink"
                 aria-label="Izađi iz vodiča kroz uloge"
               >
@@ -1332,6 +1323,8 @@ export function GameSimulatorShell({
           role="dialog"
           aria-modal="true"
           aria-labelledby="debrief-title"
+          ref={debriefDialogRef}
+          tabIndex={-1}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
         >
           <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-3xl border border-border bg-surface p-6 shadow-2xl overflow-y-auto">
@@ -1343,6 +1336,7 @@ export function GameSimulatorShell({
               <button
                 type="button"
                 onClick={() => setIsDebriefOpen(false)}
+                data-dialog-initial-focus
                 className="rounded-xl p-2 text-ink-dim hover:bg-surface-2 hover:text-ink"
                 aria-label="Zatvori debrief smene"
               >

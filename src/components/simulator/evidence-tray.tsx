@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { CheckCircle2, FileText, Plus, X, Users, Clock } from "lucide-react";
 import type { EvidenceRecord } from "@/lib/domain/simulator/live-types";
 import type { SimulationRole } from "@/lib/domain/simulator/types";
 import { cn } from "@/lib/utils";
+import { useDialogFocus } from "@/components/ui/use-dialog-focus";
 
 interface EvidenceTrayProps {
   isOpen: boolean;
@@ -55,22 +56,8 @@ export function EvidenceTray({
   const [assumptionInput, setAssumptionInput] = useState("");
   const [assumptions, setAssumptions] = useState<string[]>([]);
   const [selectedWitnesses, setSelectedWitnesses] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen, onClose]);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(isOpen, dialogRef, onClose);
 
   if (!isOpen) return null;
 
@@ -140,6 +127,8 @@ export function EvidenceTray({
       role="dialog"
       aria-modal="true"
       aria-labelledby="evidence-tray-title"
+      ref={dialogRef}
+      tabIndex={-1}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
     >
       <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-3xl border border-border bg-surface shadow-2xl">
@@ -156,6 +145,7 @@ export function EvidenceTray({
           <button
             type="button"
             onClick={onClose}
+            data-dialog-initial-focus
             className="flex h-8 w-8 items-center justify-center rounded-xl text-ink-dim hover:bg-surface-2 hover:text-ink"
             aria-label="Zatvori beležnicu"
           >
