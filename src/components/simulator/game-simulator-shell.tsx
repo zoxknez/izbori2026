@@ -685,6 +685,7 @@ export function GameSimulatorShell({
                 setTimeout(() => setStatusNotification(null), 3000);
               }}
               className="flex h-8 items-center gap-1 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-2.5 text-xs font-bold text-emerald-300 transition-all hover:border-emerald-400 hover:bg-emerald-500/20"
+              aria-label="Premotaj do zvaničnog otvaranja biračkog mesta u 07:00"
               title="Premotaj do zvaničnog otvaranja biračkog mesta u 07:00"
             >
               <FastForward className="h-3.5 w-3.5" />
@@ -707,6 +708,7 @@ export function GameSimulatorShell({
                 });
               }}
               className="flex h-8 items-center gap-1 rounded-xl border border-border/80 bg-surface-2 px-2.5 text-xs font-bold text-ink-dim hover:text-brand hover:border-brand/40 transition-all shadow-sm"
+              aria-label="Premotaj simulaciju do kraja glasanja u 20:00"
               title="Premotaj simulaciju do kraja glasanja (20:00)"
             >
               <FastForward className="h-3.5 w-3.5 text-brand" />

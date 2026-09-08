@@ -87,6 +87,20 @@ test("simulator save survives a reload and offers a valid resume", async ({ page
   await expect(page.getByTestId("save-game-button")).toBeVisible();
 });
 
+test("simulator fast-forward controls remain named on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/izborni-dan");
+  await page.getByRole("button", { name: /2D Biračko mesto/i }).click();
+
+  const openingButton = page.getByTestId("fast-forward-to-opening-button");
+  await expect(openingButton).toBeVisible({ timeout: 15_000 });
+  await expect(openingButton).toHaveAccessibleName(/07:00/);
+
+  const closingButton = page.getByTestId("fast-forward-to-closing-button");
+  await expect(closingButton).toBeVisible();
+  await expect(closingButton).toHaveAccessibleName(/20:00/);
+});
+
 async function playSimulation(page: import("@playwright/test").Page, maxSteps: number) {
   for (let index = 0; index < maxSteps; index += 1) {
     if (await page.getByText(/Birački dan završen/i).isVisible().catch(() => false)) return true;
