@@ -1,5 +1,6 @@
 import type { CountingInput } from "@/lib/domain/results-validator";
 import { validateCounting } from "@/lib/domain/results-validator";
+import type { EvidenceRecord } from "./live-types";
 import {
   SCORE_CATEGORIES,
   type CategoryResult,
@@ -177,6 +178,32 @@ export function resolveChoice(
         explanation: choice.explanation,
       },
     ],
+  };
+}
+
+/**
+ * Evidence is a domain scoring input, not merely a UI note. The record keeps
+ * its authored facts in the notebook while this pure function converts the
+ * completeness checklist into documentation points for the debrief.
+ */
+export function applyEvidenceRecord(
+  state: SimulationState,
+  record: Pick<EvidenceRecord, "completeness">,
+): SimulationState {
+  const completeness = Object.values(record.completeness).filter(Boolean).length;
+  const maxEvidencePoints = Object.keys(record.completeness).length;
+
+  return {
+    ...state,
+    evidence: state.evidence + 1,
+    scores: {
+      ...state.scores,
+      documentation: state.scores.documentation + completeness,
+    },
+    maxScores: {
+      ...state.maxScores,
+      documentation: state.maxScores.documentation + maxEvidencePoints,
+    },
   };
 }
 

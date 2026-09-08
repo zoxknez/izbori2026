@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { validateCounting } from "@/lib/domain/results-validator";
 import {
   applyChoice,
+  applyEvidenceRecord,
   availableChoices,
   computeDebrief,
   createSimulationState,
@@ -152,5 +153,16 @@ describe("simulator engine", () => {
     expect(event.counting).toBeDefined();
     expect(runCountingMode(event.counting!)).toEqual(validateCounting(event.counting!));
     expect(runCountingMode(event.counting!).isAnnulmentFail).toBe(true);
+  });
+
+  it("računa kvalitet dokaza u domain dokumentacioni skor", () => {
+    const state = createSimulationState(simulationEvents);
+    const next = applyEvidenceRecord(state, {
+      completeness: { time: true, location: true, facts: true, witnesses: false },
+    });
+
+    expect(next.evidence).toBe(1);
+    expect(next.scores.documentation).toBe(3);
+    expect(next.maxScores.documentation).toBe(4);
   });
 });

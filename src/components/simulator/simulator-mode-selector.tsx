@@ -29,6 +29,7 @@ export function SimulatorModeSelector() {
   const [mode, setMode] = useState<"classic" | "game_2d">("game_2d");
   const [selectedRole, setSelectedRole] = useState<SimulationRole>("clan_odbora");
   const [gameMode, setGameMode] = useState<"guided" | "realistic" | "stress">("guided");
+  const [retryEventIds, setRetryEventIds] = useState<string[] | undefined>();
 
   return (
     <div className="flex flex-col gap-6">
@@ -68,7 +69,10 @@ export function SimulatorModeSelector() {
                     <button
                       key={m.id}
                       type="button"
-                      onClick={() => setGameMode(m.id)}
+                      onClick={() => {
+                        setGameMode(m.id);
+                        setRetryEventIds(undefined);
+                      }}
                       aria-pressed={gameMode === m.id}
                       className={cn(
                         "rounded-xl px-2.5 py-1 text-xs font-semibold transition-all",
@@ -95,7 +99,10 @@ export function SimulatorModeSelector() {
                       <button
                         key={r}
                         type="button"
-                        onClick={() => setSelectedRole(r)}
+                        onClick={() => {
+                          setSelectedRole(r);
+                          setRetryEventIds(undefined);
+                        }}
                         aria-pressed={isSel}
                         className={cn(
                           "rounded-xl px-2.5 py-1 text-xs font-semibold transition-all",
@@ -118,7 +125,10 @@ export function SimulatorModeSelector() {
             {/* 1. Primarni 2D režim */}
             <button
               type="button"
-              onClick={() => setMode("game_2d")}
+              onClick={() => {
+                setMode("game_2d");
+                setRetryEventIds(undefined);
+              }}
               aria-pressed={mode === "game_2d"}
               className={cn(
                 "group relative flex flex-col items-start gap-2.5 rounded-2xl p-4 text-left transition-all duration-200",
@@ -170,7 +180,10 @@ export function SimulatorModeSelector() {
             {/* 2. Klasični režim kartica */}
             <button
               type="button"
-              onClick={() => setMode("classic")}
+              onClick={() => {
+                setMode("classic");
+                setRetryEventIds(undefined);
+              }}
               aria-pressed={mode === "classic"}
               className={cn(
                 "group relative flex flex-col items-start gap-2.5 rounded-2xl p-4 text-left transition-all duration-200",
@@ -227,9 +240,11 @@ export function SimulatorModeSelector() {
         <SimulationGame />
       ) : (
         <DynamicGameSimulatorShell
-          key={`${selectedRole}-${gameMode}`}
+          key={`${selectedRole}-${gameMode}-${retryEventIds?.join("|") ?? "full"}`}
           initialRole={selectedRole}
           initialMode={gameMode}
+          initialOnlyEventIds={retryEventIds}
+          onRetryMistakes={setRetryEventIds}
         />
       )}
     </div>

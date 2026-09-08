@@ -4,6 +4,7 @@ import {
   createSimulationState,
   conditionMatches,
   resolveChoice,
+  applyEvidenceRecord,
 } from "@/lib/domain/simulator/engine";
 import { simulationEvents } from "@/lib/domain/simulator/seed-events";
 import type {
@@ -139,6 +140,8 @@ export interface CreateElectionMachineOptions {
   seed?: number;
   role?: "clan_odbora" | "posmatrac" | "birac";
   mode?: "guided" | "realistic" | "stress";
+  /** Ograničava novi pokušaj na konkretne autorske situacije. */
+  onlyEventIds?: string[];
   startTime?: string;
   save?: GameSaveV2 | GameSaveV1;
   snapshot?: unknown;
@@ -176,6 +179,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
         role: options.role ?? "clan_odbora",
         mode: domainMode,
         randomSeed: seed,
+        onlyEventIds: options.onlyEventIds,
       });
 
   const initialBoardProtocol: BoardProtocol =
@@ -250,6 +254,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
         const nextCount = context.deterministicCounter + 1;
         return {
           deterministicCounter: nextCount,
+          domainState: applyEvidenceRecord(context.domainState, params.record),
           evidenceNotebook: [...context.evidenceNotebook, params.record],
           actionLog: [
             ...context.actionLog,
@@ -712,6 +717,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
                 timestamp: msToTimeString(context.simulationTimeMs),
                 type: "world_action" as const,
                 eventId: event.eventId,
+                incidentInstanceId: activeInc.instanceId,
                 choiceId: event.choiceId,
                 details: choice.label,
               },
@@ -778,6 +784,7 @@ function processTickLogic(
           timestamp: msToTimeString(newMs),
           type: "timeout" as const,
           eventId: exp.eventId,
+          incidentInstanceId: exp.instanceId,
           choiceId: choice.id,
           locationId: exp.locationId,
           details: exp.binding.timeout.label,
@@ -801,6 +808,7 @@ function processTickLogic(
       if (
         (inInterval || isDeferred) &&
         authoredEvent &&
+        (!updatedDomain.allowedEventIds || updatedDomain.allowedEventIds.includes(binding.eventId)) &&
         conditionMatches(authoredEvent.conditions, {
           flags: updatedDomain.flags,
           phase: updatedDomain.phase,
@@ -875,7 +883,9 @@ function advanceSimulationInternal(
   for (const binding of Object.values(WORLD_INCIDENT_BINDINGS)) {
     if (binding.trigger.type === "time" && binding.trigger.simulationTime) {
       const tMs = timeStringToMs(binding.trigger.simulationTime);
-      if (tMs > currentCtx.simulationTimeMs && tMs <= targetMs) {
+      const isAllowed =
+        !currentCtx.domainState.allowedEventIds || currentCtx.domainState.allowedEventIds.includes(binding.eventId);
+      if (isAllowed && tMs > currentCtx.simulationTimeMs && tMs <= targetMs) {
         points.push({ timeMs: tMs, priority: SchedulerPriority.FLAG_TRIGGER, type: `incident-${binding.eventId}` });
       }
     }

@@ -15,6 +15,12 @@ interface EvidenceTrayProps {
   currentSimulationTimeMs: number;
   currentRole: SimulationRole;
   selectedLocationId?: string;
+  selectedIncident?: {
+    eventId: string;
+    instanceId: string;
+    relatedRuleIds: string[];
+    label: string;
+  };
   onAddEvidence: (record: EvidenceRecord) => void;
 }
 
@@ -46,6 +52,7 @@ export function EvidenceTray({
   currentSimulationTimeMs,
   currentRole,
   selectedLocationId = "voter-roll-desk",
+  selectedIncident,
   onAddEvidence,
 }: EvidenceTrayProps) {
   const [isCreating, setIsCreating] = useState(false);
@@ -88,13 +95,15 @@ export function EvidenceTray({
       // Evidence IDs are part of the persisted replay surface. Keep them
       // deterministic instead of coupling them to wall-clock time.
       id: `ev-${currentSimulationTimeMs}-${evidenceList.length + 1}`,
+      eventId: selectedIncident?.eventId,
+      incidentInstanceId: selectedIncident?.instanceId,
       simulationTimeMs: currentSimulationTimeMs,
       timestamp: currentClock,
       locationId,
       observedFacts: facts,
       assumptions,
       witnesses: selectedWitnesses,
-      relatedRuleIds: [],
+      relatedRuleIds: selectedIncident?.relatedRuleIds ?? [],
       createdByRole: currentRole,
       source: "manual",
       completeness: {
@@ -191,6 +200,12 @@ export function EvidenceTray({
                     </div>
                   ))}
                 </div>
+                {selectedIncident && (
+                  <div className="mt-2 flex items-start gap-2 rounded-lg border border-sky-500/20 bg-sky-500/5 px-2.5 py-2 text-[11px] text-sky-200">
+                    <span className="font-bold">Povezano sa situacijom:</span>
+                    <span>{selectedIncident.label} ({selectedIncident.eventId})</span>
+                  </div>
+                )}
               </div>
 
               {/* Lokacija i vreme */}

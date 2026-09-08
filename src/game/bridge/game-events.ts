@@ -51,6 +51,8 @@ export interface GameBridgeEventMap {
     incidents: Array<ActiveIncident & { presentation: WorldIncidentPresentation }>;
     /** Incidents that timed out stay visible as a consequence marker in the world. */
     missedIncidents: Array<ActiveIncident & { presentation: WorldIncidentPresentation }>;
+    /** Presentation result of an incident resolved since the previous update. */
+    resolvedIncidents?: Array<{ instanceId: string; state: "resolved" | "unresolved" }>;
   };
   INCIDENT_EXPIRED: { incident: ActiveIncident };
   EVIDENCE_ADDED: { record: EvidenceRecord };
@@ -68,6 +70,17 @@ export interface GameBridgeEventMap {
   /** A11y/touch equivalent of selecting a numbered item at the counting table. */
   ADVANCE_COUNTING_WORKFLOW: { hotspotId: string };
   COUNTING_WORKFLOW_CHANGED: { step: number };
+  /** Domain-evaluated numbers exposed to the counting scene as presentation data. */
+  COUNTING_STATUS_CHANGED: {
+    receivedBallots: number;
+    unusedBallots: number | null;
+    votersTurnout: number | null;
+    ballotsInBox: number | null;
+    validBallots: number | null;
+    invalidBallots: number | null;
+    allValid: boolean;
+    discrepancies: string[];
+  };
   PHASE_CHANGED: {
     phase: "pre_opening" | "voting" | "closing" | "counting" | "protocol" | "handover" | "debrief" | "closed";
     acceptingNewVoters: boolean;

@@ -103,6 +103,7 @@ export interface GameActionLogEntry {
     | "phase_change"
     | "protocol_signed";
   eventId?: string;
+  incidentInstanceId?: string;
   choiceId?: string;
   locationId?: string;
   actorId?: string;
@@ -175,4 +176,3 @@ export interface ObserverPresenceRecord {
     timestampMs: number;
   }>;
 }
-

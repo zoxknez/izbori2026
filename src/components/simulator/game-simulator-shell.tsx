@@ -51,7 +51,7 @@ import {
   type GameSaveV2,
   type WorldSimulationSaveState,
 } from "@/lib/domain/simulator/game-save";
-import { initializeCountingSession } from "@/lib/domain/simulator/counting-session";
+import { evaluateCountingSession, initializeCountingSession } from "@/lib/domain/simulator/counting-session";
 import { computeDebrief } from "@/lib/domain/simulator/engine";
 import { msToTimeString } from "@/game/clock/simulation-clock";
 import { CLASSIFICATION_LABELS, SCORE_CATEGORY_LABELS, type SimulationRole } from "@/lib/domain/simulator/types";
@@ -63,18 +63,23 @@ import { cn } from "@/lib/utils";
 import { getWorldIncidentPresentation } from "@/game/world/world-incident-presentation";
 import { SIMULATION_MODE_PROFILES } from "@/game/config/simulation-mode-profile";
 import { buildDebriefTimeline } from "@/lib/domain/simulator/debrief-timeline";
+import { simulationEvents } from "@/lib/domain/simulator/seed-events";
 import { useDialogFocus } from "@/components/ui/use-dialog-focus";
 
 interface GameSimulatorShellProps {
   initialRole?: SimulationRole;
   initialSeed?: number;
   initialMode?: "guided" | "realistic" | "stress";
+  initialOnlyEventIds?: string[];
+  onRetryMistakes?: (eventIds: string[]) => void;
 }
 
 export function GameSimulatorShell({
   initialRole = "clan_odbora",
   initialSeed,
   initialMode = "guided",
+  initialOnlyEventIds,
+  onRetryMistakes,
 }: GameSimulatorShellProps) {
   // 1. Instance-scoped GameBridge
   const bridge = useMemo(() => createGameBridge(), []);
@@ -95,9 +100,10 @@ export function GameSimulatorShell({
         role: initialRole,
         seed: initialSeed,
         mode: initialMode,
+        onlyEventIds: initialOnlyEventIds,
         save: activeSave ?? undefined,
       }),
-    [initialRole, initialSeed, initialMode, activeSave],
+    [initialRole, initialSeed, initialMode, initialOnlyEventIds, activeSave],
   );
 
   // @xstate/react intentionally rehydrates a replaced logic from the previous
@@ -130,12 +136,40 @@ export function GameSimulatorShell({
   }, [actorRef]);
   const context = state.context;
   const contextRef = useRef(context);
+  const countingPresentation = useMemo(() => {
+    if (!context.countingSession) return null;
+    const { countingResult, forensicsResult } = evaluateCountingSession(context.countingSession);
+    const discrepancies: string[] = [];
+    if (!countingResult.ruleA.ok) discrepancies.push("B nije manje ili jednako G");
+    if (!countingResult.ruleB.ok || countingResult.ruleB.difference !== 0) discrepancies.push("U + B nije jednako R");
+    if (!countingResult.ruleC.ok) discrepancies.push("V + N nije jednako B");
+    if (!countingResult.ruleD.ok) discrepancies.push("zbir lista nije jednak V");
+    if (forensicsResult.status !== "correct" && forensicsResult.findings[0]) {
+      discrepancies.push(forensicsResult.findings[0]);
+    }
+    return {
+      receivedBallots: context.countingSession.receivedBallots,
+      unusedBallots: context.countingSession.unusedBallots,
+      votersTurnout: context.countingSession.votersTurnout,
+      ballotsInBox: context.countingSession.ballotsInBox,
+      validBallots: context.countingSession.validBallots,
+      invalidBallots: context.countingSession.invalidBallots,
+      allValid: countingResult.isEverythingValid && forensicsResult.status === "correct",
+      discrepancies,
+    };
+  }, [context.countingSession]);
+  const countingPresentationRef = useRef<typeof countingPresentation>(null);
   const activeSaveRef = useRef<GameSaveV2 | GameSaveV1 | null>(activeSave);
   const legalInterruptionsRef = useRef(context.legalInterruptions);
 
   useEffect(() => {
     contextRef.current = context;
   }, [context]);
+
+  useEffect(() => {
+    countingPresentationRef.current = countingPresentation;
+    if (countingPresentation) bridge.emit("COUNTING_STATUS_CHANGED", countingPresentation);
+  }, [bridge, countingPresentation]);
 
   useEffect(() => {
     activeSaveRef.current = activeSave;
@@ -300,6 +334,7 @@ export function GameSimulatorShell({
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [isCountingModalOpen, setIsCountingModalOpen] = useState(false);
   const [previewRole, setPreviewRole] = useState<SimulationRole>(initialRole);
+  const [expandedAlternativeEventId, setExpandedAlternativeEventId] = useState<string | null>(null);
 
   // Status poruka za povratnu informaciju
   const [statusNotification, setStatusNotification] = useState<string | null>(null);
@@ -398,6 +433,19 @@ export function GameSimulatorShell({
   }, [bridge, context.currentPhase, context.simulationTimeMs, context.paused, context.systemPaused, context.speed]);
 
   useEffect(() => {
+    const resolvedIncidents = context.actionLog
+      .filter((entry) => entry.type === "world_action" && entry.incidentInstanceId)
+      .map((entry) => {
+        const decision = context.domainState.history.find(
+          (candidate) => candidate.eventId === entry.eventId && candidate.choiceId === entry.choiceId,
+        );
+        return {
+          instanceId: entry.incidentInstanceId!,
+          state: decision && (decision.classification === "correct" || decision.classification === "acceptable")
+            ? "resolved" as const
+            : "unresolved" as const,
+        };
+      });
     bridge.emit("WORLD_INCIDENT_PRESENTATIONS_CHANGED", {
       incidents: context.activeIncidents.map((incident) => ({
         ...incident,
@@ -407,8 +455,9 @@ export function GameSimulatorShell({
         ...incident,
         presentation: getWorldIncidentPresentation(incident),
       })),
+      resolvedIncidents,
     });
-  }, [bridge, context.activeIncidents, context.missedIncidents]);
+  }, [bridge, context.activeIncidents, context.missedIncidents, context.actionLog, context.domainState.history]);
 
   useEffect(() => {
     bridge.emit("EVIDENCE_MARKERS_CHANGED", { records: context.evidenceNotebook });
@@ -427,6 +476,9 @@ export function GameSimulatorShell({
       send({ type: "WORLD_READY" });
       if (activeSaveRef.current?.version === 2) {
         bridge.emit("RESTORE_WORLD_STATE", activeSaveRef.current.worldSimulation);
+      }
+      if (countingPresentationRef.current) {
+        bridge.emit("COUNTING_STATUS_CHANGED", countingPresentationRef.current);
       }
       bridge.emit("REQUEST_WORLD_SNAPSHOT", {});
     });
@@ -542,6 +594,17 @@ export function GameSimulatorShell({
   const activeBinding = useMemo(() => {
     if (!activeIncident) return null;
     return activeIncident.binding;
+  }, [activeIncident]);
+
+  const selectedIncidentForEvidence = useMemo(() => {
+    if (!activeIncident) return undefined;
+    const authoredEvent = simulationEvents.find((event) => event.id === activeIncident.eventId);
+    return {
+      eventId: activeIncident.eventId,
+      instanceId: activeIncident.instanceId,
+      relatedRuleIds: [...new Set(authoredEvent?.choices.flatMap((choice) => choice.ruleIds) ?? [])],
+      label: activeIncident.binding.locationId,
+    };
   }, [activeIncident]);
 
   // Akcije specifične za ulogu
@@ -935,6 +998,16 @@ export function GameSimulatorShell({
       <div className="sr-only" aria-live="polite">
         {statusNotification}
       </div>
+
+      {initialOnlyEventIds && initialOnlyEventIds.length > 0 && (
+        <section className="flex items-center gap-2 rounded-2xl border border-brand/30 bg-brand/10 p-3 text-xs text-brand" data-testid="retry-mode-banner">
+          <RotateCcw className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <div>
+            <p className="font-bold">Ponovni pokušaj: tvoje promašene situacije</p>
+            <p className="mt-0.5 text-[11px] text-brand/80">Ovaj dan sadrži samo {initialOnlyEventIds.length} situacija iz prethodnog pokušaja. Ponovo donesi odluke u živom 2D prostoru.</p>
+          </div>
+        </section>
+      )}
 
       {context.currentPhase === "counting" && !isCountingModalOpen && (
         <section
@@ -1400,6 +1473,7 @@ export function GameSimulatorShell({
         currentSimulationTimeMs={context.simulationTimeMs}
         currentRole={context.domainState.role}
         selectedLocationId={selectedHotspot?.locationId}
+        selectedIncident={selectedIncidentForEvidence}
         onAddEvidence={(record) => {
           send({ type: "ADD_EVIDENCE", record });
           setStatusNotification(`Zabeleženo u beležnicu dokaza (${record.timestamp})`);
@@ -1443,6 +1517,23 @@ export function GameSimulatorShell({
               );
               const debrief = computeDebrief(context.domainState);
               const timeline = buildDebriefTimeline(context.actionLog, context.evidenceNotebook, context.missedIncidents);
+              const alternativeReviews = debrief.mistakes
+                .slice(0, 4)
+                .map((decision) => {
+                  const event = simulationEvents.find((candidate) => candidate.id === decision.eventId);
+                  const alternatives = event?.choices
+                    .filter(
+                      (choice) =>
+                        choice.id !== decision.choiceId &&
+                        (!choice.roles || choice.roles.includes(context.domainState.role)),
+                    )
+                    .sort((a, b) => {
+                      const rank = { correct: 0, acceptable: 1, suboptimal: 2, wrong: 3, critical_error: 4 };
+                      return rank[a.classification] - rank[b.classification];
+                    }) ?? [];
+                  return { decision, alternatives };
+                })
+                .filter((review) => review.alternatives.length > 0);
 
               return (
                 <div className="mt-4 flex flex-col gap-4">
@@ -1594,6 +1685,49 @@ export function GameSimulatorShell({
                           </div>
                         </>
                       )}
+                      {alternativeReviews.length > 0 && (
+                        <div className="mt-4 border-t border-border/70 pt-3">
+                          <div className="flex items-center gap-2 text-xs font-bold text-ink">
+                            <Lightbulb className="h-3.5 w-3.5 text-amber-400" aria-hidden="true" />
+                            <span>Alternativa za tvoje odluke</span>
+                          </div>
+                          <p className="mt-1 text-[11px] leading-relaxed text-ink-dim">
+                            Pogledaj autorsku reakciju koja bi bolje zaštitila biračko pravo u istoj situaciji.
+                          </p>
+                          <div className="mt-2 space-y-2">
+                            {alternativeReviews.map(({ decision, alternatives }) => {
+                              const alternative = alternatives[0];
+                              const isExpanded = expandedAlternativeEventId === decision.eventId;
+                              return (
+                                <div key={`${decision.eventId}:${decision.choiceId}`} className="rounded-xl border border-border/70 bg-surface p-2.5">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div className="min-w-0">
+                                      <div className="font-mono text-[10px] text-ink-dim">{decision.time} · {decision.eventId}</div>
+                                      <div className="mt-0.5 truncate text-[11px] font-semibold text-ink">{decision.eventTitle}</div>
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => setExpandedAlternativeEventId(isExpanded ? null : decision.eventId)}
+                                      aria-expanded={isExpanded}
+                                      className="shrink-0 rounded-lg border border-brand/30 bg-brand/10 px-2 py-1 text-[10px] font-bold text-brand hover:bg-brand/20"
+                                    >
+                                      {isExpanded ? "Sakrij" : "Pogledaj alternativu"}
+                                    </button>
+                                  </div>
+                                  {isExpanded && (
+                                    <div className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-2.5">
+                                      <div className="text-[10px] font-bold uppercase tracking-wide text-emerald-300">Bolja dostupna reakcija · {CLASSIFICATION_LABELS[alternative.classification]}</div>
+                                      <div className="mt-1 text-[11px] font-semibold leading-relaxed text-ink">{alternative.label}</div>
+                                      <div className="mt-1 text-[11px] leading-relaxed text-ink-dim">{alternative.explanation}</div>
+                                      <div className="mt-1 font-mono text-[10px] text-emerald-300">Pravila: {alternative.ruleIds.join(", ") || "opšti postupak"}</div>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                       {debrief.handledWell.length > 0 && (
                         <p className="mt-3 border-t border-border/70 pt-3 text-xs text-emerald-300">
                           Dobro urađeno: {debrief.handledWell[0].choiceLabel}
@@ -1603,6 +1737,20 @@ export function GameSimulatorShell({
                   </div>
 
                   <div className="flex justify-end pt-2">
+                    {debrief.mistakes.length > 0 && onRetryMistakes && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsDebriefOpen(false);
+                          setExpandedAlternativeEventId(null);
+                          onRetryMistakes([...new Set(debrief.mistakes.map((decision) => decision.eventId))]);
+                        }}
+                        className="mr-auto inline-flex items-center gap-2 rounded-xl border border-brand/40 bg-brand/10 px-4 py-2.5 text-xs font-bold text-brand hover:bg-brand/20"
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+                        Ponovi samo moje greške ({debrief.mistakes.length})
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => setIsDebriefOpen(false)}

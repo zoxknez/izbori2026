@@ -98,6 +98,21 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     actor.stop();
   });
 
+  it("ponovni pokušaj ograničava live scheduler na promašene authored situacije", () => {
+    const machine = createElectionDayMachine({ role: "clan_odbora", onlyEventIds: ["E01"] });
+    const actor = createActor(machine);
+    actor.start();
+
+    actor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 72_000_000 });
+
+    const context = actor.getSnapshot().context;
+    expect(context.domainState.allowedEventIds).toEqual(["E01"]);
+    expect([...context.activeIncidents, ...context.missedIncidents].every((incident) => incident.eventId === "E01")).toBe(true);
+    expect([...context.activeIncidents, ...context.missedIncidents].some((incident) => incident.eventId === "E02")).toBe(false);
+
+    actor.stop();
+  });
+
   it("ADD_EVIDENCE dodaje strukturirani dokaz i beleži unos u actionLog", () => {
     const machine = createElectionDayMachine({ role: "posmatrac" });
     const actor = createActor(machine);
@@ -123,6 +138,9 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     const ctx = actor.getSnapshot().context;
     expect(ctx.evidenceNotebook).toHaveLength(1);
     expect(ctx.evidenceNotebook[0].id).toBe("ev-test-1");
+    expect(ctx.domainState.evidence).toBe(1);
+    expect(ctx.domainState.scores.documentation).toBe(4);
+    expect(ctx.domainState.maxScores.documentation).toBe(4);
     expect(ctx.actionLog).toHaveLength(1);
     expect(ctx.actionLog[0].type).toBe("evidence_recorded");
 

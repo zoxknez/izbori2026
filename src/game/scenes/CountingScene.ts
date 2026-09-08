@@ -1,5 +1,6 @@
 import * as Phaser from "phaser";
 import type { GameBridge } from "@/game/bridge/game-bridge";
+import type { GameBridgeEventMap } from "@/game/bridge/game-events";
 import { COUNTING_WORKFLOW_STEPS, nextCountingWorkflowStep } from "@/game/world/counting-workflow";
 import { ProceduralAudio } from "@/game/audio/procedural-audio";
 
@@ -23,6 +24,10 @@ export class CountingScene extends Phaser.Scene {
   private unsubAdvanceWorkflow?: () => void;
   private unsubRequestWorldSnapshot?: () => void;
   private unsubRestoreWorldState?: () => void;
+  private unsubCountingStatus?: () => void;
+  private countingStatus?: GameBridgeEventMap["COUNTING_STATUS_CHANGED"];
+  private countingStatusText?: Phaser.GameObjects.Text;
+  private discrepancyText?: Phaser.GameObjects.Text;
   private reducedMotion = false;
 
   constructor() {
@@ -58,6 +63,9 @@ export class CountingScene extends Phaser.Scene {
       );
       this.refreshWorkflowPresentation();
     });
+    this.unsubCountingStatus = this.bridge?.on("COUNTING_STATUS_CHANGED", (status) => {
+      this.refreshCountingStatus(status);
+    });
 
     // 1. Noćna atmosfera prostorije (zatvoreno biračko mesto posle 20:00)
     this.add.tileSprite(width / 2, height / 2, width - 40, height - 40, "floor-tile").setTint(0x8899aa);
@@ -81,6 +89,23 @@ export class CountingScene extends Phaser.Scene {
       fontFamily: "sans-serif",
       fontStyle: "bold",
     });
+
+    this.countingStatusText = this.add.text(40, 68, "R —  U —  G —  B —  V —  N —", {
+      fontSize: "11px",
+      color: "#bae6fd",
+      fontFamily: "monospace",
+      fontStyle: "bold",
+      backgroundColor: "rgba(15, 23, 42, 0.82)",
+      padding: { x: 8, y: 4 },
+    });
+    this.discrepancyText = this.add.text(width - 40, 68, "", {
+      fontSize: "10px",
+      color: "#6ee7b7",
+      fontFamily: "sans-serif",
+      fontStyle: "bold",
+      backgroundColor: "rgba(15, 23, 42, 0.82)",
+      padding: { x: 8, y: 4 },
+    }).setOrigin(1, 0);
 
     // 2. Centralni sto za prebrojavanje (Counting Table)
     const tableCenterX = width / 2;
@@ -110,35 +135,22 @@ export class CountingScene extends Phaser.Scene {
     }).setOrigin(0.5);
     this.workflowProgress = this.add.graphics();
 
-    // 3. Stanica 1: Neupotrebljeni listići (U)
-    const unusedSprite = this.add.sprite(tableCenterX - 180, tableCenterY - 10, "stack-unused");
-    this.createCountingBadge("counting-unused", tableCenterX - 180, tableCenterY + 34, "1. Neupotrebljeni (U)", "#cbd5e1");
-    this.setupHotspot(unusedSprite, "counting-unused", "counting-table", "1. Neupotrebljeni listići (U)");
-
-    // 4. Stanica 2: Birački spisak (G)
-    const rollSprite = this.add.sprite(tableCenterX - 100, tableCenterY - 10, "table-desk").setScale(0.55);
-    this.createCountingBadge("counting-voter-roll", tableCenterX - 100, tableCenterY + 34, "2. Spisak birača (G)", "#34d399");
-    this.setupHotspot(rollSprite, "counting-voter-roll", "counting-table", "2. Birački spisak i potpisani birači (G)");
-
-    // 5. Stanica 3: Kontrolni list u kutiji
-    const controlSprite = this.add.sprite(tableCenterX - 20, tableCenterY - 10, "doc-control-sheet");
-    this.createCountingBadge("counting-control-sheet", tableCenterX - 20, tableCenterY + 34, "3. Kontrolni list", "#fb923c");
-    this.setupHotspot(controlSprite, "counting-control-sheet", "counting-table", "3. Kontrolni list u glasačkoj kutiji");
-
-    // 6. Stanica 4: Listići u kutiji (B)
-    const boxBallotsSprite = this.add.sprite(tableCenterX + 60, tableCenterY - 10, "ballot-box").setScale(0.8);
-    this.createCountingBadge("counting-box-ballots", tableCenterX + 60, tableCenterY + 34, "4. Iz kutije (B)", "#38bdf8");
-    this.setupHotspot(boxBallotsSprite, "counting-box-ballots", "counting-table", "4. Listići u glasačkoj kutiji (B)");
-
-    // 7. Stanica 5: Razvrstavanje (V i N)
-    const sortedSprite = this.add.sprite(tableCenterX + 130, tableCenterY - 10, "stack-unused").setTint(0x10b981);
-    this.createCountingBadge("counting-sorting", tableCenterX + 130, tableCenterY + 34, "5. Važeći / Nevažeći", "#10b981");
-    this.setupHotspot(sortedSprite, "counting-sorting", "counting-table", "5. Razvrstavanje: Važeći (V) i Nevažeći (N)");
-
-    // 8. Stanica 6 & 7: Zapisnik o radu biračkog odbora
-    const protocolSprite = this.add.sprite(tableCenterX + 195, tableCenterY - 10, "doc-protocol");
-    this.createCountingBadge("counting-protocol", tableCenterX + 195, tableCenterY + 38, "6. Zapisnik BO", "#60a5fa");
-    this.setupHotspot(protocolSprite, "counting-protocol", "counting-table", "6. Zapisnik o radu biračkog odbora");
+    // 3-8. Representative counting workflow in a readable 3x2 layout.
+    const cells = [
+      { x: tableCenterX - 142, y: tableCenterY - 30, id: "counting-unused", label: "1 U · Neupotrebljeni", color: "#cbd5e1", texture: "stack-unused", title: "1. Neupotrebljeni listići (U)" },
+      { x: tableCenterX, y: tableCenterY - 30, id: "counting-voter-roll", label: "2 G · Spisak birača", color: "#34d399", texture: "table-desk", title: "2. Birački spisak i potpisani birači (G)", scale: 0.55 },
+      { x: tableCenterX + 142, y: tableCenterY - 30, id: "counting-control-sheet", label: "3 · Kontrolni list", color: "#fb923c", texture: "doc-control-sheet", title: "3. Kontrolni list u glasačkoj kutiji" },
+      { x: tableCenterX - 142, y: tableCenterY + 34, id: "counting-box-ballots", label: "4 B · Iz kutije", color: "#38bdf8", texture: "ballot-box", title: "4. Listići u glasačkoj kutiji (B)", scale: 0.8 },
+      { x: tableCenterX, y: tableCenterY + 34, id: "counting-sorting", label: "5 V/N · Razvrstavanje", color: "#10b981", texture: "stack-unused", title: "5. Razvrstavanje: Važeći (V) i Nevažeći (N)", tint: 0x10b981 },
+      { x: tableCenterX + 142, y: tableCenterY + 34, id: "counting-protocol", label: "6 · Zapisnik BO", color: "#60a5fa", texture: "doc-protocol", title: "6. Zapisnik o radu biračkog odbora" },
+    ] as const;
+    for (const cell of cells) {
+      const sprite = this.add.sprite(cell.x, cell.y, cell.texture);
+      if ("scale" in cell) sprite.setScale(cell.scale);
+      if ("tint" in cell) sprite.setTint(cell.tint);
+      this.createCountingBadge(cell.id, cell.x, cell.y + 27, cell.label, cell.color);
+      this.setupHotspot(sprite, cell.id, "counting-table", cell.title);
+    }
 
     // 9. Članovi biračkog odbora sede oko stola (ozbiljna radna atmosfera)
     const boardSeats = [
@@ -163,8 +175,8 @@ export class CountingScene extends Phaser.Scene {
     // 10. Posmatrači prate sa propisane udaljenosti (bez dodirivanja stola)
     const observerZone = this.add.graphics();
     observerZone.lineStyle(1.5, 0x0284c7, 0.6);
-    observerZone.strokeRoundedRect(tableCenterX - 220, tableCenterY + 125, 440, 36, 8);
-    this.add.text(tableCenterX, tableCenterY + 130, "👁️ ZONA ZA POSMATRAČE (Nadzor bez fizičkog dodirivanja materijala)", {
+    observerZone.strokeRoundedRect(tableCenterX - 220, tableCenterY + 145, 440, 44, 8);
+    this.add.text(tableCenterX, tableCenterY + 151, "👁️ ZONA ZA POSMATRAČE · nadzor bez dodirivanja materijala", {
       fontSize: "9px",
       color: "#38bdf8",
       fontFamily: "sans-serif",
@@ -173,13 +185,14 @@ export class CountingScene extends Phaser.Scene {
 
     const observerAvatars = [tableCenterX - 100, tableCenterX, tableCenterX + 100];
     for (const ox of observerAvatars) {
-      const obs = this.add.sprite(ox, tableCenterY + 145, "npc-avatar");
+      const obs = this.add.sprite(ox, tableCenterY + 173, "npc-avatar");
       obs.setScale(0.65).setTint(0x38bdf8);
     }
 
     // Indikator selekcije
     this.selectedIndicator = this.add.graphics();
     this.refreshWorkflowPresentation();
+    this.refreshCountingStatus();
 
     // Mobile pan podrška: prevlačenje kamere prevlačenjem/dodirom
     this.input.on("pointermove", (p: Phaser.Input.Pointer) => {
@@ -204,6 +217,7 @@ export class CountingScene extends Phaser.Scene {
       this.unsubAdvanceWorkflow?.();
       this.unsubRequestWorldSnapshot?.();
       this.unsubRestoreWorldState?.();
+      this.unsubCountingStatus?.();
       this.audio.destroy();
     });
   }
@@ -227,6 +241,7 @@ export class CountingScene extends Phaser.Scene {
     });
 
     target.on("pointerdown", () => {
+      this.audio.startAmbient("counting");
       if (this.selectedIndicator) {
         this.selectedIndicator.clear();
         this.selectedIndicator.lineStyle(2, 0x38bdf8, 0.9);
@@ -239,6 +254,7 @@ export class CountingScene extends Phaser.Scene {
         title,
       });
       this.bridge?.emit("AUDIO_CUE_REQUESTED", { cue: "ui" });
+      this.bridge?.emit("AUDIO_CUE_REQUESTED", { cue: "counting" });
       this.handleWorkflowInteraction(hotspotId, target);
     });
   }
@@ -276,6 +292,21 @@ export class CountingScene extends Phaser.Scene {
       nextEntityId: 0,
       countingWorkflowStep: this.workflowStep,
     });
+  }
+
+  private refreshCountingStatus(status?: GameBridgeEventMap["COUNTING_STATUS_CHANGED"]) {
+    if (status) this.countingStatus = status;
+    const current = this.countingStatus;
+    if (!current || !this.countingStatusText || !this.discrepancyText) return;
+
+    const value = (number: number | null) => number === null ? "—" : String(number);
+    this.countingStatusText.setText(
+      `R ${value(current.receivedBallots)}   U ${value(current.unusedBallots)}   G ${value(current.votersTurnout)}   B ${value(current.ballotsInBox)}   V ${value(current.validBallots)}   N ${value(current.invalidBallots)}`,
+    );
+    this.countingStatusText.setColor(current.allValid ? "#a7f3d0" : "#fde68a");
+    this.discrepancyText
+      .setColor(current.allValid ? "#6ee7b7" : "#fbbf24")
+      .setText(current.allValid ? "✓ kontrola usaglašena" : `⚠ razlika: ${current.discrepancies[0] ?? "potrebna provera"}`);
   }
 
   private refreshWorkflowPresentation() {

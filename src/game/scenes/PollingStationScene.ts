@@ -114,15 +114,21 @@ export class PollingStationScene extends Phaser.Scene {
       this.isSimPaused = data.paused;
     });
 
-    this.unsubIncidentPresentations = this.bridge?.on("WORLD_INCIDENT_PRESENTATIONS_CHANGED", ({ incidents, missedIncidents }) => {
+    this.unsubIncidentPresentations = this.bridge?.on("WORLD_INCIDENT_PRESENTATIONS_CHANGED", ({ incidents, missedIncidents, resolvedIncidents = [] }) => {
       const incoming = new Map(incidents.map((incident) => [incident.instanceId, incident]));
       const missed = new Map((missedIncidents ?? []).map((incident) => [incident.instanceId, incident]));
+      const resolved = new Map(resolvedIncidents.map((incident) => [incident.instanceId, incident.state]));
       for (const [instanceId, visual] of this.incidentVisuals) {
         if (!incoming.has(instanceId)) {
           // Timeout is not a successful resolution: keep the physical problem
           // in the world and show a distinct consequence marker in the debrief.
           if (missed.has(instanceId)) {
             this.markTimedOutIncident(visual);
+          } else if (
+            resolved.get(instanceId) === "unresolved" ||
+            (resolved.get(instanceId) === undefined && visual.presentation.resolvedVisual.state === "unresolved")
+          ) {
+            this.markUnresolvedIncident(visual);
           } else if (visual.presentation.resolvedVisual.remove) {
             this.incidentVisuals.delete(instanceId);
             this.animateResolvedIncident(visual);
@@ -481,7 +487,10 @@ export class PollingStationScene extends Phaser.Scene {
       locationId: presentation.locationId,
       title: presentation.attention.label,
     }));
-    container.on("pointerdown", () => this.audio.play("incident"));
+    container.on("pointerdown", () => {
+      this.audio.startAmbient("ambient");
+      this.audio.play("incident");
+    });
     this.incidentVisuals.set(incidentId, { container, incidentId, presentation });
     this.reactNearbyVoters(x, y, presentation.attention.awareness);
   }
@@ -556,6 +565,19 @@ export class PollingStationScene extends Phaser.Scene {
         ease: "Sine.easeInOut",
       });
     }
+  }
+
+  /** A poor authored choice resolves the active binding but leaves a visible consequence. */
+  private markUnresolvedIncident(visual: IncidentVisual) {
+    visual.container.setAlpha(0.9);
+    visual.container.disableInteractive();
+    if (visual.outcomeLabel) return;
+
+    visual.outcomeLabel = this.add.text(0, 42, "⚠ posledica ostaje · proveri u debriefu", {
+      fontSize: "9px", color: "#fde68a", fontFamily: "sans-serif", fontStyle: "bold",
+      backgroundColor: "rgba(120, 53, 15, 0.94)", padding: { x: 4, y: 2 },
+    }).setOrigin(0.5);
+    visual.container.add(visual.outcomeLabel);
   }
 
   private createIncidentWorldObject(
@@ -861,6 +883,7 @@ export class PollingStationScene extends Phaser.Scene {
     });
 
     sprite.on("pointerdown", () => {
+      this.audio.startAmbient("ambient");
       this.highlightObject(sprite);
       this.bridge?.emit("HOTSPOT_CLICKED", {
         hotspotId,
