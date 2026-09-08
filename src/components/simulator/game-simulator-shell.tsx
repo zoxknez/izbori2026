@@ -654,6 +654,7 @@ export function GameSimulatorShell({
               key={spd}
               type="button"
               onClick={() => send({ type: "SET_SPEED", speed: spd })}
+              aria-pressed={context.speed === spd && !context.paused}
               className={cn(
                 "h-8 rounded-xl px-2.5 text-xs font-bold transition-all",
                 context.speed === spd && !context.paused

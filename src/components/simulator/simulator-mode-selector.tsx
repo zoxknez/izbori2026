@@ -69,6 +69,7 @@ export function SimulatorModeSelector() {
                       key={m.id}
                       type="button"
                       onClick={() => setGameMode(m.id)}
+                      aria-pressed={gameMode === m.id}
                       className={cn(
                         "rounded-xl px-2.5 py-1 text-xs font-semibold transition-all",
                         gameMode === m.id
@@ -95,6 +96,7 @@ export function SimulatorModeSelector() {
                         key={r}
                         type="button"
                         onClick={() => setSelectedRole(r)}
+                        aria-pressed={isSel}
                         className={cn(
                           "rounded-xl px-2.5 py-1 text-xs font-semibold transition-all",
                           isSel
@@ -117,6 +119,7 @@ export function SimulatorModeSelector() {
             <button
               type="button"
               onClick={() => setMode("game_2d")}
+              aria-pressed={mode === "game_2d"}
               className={cn(
                 "group relative flex flex-col items-start gap-2.5 rounded-2xl p-4 text-left transition-all duration-200",
                 mode === "game_2d"
@@ -168,6 +171,7 @@ export function SimulatorModeSelector() {
             <button
               type="button"
               onClick={() => setMode("classic")}
+              aria-pressed={mode === "classic"}
               className={cn(
                 "group relative flex flex-col items-start gap-2.5 rounded-2xl p-4 text-left transition-all duration-200",
                 mode === "classic"

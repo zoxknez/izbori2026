@@ -51,6 +51,11 @@ body {
   border-color: var(--color-border);
 }
 
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
+}
+
 /* Prevent iOS Safari from auto-zooming on input focus */
 @media (max-width: 640px) {
   input,

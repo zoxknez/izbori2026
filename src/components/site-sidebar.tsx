@@ -209,6 +209,7 @@ export function SiteSidebar() {
                     <Link
                       key={item.href}
                       href={item.href}
+                      aria-current={active ? "page" : undefined}
                       onClick={close}
                       className={cn(
                         "group flex items-center justify-between rounded-xl px-2.5 py-2 text-xs font-semibold transition-all",

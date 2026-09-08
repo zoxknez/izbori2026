@@ -57,7 +57,7 @@ export default function RootLayout({
           <SiteSidebar />
           <div className="flex min-h-screen flex-col lg:pl-64">
             <SiteHeader />
-            <main className="flex-1 pb-16 sm:pb-0">{children}</main>
+            <main className="flex-1 pb-16 lg:pb-0">{children}</main>
             <SiteFooter />
           </div>
           <MobileTabBar />
