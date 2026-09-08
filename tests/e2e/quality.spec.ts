@@ -36,15 +36,18 @@ test("public routes have one h1, main landmark and no missing image alt", async 
   }
 });
 
-test("mobile public layouts do not overflow horizontally", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 900 });
+test("public layouts do not overflow horizontally on narrow screens", async ({ page }) => {
+  const routes = ["/", "/validator", "/izvori", "/pravila", "/kontrolor", "/trening/kviz", "/izborni-dan"];
 
-  for (const route of ["/", "/validator", "/izvori", "/trening/kviz", "/izborni-dan"]) {
-    await page.goto(route, { waitUntil: "domcontentloaded" });
-    await expect.poll(
-      () => page.evaluate(() => Math.max(document.body.scrollWidth, document.documentElement.scrollWidth)),
-      { message: `${route} must fit the mobile viewport` },
-    ).toBeLessThanOrEqual(390);
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const route of routes) {
+      await page.goto(route, { waitUntil: "domcontentloaded" });
+      await expect.poll(
+        () => page.evaluate(() => Math.max(document.body.scrollWidth, document.documentElement.scrollWidth)),
+        { message: `${route} must fit the ${width}px mobile viewport` },
+      ).toBeLessThanOrEqual(width);
+    }
   }
 });
 

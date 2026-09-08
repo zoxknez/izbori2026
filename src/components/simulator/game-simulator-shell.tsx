@@ -627,7 +627,7 @@ export function GameSimulatorShell({
         </div>
 
         {/* Kontrole vremena */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex min-w-0 max-w-full flex-wrap items-center justify-end gap-1.5">
           <button
             type="button"
             onClick={() => send({ type: "TOGGLE_PAUSE" })}
@@ -687,7 +687,7 @@ export function GameSimulatorShell({
               title="Premotaj do zvaničnog otvaranja biračkog mesta u 07:00"
             >
               <FastForward className="h-3.5 w-3.5" />
-              <span>07:00</span>
+              <span className="hidden sm:inline">07:00</span>
             </button>
           )}
 

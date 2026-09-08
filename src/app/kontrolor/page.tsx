@@ -229,10 +229,10 @@ export default async function KontrolorPage() {
             </Link>
           </div>
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <div className="mt-6 grid min-w-0 gap-4 sm:grid-cols-2">
             {annulment.map((r) => (
-              <Link key={r.id} href={`/pravila/${r.slug}`} className="group block h-full">
-                <div className="flex h-full flex-col justify-between rounded-2xl border border-sev-ponistavanje/25 bg-surface/80 p-5 transition-all hover:border-sev-ponistavanje/60 hover:bg-surface hover:shadow-md">
+              <Link key={r.id} href={`/pravila/${r.slug}`} className="group block h-full min-w-0">
+                <div className="flex h-full min-w-0 flex-col justify-between rounded-2xl border border-sev-ponistavanje/25 bg-surface/80 p-5 transition-all hover:border-sev-ponistavanje/60 hover:bg-surface hover:shadow-md">
                   <div>
                     <div className="flex items-center justify-between gap-2">
                       <SeverityBadge severity="ponistavanje" size="sm" />

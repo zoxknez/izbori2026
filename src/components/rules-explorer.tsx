@@ -180,14 +180,14 @@ export function RulesExplorer({
         </div>
 
         {/* Sorting & Layout Toggles */}
-        <div className="flex items-center gap-2">
+        <div className="flex w-full min-w-0 items-center gap-2 md:w-auto">
           {/* Sort dropdown */}
-          <div className="relative flex items-center">
+          <div className="relative min-w-0 flex-1 md:flex-none">
             <ArrowUpDown className="pointer-events-none absolute left-3 h-3.5 w-3.5 text-ink-faint" />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="h-12 appearance-none rounded-xl border border-border/80 bg-surface/90 pl-8 pr-8 text-xs font-semibold text-ink shadow-xs hover:border-brand/40 focus:border-brand/60 focus:outline-none cursor-pointer"
+              className="h-12 w-full min-w-0 appearance-none rounded-xl border border-border/80 bg-surface/90 pl-8 pr-8 text-xs font-semibold text-ink shadow-xs hover:border-brand/40 focus:border-brand/60 focus:outline-none cursor-pointer md:w-auto"
             >
               <option value="priority">Sort: Najkritičnije prvo</option>
               <option value="annulment">Sort: Poništavanja prvo</option>
@@ -225,7 +225,7 @@ export function RulesExplorer({
           {/* Mobile Filter Toggle Button */}
           <button
             onClick={() => setShowMobileFilters(!showMobileFilters)}
-            className="flex sm:hidden h-12 items-center gap-1.5 rounded-xl border border-border/80 bg-surface/90 px-3.5 text-xs font-semibold text-ink"
+            className="flex shrink-0 sm:hidden h-12 items-center gap-1.5 rounded-xl border border-border/80 bg-surface/90 px-3.5 text-xs font-semibold text-ink"
           >
             <SlidersHorizontal className="h-4 w-4" />
             <span>Filteri</span>
@@ -408,14 +408,15 @@ export function RulesExplorer({
             Stranica <strong>{safePage}</strong> od <strong>{totalPages}</strong>
           </p>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex max-w-full min-w-0 flex-wrap items-center justify-end gap-1.5">
             <button
               onClick={() => handlePageChange(safePage - 1)}
               disabled={safePage <= 1}
-              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border/80 bg-surface-2/80 px-3 text-xs font-semibold text-ink disabled:opacity-40 disabled:cursor-not-allowed hover:bg-surface-2 transition-colors"
+              aria-label="Prethodna stranica"
+              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border/80 bg-surface-2/80 px-2 text-xs font-semibold text-ink disabled:opacity-40 disabled:cursor-not-allowed hover:bg-surface-2 transition-colors sm:px-3"
             >
               <ChevronLeft className="h-4 w-4" />
-              Prethodna
+              <span className="hidden sm:inline">Prethodna</span>
             </button>
 
             <div className="flex items-center gap-1">
@@ -452,9 +453,10 @@ export function RulesExplorer({
             <button
               onClick={() => handlePageChange(safePage + 1)}
               disabled={safePage >= totalPages}
-              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border/80 bg-surface-2/80 px-3 text-xs font-semibold text-ink disabled:opacity-40 disabled:cursor-not-allowed hover:bg-surface-2 transition-colors"
+              aria-label="Sledeća stranica"
+              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border/80 bg-surface-2/80 px-2 text-xs font-semibold text-ink disabled:opacity-40 disabled:cursor-not-allowed hover:bg-surface-2 transition-colors sm:px-3"
             >
-              Sledeća
+              <span className="hidden sm:inline">Sledeća</span>
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
