@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, FileText, Plus, X, Users, Clock } from "lucide-react";
 import type { EvidenceRecord } from "@/lib/domain/simulator/live-types";
 import type { SimulationRole } from "@/lib/domain/simulator/types";
@@ -55,6 +55,22 @@ export function EvidenceTray({
   const [assumptionInput, setAssumptionInput] = useState("");
   const [assumptions, setAssumptions] = useState<string[]>([]);
   const [selectedWitnesses, setSelectedWitnesses] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

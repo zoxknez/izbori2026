@@ -81,6 +81,7 @@ export function GameSimulatorShell({
   const [worldSnapshot, setWorldSnapshot] = useState<WorldSimulationSaveState | null>(null);
   const worldSnapshotRef = useRef<WorldSimulationSaveState | null>(null);
   const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const saveRevisionRef = useRef(0);
 
   // 2. XState 5 Machine instanca (rehidrira se iz sačuvane sesije ukoliko postoji)
   const machine = useMemo(
@@ -136,6 +137,7 @@ export function GameSimulatorShell({
   }, [context.runId]);
 
   const persistGame = useCallback(async (notify = false) => {
+    const saveRevision = ++saveRevisionRef.current;
     const saveContext = contextRef.current;
     const snapshot = actorRef?.getPersistedSnapshot?.();
 
@@ -155,7 +157,11 @@ export function GameSimulatorShell({
     // Hashing and IndexedDB writes are asynchronous. Queue the complete write
     // so autosave, manual save and lifecycle saves always commit in invocation
     // order, even when a newer snapshot arrives during crypto.subtle.digest().
+    // Obsolete queued requests are skipped so repeated autosaves never delay
+    // an explicit manual save behind stale work.
     const saveOperation = saveQueueRef.current.then(async () => {
+      if (saveRevision !== saveRevisionRef.current) return;
+
       const hash = await computeCanonicalStateHash({
         runId: saveContext.runId,
         seed: saveContext.seed,
@@ -194,6 +200,7 @@ export function GameSimulatorShell({
         stateHash: hash,
       };
 
+      if (saveRevision !== saveRevisionRef.current) return;
       await saveGameSession(saveObj);
       if (notify) {
         setSaveFeedback("Sačuvano!");
@@ -261,6 +268,26 @@ export function GameSimulatorShell({
   const [statusNotification, setStatusNotification] = useState<string | null>(null);
   const [audioMuted, setAudioMuted] = useState(false);
   const [audioVolume, setAudioVolume] = useState(0.12);
+
+  useEffect(() => {
+    if (!isRoleModalOpen && !isDebriefOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsRoleModalOpen(false);
+        setIsDebriefOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isDebriefOpen, isRoleModalOpen]);
+
   const normalizedIncidentCursor = context.activeIncidents.length === 0
     ? 0
     : Math.min(incidentCursor, context.activeIncidents.length - 1);

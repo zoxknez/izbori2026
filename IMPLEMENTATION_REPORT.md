@@ -58,7 +58,7 @@ Urađeno:
 
 Provere: typecheck, ESLint, Vitest i production build prolaze; testiran je i rollback pointera kada
 preuzimanje zakaže posle prvog fajla. Dataset snapshot trenutno sadrži 66 pravila, 8 izvora, 3 stabla,
-193 training reference-a i 80 simulation reference-a.
+193 training reference-a i 136 simulation reference-a.
 
 ## Faza 3 - trening engine
 
@@ -75,9 +75,12 @@ Urađeno:
 
 Provere: coverage, mastery, selection i exam scoring imaju unit testove; typecheck, ESLint, Vitest i build coverage gate prolaze. Preostaje samo ručna legal/content redakcija promptova i objašnjenja.
 
-## Faza 4 - simulator biračkog dana
+## Faza 4 - simulator biračkog dana (početni milestone)
 
-Status: **engine, vođeni i randomizovani režim implementirani**.
+Status: **osnovni engine milestone; kasnija nadogradnja sadržaja i 2D sveta je opisana niže**.
+
+Napomena: brojke od 30 događaja i 80 odluka u ovom istorijskom odeljku odnose se na početnu verziju
+pre nadogradnje simulatora od 7. septembra 2026. Aktuelni sadržaj ima 55 događaja i 136 odluka.
 
 Urađeno:
 
@@ -136,7 +139,7 @@ Urađeno:
 
 - dodat cross-module Playwright tok: validator demo → trening učitavanje → simulator odluka;
 - dodate accessibility smoke provere za jedan `h1`, `main` landmark i missing image alt na javnim rutama;
-- E2E sada pokriva javne rute, offline API, SW/offline fallback, training practice/exam sa breakdown-om i IndexedDB stanjem, randomizovani i kompletan 30-event simulator, indeksiranu globalnu pretragu, admin RBAC guard za pravila/izvore/publish i incident draft kroz online/offline prelaz; dodat je i browser performance budget (23 javna/guard testa prolaze);
+- E2E sada pokriva javne rute, offline API, SW/offline fallback, training practice/exam sa breakdown-om i IndexedDB stanjem, simulator tokove kroz uloge i režime, indeksiranu globalnu pretragu, admin RBAC guard za pravila/izvore/publish i incident draft kroz online/offline prelaz; dodat je i browser performance budget;
 - authenticated Admin publish → dataset → client update tok je izvršen sa stvarnim admin nalogom na kratkotrajnom Neon branch-u: login, publish nove verzije, `/api/offline-dataset/current`, download, hash/schema/cross-reference validacija i IndexedDB activation su prošli; branch i test nalog su obrisani posle testa, production branch nije menjan;
 - production build i deployment se proveravaju posle svake veće faze.
 
@@ -230,10 +233,10 @@ nijedna stvarna posledica i nijedan misconception mehanizam.
 
 ### Provere
 
-- Unit: **55 testova** (ranije 36), uključujući nove pakete za simulator (uloge, posledice,
+- Unit: **113 testova u 26 test fajlova**, uključujući pakete za simulator (uloge, posledice,
   debrief, teški režim, retry režim) i trening (tipovi odgovora, misconception životni ciklus).
-- E2E: **25 prolazi, 1 preskočen** (admin publish bez fixture kredencijala), sa novim tokovima za
-  put birača, ceo dan člana odbora, nasumični režim i registrovanje zablude.
+- E2E: **34 testa u 4 fajla** (admin publish se preskače bez izolovanih fixture kredencijala), sa
+  tokovima za put birača, ceo dan člana odbora, nasumični režim, modal accessibility i zablude.
 - `npm run build` prolazi sa svim gate-ovima; aktivni dataset je obnovljen kao
   `2026.09.07-simulator-training-upgrade` (66 pravila, 193 trening reference, 136 simulation
   referenci, 3 stabla odluka).

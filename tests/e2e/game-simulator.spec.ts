@@ -67,18 +67,24 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     const evidenceBtn = page.getByRole("button", { name: /Dokazi:/i });
     await expect(evidenceBtn).toBeVisible();
     await evidenceBtn.click();
-    await expect(page.getByText(/Beležnica dokaza i zapažanja/i)).toBeVisible();
+    const evidenceDialog = page.getByRole("dialog", { name: /Beležnica dokaza i zapažanja/i });
+    await expect(evidenceDialog).toBeVisible();
+    await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe("hidden");
     await page.getByRole("button", { name: /Nova zabeleška/i }).click();
     await expect(page.getByText(/2\/4 kompletno/i)).toBeVisible();
     await page.getByRole("button", { name: /Otkaži/i }).click();
     await page.getByRole("button", { name: /Zatvori beležnicu/i }).click();
+    await expect(evidenceDialog).not.toBeVisible();
+    await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe("");
 
     // Otvaramo završni debrief smene
     const debriefBtn = page.getByRole("button", { name: /Završi smenu/i });
     await expect(debriefBtn).toBeVisible();
     await debriefBtn.click();
-    await expect(page.getByText(/Debrief smene i odložene posledice/i)).toBeVisible();
-    await page.getByRole("button", { name: /Nastavi smenu/i }).click();
+    const debriefDialog = page.getByRole("dialog", { name: /Debrief smene i odložene posledice/i });
+    await expect(debriefDialog).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(debriefDialog).not.toBeVisible();
 
     // Otvaramo vodič kroz uloge i menjamo ulogu u Posmatrača
     const roleBtn = page.getByTestId("role-selector-button");
@@ -126,6 +132,8 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     // Zvanični zapisnik biračkog odbora se automatski otvara na početku prebrojavanja
     const countingModal = page.getByTestId("counting-protocol-modal");
     await expect(countingModal).toBeVisible();
+    await expect(countingModal).toHaveAttribute("role", "dialog");
+    await expect(countingModal).toHaveAttribute("aria-modal", "true");
     await expect(countingModal.getByText(/Zapisnik o radu biračkog odbora/i)).toBeVisible();
 
     // Proveravamo tab 2 (Kontrolni list i forenzika)
@@ -191,6 +199,7 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
 
     const replayModal = page.getByTestId("replay-modal");
     await expect(replayModal).toBeVisible();
+    await expect(replayModal).toHaveAttribute("role", "dialog");
     await expect(replayModal.getByText(/Replay & Revizija toka glasanja/i)).toBeVisible();
     await expect(replayModal.getByText(/Domain replay paritet potvrđen/i)).toBeVisible();
 
