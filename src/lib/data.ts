@@ -18,6 +18,19 @@ import { decisionTrees as bundledDecisionTrees } from "@/content/decision-trees"
 
 const hasDatabase = () => Boolean(process.env.DATABASE_URL);
 
+async function readWithBundledFallback<T>(
+  label: string,
+  readFromDatabase: () => Promise<T>,
+  bundledValue: T,
+): Promise<T> {
+  try {
+    return await readFromDatabase();
+  } catch (error) {
+    console.warn(`[Data] ${label} nije dostupan; koristi se ugrađeni snapshot.`, error);
+    return bundledValue;
+  }
+}
+
 const VALID_SEVERITIES = new Set<Rule["severity"]>([
   "ponistavanje",
   "teska_nepravilnost",
@@ -67,8 +80,14 @@ function toRule(row: RuleRow): Rule {
 
 export const getAllRules = cache(async (): Promise<Rule[]> => {
   if (!hasDatabase()) return bundledRules;
-  const rows = await db.select().from(rulesTable).orderBy(asc(rulesTable.order));
-  return rows.map(toRule);
+  return readWithBundledFallback(
+    "Baza pravila",
+    async () => {
+      const rows = await db.select().from(rulesTable).orderBy(asc(rulesTable.order));
+      return rows.map(toRule);
+    },
+    bundledRules,
+  );
 });
 
 export const getRuleBySlug = cache(async (slug: string): Promise<Rule | undefined> => {
@@ -84,53 +103,71 @@ export const getRulesByIds = cache(async (ids: string[]): Promise<Rule[]> => {
 
 export async function getCriminalArticles() {
   if (!hasDatabase()) return bundledCriminalArticles;
-  const rows = await db.select().from(criminalArticlesTable).orderBy(asc(criminalArticlesTable.order));
-  return rows.map((row) => ({ ...row, nijeDokaz: row.nijeDokaz ?? undefined, order: row.order ?? 0 }));
+  return readWithBundledFallback(
+    "Baza krivičnih članova",
+    async () => {
+      const rows = await db.select().from(criminalArticlesTable).orderBy(asc(criminalArticlesTable.order));
+      return rows.map((row) => ({ ...row, nijeDokaz: row.nijeDokaz ?? undefined, order: row.order ?? 0 }));
+    },
+    bundledCriminalArticles,
+  );
 }
 
 export async function getSources() {
   if (!hasDatabase()) return bundledSources;
-  const rows = await db.select().from(sourcesTable).orderBy(asc(sourcesTable.tier));
-  return rows.map((row) => ({
-    ...row,
-    tier: row.tier as 1 | 2 | 3,
-    type: (row.type as "law" | "bylaw" | "rik" | "court" | "odihr" | "observer_report" | "other") ?? "other",
-    description: row.description ?? undefined,
-    order: row.order ?? 0,
-    publisher: row.publisher ?? undefined,
-    version: row.version ?? undefined,
-    validFromDate: row.validFromDate ?? undefined,
-    validUntilDate: row.validUntilDate ?? undefined,
-    status: (row.status as "active" | "superseded" | "archived") ?? "active",
-    supersedesId: row.supersedesId ?? undefined,
-    lastCheckedAt: row.lastCheckedAt?.toISOString(),
-  }));
+  return readWithBundledFallback(
+    "Baza izvora",
+    async () => {
+      const rows = await db.select().from(sourcesTable).orderBy(asc(sourcesTable.tier));
+      return rows.map((row) => ({
+        ...row,
+        tier: row.tier as 1 | 2 | 3,
+        type: (row.type as "law" | "bylaw" | "rik" | "court" | "odihr" | "observer_report" | "other") ?? "other",
+        description: row.description ?? undefined,
+        order: row.order ?? 0,
+        publisher: row.publisher ?? undefined,
+        version: row.version ?? undefined,
+        validFromDate: row.validFromDate ?? undefined,
+        validUntilDate: row.validUntilDate ?? undefined,
+        status: (row.status as "active" | "superseded" | "archived") ?? "active",
+        supersedesId: row.supersedesId ?? undefined,
+        lastCheckedAt: row.lastCheckedAt?.toISOString(),
+      }));
+    },
+    bundledSources,
+  );
 }
 
 export const getDecisionTrees = cache(async () => {
   if (!hasDatabase()) return bundledDecisionTrees;
-  const [trees, nodes] = await Promise.all([
-    db.select().from(decisionTreesTable).orderBy(asc(decisionTreesTable.order)),
-    db.select().from(decisionNodesTable).orderBy(asc(decisionNodesTable.order)),
-  ]);
-  return trees.map((tree) => ({
-    id: tree.id,
-    slug: tree.slug,
-    title: tree.title,
-    description: tree.description,
-    startNodeId: tree.startNodeId,
-    publicationStatus: (tree.publicationStatus as "draft" | "published" | "archived") ?? "published",
-    reviewStatus: (tree.reviewStatus as "unreviewed" | "content_review" | "legal_review" | "verified" | "stale") ?? "legal_review",
-    order: tree.order ?? 0,
-    nodes: nodes
-      .filter((node) => node.treeId === tree.id)
-      .map((node) => ({
-        id: node.id,
-        type: node.type as "question" | "result",
-        prompt: node.prompt,
-        options: node.options ?? [],
-        ruleIds: node.ruleIds ?? [],
-        order: node.order ?? 0,
-      })),
-  }));
+  return readWithBundledFallback(
+    "Baza decision tree-ova",
+    async () => {
+      const [trees, nodes] = await Promise.all([
+        db.select().from(decisionTreesTable).orderBy(asc(decisionTreesTable.order)),
+        db.select().from(decisionNodesTable).orderBy(asc(decisionNodesTable.order)),
+      ]);
+      return trees.map((tree) => ({
+        id: tree.id,
+        slug: tree.slug,
+        title: tree.title,
+        description: tree.description,
+        startNodeId: tree.startNodeId,
+        publicationStatus: (tree.publicationStatus as "draft" | "archived" | "published") ?? "published",
+        reviewStatus: (tree.reviewStatus as "unreviewed" | "content_review" | "legal_review" | "verified" | "stale") ?? "legal_review",
+        order: tree.order ?? 0,
+        nodes: nodes
+          .filter((node) => node.treeId === tree.id)
+          .map((node) => ({
+            id: node.id,
+            type: node.type as "question" | "result",
+            prompt: node.prompt,
+            options: node.options ?? [],
+            ruleIds: node.ruleIds ?? [],
+            order: node.order ?? 0,
+          })),
+      }));
+    },
+    bundledDecisionTrees,
+  );
 });
