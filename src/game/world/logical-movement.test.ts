@@ -19,4 +19,13 @@ describe("logical movement", () => {
   it("does not advance before its logical start, which preserves pause/restore parity", () => {
     expect(getLogicalMovementPosition(movement, 900)).toEqual(movement.from);
   });
+
+  it("zadržava isti tok kada se putanja serijalizuje za save/resume", () => {
+    const restored = JSON.parse(JSON.stringify(movement)) as LogicalMovement;
+
+    expect(getLogicalMovementPosition(restored, 2_000)).toEqual(
+      getLogicalMovementPosition(movement, 2_000),
+    );
+    expect(isLogicalMovementComplete(restored, 3_000)).toBe(true);
+  });
 });

@@ -1,5 +1,10 @@
 import type { SeededRNG } from "@/game/random/seeded-rng";
-import type { VoterProfile } from "@/game/machines/voter.machine";
+import {
+  getVoterBehaviorProfile,
+  type VoterBehavior,
+  type VoterProfile,
+  type VoterWalkingStyle,
+} from "@/game/machines/voter.machine";
 import { createVoterMachine } from "@/game/machines/voter.machine";
 import { createActor, type ActorRefFrom } from "xstate";
 
@@ -34,6 +39,19 @@ export function generateVoterPopulation(rng: SeededRNG, count: number = 20): Vot
           ? rng.integer(70, 85)
           : rng.integer(55, 70);
 
+    // Behavior is sampled independently from gender/age. It changes the
+    // feeling of the queue and service tempo without changing legal outcomes.
+    const behaviorRoll = rng.next();
+    const behavior: VoterBehavior =
+      behaviorRoll < 0.58
+        ? "routine"
+        : behaviorRoll < 0.74
+          ? "confused"
+          : behaviorRoll < 0.9
+            ? "impatient"
+            : "needs_assistance";
+    const walkingStyle: VoterWalkingStyle = rng.pick(["normal", "slow", "hurried"] as const);
+
     population.push({
       id: `voter-${i}`,
       name: `${name} #${i}`,
@@ -44,6 +62,12 @@ export function generateVoterPopulation(rng: SeededRNG, count: number = 20): Vot
       needsAssistance: false,
       isRegistered: true,
       hasAlreadyVoted: false,
+      behaviorProfile: {
+        patience: rng.integer(35, 95),
+        awareness: rng.integer(40, 95),
+        walkingStyle,
+        behavior,
+      },
       stationWaitTimes: {
         uvCheckMs: rng.integer(1500, 2500),
         idCheckMs: rng.integer(2000, 3000),
@@ -149,6 +173,22 @@ export class NPCStationManager {
     return [...this.completedVoters];
   }
 
+  private getStationWaitDuration(
+    entity: ActiveVoterEntity,
+    station: keyof VoterProfile["stationWaitTimes"],
+  ) {
+    const behavior = getVoterBehaviorProfile(entity.profile).behavior;
+    const multiplier =
+      behavior === "needs_assistance"
+        ? 1.28
+        : behavior === "confused"
+          ? 1.14
+          : behavior === "impatient"
+            ? 0.9
+            : 1;
+    return Math.round(entity.profile.stationWaitTimes[station] * multiplier);
+  }
+
   /** Rebuilds the logical station world from a persisted Phaser snapshot. */
   restoreVoters(entries: Array<{
     profile: VoterProfile;
@@ -220,11 +260,9 @@ export class NPCStationManager {
     // 2. Prolazak kroz aktivne birače po stanicama
     for (const [id, entity] of this.activeVoters.entries()) {
       entity.timeAtStationMs += deltaMs;
-      const waitTimes = entity.profile.stationWaitTimes;
-
       switch (entity.currentStation) {
         case "uv":
-          if (entity.timeAtStationMs >= waitTimes.uvCheckMs && !this.stationOccupancy.identification) {
+          if (entity.timeAtStationMs >= this.getStationWaitDuration(entity, "uvCheckMs") && !this.stationOccupancy.identification) {
             this.stationOccupancy.uv = null;
             this.stationOccupancy.identification = id;
             entity.currentStation = "identification";
@@ -235,7 +273,7 @@ export class NPCStationManager {
           break;
 
         case "identification":
-          if (entity.timeAtStationMs >= waitTimes.idCheckMs && !this.stationOccupancy.voter_roll) {
+          if (entity.timeAtStationMs >= this.getStationWaitDuration(entity, "idCheckMs") && !this.stationOccupancy.voter_roll) {
             this.stationOccupancy.identification = null;
             this.stationOccupancy.voter_roll = id;
             entity.currentStation = "voter_roll";
@@ -246,7 +284,7 @@ export class NPCStationManager {
           break;
 
         case "voter_roll":
-          if (entity.timeAtStationMs >= waitTimes.voterRollMs && !this.stationOccupancy.spray) {
+          if (entity.timeAtStationMs >= this.getStationWaitDuration(entity, "voterRollMs") && !this.stationOccupancy.spray) {
             this.stationOccupancy.voter_roll = null;
             this.stationOccupancy.spray = id;
             entity.currentStation = "spray";
@@ -257,7 +295,7 @@ export class NPCStationManager {
           break;
 
         case "spray":
-          if (entity.timeAtStationMs >= waitTimes.sprayMs && !this.stationOccupancy.receive_ballot) {
+          if (entity.timeAtStationMs >= this.getStationWaitDuration(entity, "sprayMs") && !this.stationOccupancy.receive_ballot) {
             this.stationOccupancy.spray = null;
             this.stationOccupancy.receive_ballot = id;
             entity.currentStation = "receive_ballot";
@@ -268,7 +306,7 @@ export class NPCStationManager {
           break;
 
         case "receive_ballot":
-          if (entity.timeAtStationMs >= waitTimes.receiveBallotMs) {
+          if (entity.timeAtStationMs >= this.getStationWaitDuration(entity, "receiveBallotMs")) {
             const freeBoothIndex = this.getFreeBoothIndex();
             if (freeBoothIndex !== -1) {
               this.stationOccupancy.receive_ballot = null;
@@ -284,7 +322,7 @@ export class NPCStationManager {
           break;
 
         case "booth":
-          if (entity.timeAtStationMs >= waitTimes.boothMs && !this.stationOccupancy.ballot_box) {
+          if (entity.timeAtStationMs >= this.getStationWaitDuration(entity, "boothMs") && !this.stationOccupancy.ballot_box) {
             const boothIdx = entity.assignedBoothIndex ?? 0;
             this.stationOccupancy.booths[boothIdx] = null;
             this.stationOccupancy.ballot_box = id;
@@ -296,7 +334,7 @@ export class NPCStationManager {
           break;
 
         case "ballot_box":
-          if (entity.timeAtStationMs >= waitTimes.ballotBoxMs) {
+          if (entity.timeAtStationMs >= this.getStationWaitDuration(entity, "ballotBoxMs")) {
             this.stationOccupancy.ballot_box = null;
             entity.currentStation = "exiting";
             entity.timeAtStationMs = 0;

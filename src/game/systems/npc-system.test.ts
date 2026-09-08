@@ -16,6 +16,19 @@ describe("Milestone 2: NPC Station Manager & Population Generator", () => {
     expect(pop1.map((p) => p.name)).toEqual(pop2.map((p) => p.name));
     expect(pop1.map((p) => p.walkSpeed)).toEqual(pop2.map((p) => p.walkSpeed));
     expect(pop1.map((p) => p.gender)).toEqual(pop2.map((p) => p.gender));
+    expect(pop1.map((p) => p.behaviorProfile)).toEqual(pop2.map((p) => p.behaviorProfile));
+    expect(pop1.every((p) => {
+      const behavior = p.behaviorProfile;
+      return Boolean(
+        behavior &&
+          behavior.patience >= 35 &&
+          behavior.patience <= 95 &&
+          behavior.awareness >= 40 &&
+          behavior.awareness <= 95 &&
+          ["normal", "slow", "hurried"].includes(behavior.walkingStyle) &&
+          ["routine", "confused", "impatient", "needs_assistance"].includes(behavior.behavior),
+      );
+    })).toBe(true);
   });
 
   it("NPCStationManager raspoređuje birače u red i sukcesivno ih vodi kroz stanice", () => {

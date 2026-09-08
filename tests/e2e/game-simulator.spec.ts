@@ -142,8 +142,13 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     // Verifikujemo da je faza prešla u Prebrojavanje i Zapisnik
     await expect(page.getByText(/Prebrojavanje i Zapisnik \(20:00\+\)/i)).toBeVisible();
 
-    // Zvanični zapisnik biračkog odbora se automatski otvara na početku prebrojavanja
+    // Counting je prvo vidljiva, interaktivna Phaser scena; zapisnik se otvara kontekstualno.
     const countingModal = page.getByTestId("counting-protocol-modal");
+    await expect(page.getByTestId("counting-workspace-banner")).toBeVisible();
+    await expect(countingModal).not.toBeVisible();
+    await page.getByRole("button", { name: /1\. Neupotrebljeni listići/i }).click();
+    await expect(page.getByTestId("inspect-protocol-btn")).toBeVisible();
+    await page.getByTestId("open-protocol-button").click();
     await expect(countingModal).toBeVisible();
     await expect(countingModal).toHaveAttribute("role", "dialog");
     await expect(countingModal).toHaveAttribute("aria-modal", "true");

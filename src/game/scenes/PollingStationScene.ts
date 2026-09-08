@@ -11,7 +11,7 @@ import {
   STATION_WAYPOINTS,
   type Point2D,
 } from "@/game/world/routes";
-import type { VoterProfile } from "@/game/machines/voter.machine";
+import { getVoterBehaviorProfile, type VoterProfile } from "@/game/machines/voter.machine";
 import type { WorldIncidentPresentation } from "@/game/world/world-incident-presentation";
 import type { EvidenceRecord } from "@/lib/domain/simulator/live-types";
 import { getLogicalMovementPosition, isLogicalMovementComplete, type LogicalMovement } from "@/game/world/logical-movement";
@@ -23,6 +23,7 @@ interface VoterVisual {
   sprite: Phaser.GameObjects.Sprite;
   label: Phaser.GameObjects.Text;
   statusLabel: Phaser.GameObjects.Text;
+  moodLabel: Phaser.GameObjects.Text;
 }
 
 interface IncidentVisual {
@@ -175,6 +176,7 @@ export class PollingStationScene extends Phaser.Scene {
           progress: v.timeAtStationMs,
           x: visual?.container.x ?? 0,
           y: visual?.container.y ?? 0,
+          movement: this.logicalMovements.get(v.profile.id),
         };
       });
       this.bridge?.emit("WORLD_STATE_SNAPSHOT", {
@@ -198,13 +200,17 @@ export class PollingStationScene extends Phaser.Scene {
       if (data.nextSpawnAtMs !== undefined) this.nextSpawnTimeMs = data.nextSpawnAtMs;
       if (data.activeVoters) {
         this.logicalMovements.clear();
-        const savedVoters = data.activeVoters as Array<Parameters<NPCStationManager["restoreVoters"]>[0][number] & { x?: number; y?: number }>;
+        const savedVoters = data.activeVoters as Array<Parameters<NPCStationManager["restoreVoters"]>[0][number] & { x?: number; y?: number; movement?: LogicalMovement }>;
         this.npcManager.restoreVoters(savedVoters, data.queueOrder ?? [], data.completedVoterIds ?? []);
         this.voterPool = (data.voterPool ?? []) as VoterProfile[];
         for (const visual of this.voterVisuals.values()) visual.container.destroy();
         this.voterVisuals.clear();
         const positionById = new Map(savedVoters.map((v) => [v.profile.id, { x: v.x, y: v.y }]));
-        for (const entity of this.npcManager.getAllActiveVoters()) this.createVoterVisual(entity, positionById.get(entity.profile.id));
+        for (const entity of this.npcManager.getAllActiveVoters()) {
+          this.createVoterVisual(entity, positionById.get(entity.profile.id));
+          const savedMovement = savedVoters.find((voter) => voter.profile.id === entity.profile.id)?.movement;
+          if (savedMovement) this.logicalMovements.set(entity.profile.id, savedMovement);
+        }
       }
     });
 
@@ -476,6 +482,7 @@ export class PollingStationScene extends Phaser.Scene {
     }));
     container.on("pointerdown", () => this.audio.play("incident"));
     this.incidentVisuals.set(incidentId, { container, incidentId, presentation });
+    this.reactNearbyVoters(x, y, presentation.attention.awareness);
   }
 
   /** Presentation-only resolution beat: legal state was already resolved by XState. */
@@ -673,6 +680,7 @@ export class PollingStationScene extends Phaser.Scene {
   }
 
   private createVoterVisual(entity: ActiveVoterEntity, savedPosition?: Partial<Point2D>) {
+    const behaviorProfile = getVoterBehaviorProfile(entity.profile);
     const startPos = savedPosition?.x !== undefined && savedPosition.y !== undefined ? savedPosition as Point2D : STATION_WAYPOINTS.entrance;
     const container = this.add.container(startPos.x, startPos.y);
     container.setDepth(startPos.y);
@@ -680,12 +688,8 @@ export class PollingStationScene extends Phaser.Scene {
     const sprite = this.add.sprite(0, 0, "npc-avatar");
     sprite.setInteractive({ useHandCursor: true });
 
-    // Različita boja ramena zavisno od pola i starosti
-    if (entity.profile.gender === "z") {
-      sprite.setTint(0xf472b6);
-    } else if (entity.profile.ageCategory === "senior") {
-      sprite.setTint(0xa78bfa);
-    }
+    // Appearance stays neutral; behavioral cues are shown separately so
+    // gender and age cannot become a visual proxy for “problem” behavior.
 
     const label = this.add.text(0, -22, entity.profile.name, {
       fontSize: "9px",
@@ -704,13 +708,22 @@ export class PollingStationScene extends Phaser.Scene {
       padding: { x: 3, y: 1 },
     }).setOrigin(0.5);
 
-    container.add([sprite, label, statusLabel]);
+    const moodLabel = this.add.text(15, -13, this.getBehaviorGlyph(behaviorProfile.behavior), {
+      fontSize: "11px",
+      color: this.getBehaviorColor(behaviorProfile.behavior),
+      fontFamily: "sans-serif",
+      fontStyle: "bold",
+      backgroundColor: "rgba(15, 23, 42, 0.84)",
+      padding: { x: 3, y: 1 },
+    }).setOrigin(0.5);
+
+    container.add([sprite, label, statusLabel, moodLabel]);
 
     // Subtle waiting/idle motion: visual feedback only, never simulation state.
     if (!this.reducedMotion) this.tweens.add({
       targets: sprite,
-      y: -2,
-      duration: entity.currentStation === "queue" ? 900 : 1200,
+      y: behaviorProfile.walkingStyle === "slow" ? -1 : -2.5,
+      duration: behaviorProfile.walkingStyle === "slow" ? 1500 : behaviorProfile.walkingStyle === "hurried" ? 700 : 1000,
       yoyo: true,
       repeat: -1,
       ease: "Sine.easeInOut",
@@ -726,7 +739,7 @@ export class PollingStationScene extends Phaser.Scene {
       });
     });
 
-    this.voterVisuals.set(entity.profile.id, { container, sprite, label, statusLabel });
+    this.voterVisuals.set(entity.profile.id, { container, sprite, label, statusLabel, moodLabel });
     this.updateVoterPresentation(entity);
   }
 
@@ -738,20 +751,53 @@ export class PollingStationScene extends Phaser.Scene {
     const isWaiting = entity.currentStation === "queue";
     const isVoting = entity.currentStation === "booth";
     const isLeaving = entity.currentStation === "exiting";
+    const behaviorProfile = getVoterBehaviorProfile(entity.profile);
     visual.statusLabel.setText(this.getVoterStationLabel(entity.currentStation));
     visual.statusLabel.setColor(isVoting ? "#a7f3d0" : isWaiting ? "#fde68a" : "#cbd5e1");
     visual.sprite.setAlpha(isLeaving ? 0.72 : 1);
     visual.container.setAlpha(isWaiting ? 0.88 : 1);
 
-    // Keep the identity tint, then add a small visual cue only while voting.
-    if (entity.profile.gender === "z") {
-      visual.sprite.setTint(isVoting ? 0xf9a8d4 : 0xf472b6);
-    } else if (entity.profile.ageCategory === "senior") {
-      visual.sprite.setTint(isVoting ? 0xc4b5fd : 0xa78bfa);
-    } else if (isVoting) {
+    // Keep the silhouette neutral and reserve color for meaningful state cues.
+    if (isVoting) {
       visual.sprite.setTint(0x86efac);
     } else {
       visual.sprite.clearTint();
+    }
+    visual.moodLabel.setText(this.getBehaviorGlyph(behaviorProfile.behavior));
+    visual.moodLabel.setColor(this.getBehaviorColor(behaviorProfile.behavior));
+    visual.moodLabel.setVisible(behaviorProfile.behavior !== "routine");
+  }
+
+  private getBehaviorGlyph(behavior: ReturnType<typeof getVoterBehaviorProfile>["behavior"]) {
+    return behavior === "impatient" ? "!" : behavior === "confused" ? "?" : behavior === "needs_assistance" ? "i" : "·";
+  }
+
+  private getBehaviorColor(behavior: ReturnType<typeof getVoterBehaviorProfile>["behavior"]) {
+    return behavior === "impatient" ? "#fbbf24" : behavior === "confused" ? "#93c5fd" : behavior === "needs_assistance" ? "#6ee7b7" : "#94a3b8";
+  }
+
+  private reactNearbyVoters(x: number, y: number, awareness: WorldIncidentPresentation["attention"]["awareness"]) {
+    const radius = awareness === "high" ? 190 : awareness === "medium" ? 140 : 100;
+    for (const visual of this.voterVisuals.values()) {
+      const distance = Phaser.Math.Distance.Between(visual.container.x, visual.container.y, x, y);
+      if (distance > radius) continue;
+      const reaction = this.add.text(0, -36, awareness === "high" ? "!" : "…", {
+        fontSize: "18px", color: awareness === "high" ? "#fbbf24" : "#93c5fd", fontFamily: "sans-serif", fontStyle: "bold",
+        backgroundColor: "rgba(15, 23, 42, 0.82)", padding: { x: 3, y: 1 },
+      }).setOrigin(0.5);
+      visual.container.add(reaction);
+      if (this.reducedMotion) {
+        reaction.destroy();
+      } else {
+        this.tweens.add({
+          targets: reaction,
+          y: -48,
+          alpha: 0,
+          duration: 900,
+          ease: "Sine.easeOut",
+          onComplete: () => reaction.destroy(),
+        });
+      }
     }
   }
 

@@ -355,7 +355,9 @@ export function GameSimulatorShell({
   const handleFinishClosingAndCount = () => {
     send({ type: "FINISH_CLOSING" });
     bridge.emit("SWITCH_SCENE", { sceneKey: "CountingScene" });
-    setIsCountingModalOpen(true);
+    // Counting is a playable world phase first. The protocol remains a
+    // contextual document the player opens after inspecting the table.
+    setIsCountingModalOpen(false);
     setStatusNotification("Svi zatečeni birači su glasali. Biračko mesto je zatvoreno, počinje prebrojavanje (čl. 100+ ZINP).");
     setTimeout(() => setStatusNotification(null), 4000);
   };
@@ -886,6 +888,29 @@ export function GameSimulatorShell({
       <div className="sr-only" aria-live="polite">
         {statusNotification}
       </div>
+
+      {context.currentPhase === "counting" && !isCountingModalOpen && (
+        <section
+          data-testid="counting-workspace-banner"
+          className="flex flex-col gap-3 rounded-2xl border border-sky-500/30 bg-sky-500/10 p-3.5 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div className="flex items-start gap-2.5">
+            <FileCheck2 className="mt-0.5 h-4 w-4 shrink-0 text-sky-300" aria-hidden="true" />
+            <div>
+              <p className="text-xs font-bold text-sky-200">Radni sto za prebrojavanje je otvoren</p>
+              <p className="mt-0.5 text-[11px] text-sky-100/75">Pregledaj materijal redom u 2D prostoru, pa otvori Zapisnik kada budeš spreman za proveru.</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsCountingModalOpen(true)}
+            className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl border border-sky-400/40 bg-sky-400/15 px-3 py-2 text-xs font-bold text-sky-200 transition hover:bg-sky-400/25"
+          >
+            <FileCheck2 className="h-3.5 w-3.5" aria-hidden="true" />
+            Otvori Zapisnik
+          </button>
+        </section>
+      )}
 
       {/* 2. AKTIVNE SITUACIJE U PROSTORU (INCIDENT TICKER) */}
       {context.activeIncidents.length > 0 && (

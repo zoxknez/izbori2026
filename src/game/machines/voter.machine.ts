@@ -16,6 +16,21 @@ export type VoterStateValue =
   // Grane scenarija
   | "waiting_resolution";
 
+export type VoterWalkingStyle = "normal" | "slow" | "hurried";
+export type VoterBehavior = "routine" | "confused" | "impatient" | "needs_assistance";
+
+/**
+ * Deterministic, presentation-friendly behavior metadata for a voter.
+ * It is deliberately independent from gender and age so protected
+ * characteristics never become a proxy for procedural risk.
+ */
+export interface VoterBehaviorProfile {
+  patience: number;
+  awareness: number;
+  walkingStyle: VoterWalkingStyle;
+  behavior: VoterBehavior;
+}
+
 export interface VoterProfile {
   id: string;
   name: string;
@@ -26,6 +41,8 @@ export interface VoterProfile {
   needsAssistance: boolean;
   isRegistered: boolean;
   hasAlreadyVoted: boolean;
+  /** Optional for backwards-compatible saves created before behavior metadata. */
+  behaviorProfile?: VoterBehaviorProfile;
   stationWaitTimes: {
     uvCheckMs: number;
     idCheckMs: number;
@@ -34,6 +51,15 @@ export interface VoterProfile {
     receiveBallotMs: number;
     boothMs: number;
     ballotBoxMs: number;
+  };
+}
+
+export function getVoterBehaviorProfile(profile: VoterProfile): VoterBehaviorProfile {
+  return profile.behaviorProfile ?? {
+    patience: 70,
+    awareness: 60,
+    walkingStyle: "normal",
+    behavior: "routine",
   };
 }
 
