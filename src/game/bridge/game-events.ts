@@ -44,7 +44,11 @@ export interface GameBridgeEventMap {
   SPEED_CHANGED: { speed: 1 | 2 | 4; paused: boolean };
   DOMAIN_STATE_CHANGED: { domainState: SimulationState };
   ACTIVE_INCIDENTS_CHANGED: { incidents: ActiveIncident[] };
-  WORLD_INCIDENT_PRESENTATIONS_CHANGED: { incidents: Array<ActiveIncident & { presentation: WorldIncidentPresentation }> };
+  WORLD_INCIDENT_PRESENTATIONS_CHANGED: {
+    incidents: Array<ActiveIncident & { presentation: WorldIncidentPresentation }>;
+    /** Incidents that timed out stay visible as a consequence marker in the world. */
+    missedIncidents: Array<ActiveIncident & { presentation: WorldIncidentPresentation }>;
+  };
   INCIDENT_EXPIRED: { incident: ActiveIncident };
   EVIDENCE_ADDED: { record: EvidenceRecord };
   EVIDENCE_MARKERS_CHANGED: { records: EvidenceRecord[] };

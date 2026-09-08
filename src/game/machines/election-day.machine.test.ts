@@ -268,6 +268,28 @@ describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
     actor.stop();
   });
 
+  it("otvaranje podržava konkurentne incidente, a cap režima ih deterministički odlaže", () => {
+    const guidedActor = createActor(createElectionDayMachine({ role: "clan_odbora", mode: "guided" }));
+    guidedActor.start();
+    guidedActor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 25_200_000 });
+    const guidedOpening = guidedActor.getSnapshot().context;
+
+    expect(guidedOpening.activeIncidents.map((incident) => incident.eventId)).toEqual(["E06", "E07"]);
+    expect(guidedOpening.pendingIncidentIds).toContain("E08");
+
+    guidedActor.send({ type: "TRIGGER_WORLD_ACTION", eventId: "E06", choiceId: "E06-a", worldActionId: "seal_box_and_log_opening" });
+    guidedActor.send({ type: "TRIGGER_WORLD_ACTION", eventId: "E07", choiceId: "E07-a", worldActionId: "remind_uv_sequence" });
+    guidedActor.send({ type: "TICK", deltaRealMs: 100 });
+    expect(guidedActor.getSnapshot().context.activeIncidents.some((incident) => incident.eventId === "E08")).toBe(true);
+    guidedActor.stop();
+
+    const stressActor = createActor(createElectionDayMachine({ role: "clan_odbora", mode: "stress" }));
+    stressActor.start();
+    stressActor.send({ type: "ADVANCE_SIMULATION_TO", targetMs: 25_200_000 });
+    expect(stressActor.getSnapshot().context.activeIncidents.map((incident) => incident.eventId)).toEqual(["E06", "E07", "E08"]);
+    stressActor.stop();
+  });
+
   it("ADVANCE_SIMULATION_TO pomera vreme na 20:00 kada je uloga posmatrac", () => {
     const machine = createElectionDayMachine({ role: "clan_odbora", startTime: "06:00" });
     const actor = createActor(machine);

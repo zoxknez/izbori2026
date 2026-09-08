@@ -29,7 +29,7 @@ interface IncidentVisual {
   container: Phaser.GameObjects.Container;
   incidentId: string;
   presentation: WorldIncidentPresentation;
-  resolvedLabel?: Phaser.GameObjects.Text;
+  outcomeLabel?: Phaser.GameObjects.Text;
 }
 
 interface EvidenceMarkerVisual {
@@ -113,22 +113,20 @@ export class PollingStationScene extends Phaser.Scene {
       this.isSimPaused = data.paused;
     });
 
-    this.unsubIncidentPresentations = this.bridge?.on("WORLD_INCIDENT_PRESENTATIONS_CHANGED", ({ incidents }) => {
+    this.unsubIncidentPresentations = this.bridge?.on("WORLD_INCIDENT_PRESENTATIONS_CHANGED", ({ incidents, missedIncidents }) => {
       const incoming = new Map(incidents.map((incident) => [incident.instanceId, incident]));
+      const missed = new Map((missedIncidents ?? []).map((incident) => [incident.instanceId, incident]));
       for (const [instanceId, visual] of this.incidentVisuals) {
         if (!incoming.has(instanceId)) {
-          if (visual.presentation.resolvedVisual.remove) {
+          // Timeout is not a successful resolution: keep the physical problem
+          // in the world and show a distinct consequence marker in the debrief.
+          if (missed.has(instanceId)) {
+            this.markTimedOutIncident(visual);
+          } else if (visual.presentation.resolvedVisual.remove) {
             this.incidentVisuals.delete(instanceId);
             this.animateResolvedIncident(visual);
           } else {
-            visual.container.setAlpha(0.35);
-            if (!visual.resolvedLabel) {
-              visual.resolvedLabel = this.add.text(0, 42, "✓ razrešeno · ostaje u debriefu", {
-                fontSize: "9px", color: "#a7f3d0", fontFamily: "sans-serif", fontStyle: "bold",
-                backgroundColor: "rgba(6, 78, 59, 0.92)", padding: { x: 4, y: 2 },
-              }).setOrigin(0.5);
-              visual.container.add(visual.resolvedLabel);
-            }
+            this.markResolvedIncident(visual);
           }
         }
       }
@@ -508,6 +506,48 @@ export class PollingStationScene extends Phaser.Scene {
       ease: "Quad.easeOut",
       onComplete: () => visual.container.destroy(),
     });
+  }
+
+  /** A successful resolution remains as a quiet, green world trace. */
+  private markResolvedIncident(visual: IncidentVisual) {
+    visual.container.setAlpha(0.35);
+    visual.container.disableInteractive();
+    if (visual.outcomeLabel) return;
+
+    visual.outcomeLabel = this.add.text(0, 42, "✓ razrešeno · ostaje u debriefu", {
+      fontSize: "9px", color: "#a7f3d0", fontFamily: "sans-serif", fontStyle: "bold",
+      backgroundColor: "rgba(6, 78, 59, 0.92)", padding: { x: 4, y: 2 },
+    }).setOrigin(0.5);
+    visual.container.add(visual.outcomeLabel);
+  }
+
+  /** A timeout remains physically present, but is clearly marked as unresolved. */
+  private markTimedOutIncident(visual: IncidentVisual) {
+    visual.container.setAlpha(0.82);
+    visual.container.disableInteractive();
+    if (visual.outcomeLabel) return;
+
+    visual.outcomeLabel = this.add.text(0, 42, "⚠ vreme isteklo · ostaje u debriefu", {
+      fontSize: "9px", color: "#fde68a", fontFamily: "sans-serif", fontStyle: "bold",
+      backgroundColor: "rgba(120, 53, 15, 0.94)", padding: { x: 4, y: 2 },
+    }).setOrigin(0.5);
+    visual.container.add(visual.outcomeLabel);
+
+    const warningRing = this.add.graphics();
+    warningRing.lineStyle(2, 0xf59e0b, 0.95);
+    warningRing.strokeCircle(0, 0, 34);
+    visual.container.add(warningRing);
+    if (!this.reducedMotion) {
+      this.tweens.add({
+        targets: warningRing,
+        alpha: 0.35,
+        scale: 1.15,
+        duration: 900,
+        yoyo: true,
+        repeat: 2,
+        ease: "Sine.easeInOut",
+      });
+    }
   }
 
   private createIncidentWorldObject(

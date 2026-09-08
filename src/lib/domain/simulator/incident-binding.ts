@@ -397,7 +397,9 @@ export const WORLD_INCIDENT_BINDINGS: Record<string, WorldIncidentBinding> = {
     eventId: "E07",
     trigger: {
       type: "time",
-      simulationTime: "07:38",
+      // Opening pressure: this existing authored incident can coexist with
+      // E06 so the player has to prioritize two different stations.
+      simulationTime: "07:00",
     },
     locationId: "uv-station",
     hotspotTarget: "uv-lamp-check",
@@ -471,7 +473,10 @@ export const WORLD_INCIDENT_BINDINGS: Record<string, WorldIncidentBinding> = {
     eventId: "E08",
     trigger: {
       type: "time",
-      simulationTime: "08:12",
+      // The first voter can surface an identification issue as the polls open.
+      // Guided/Realistic queue this behind their two-incident cap; Stress shows
+      // all three opening situations concurrently.
+      simulationTime: "07:00",
     },
     locationId: "voter-roll-desk",
     hotspotTarget: "voter-roll-table",

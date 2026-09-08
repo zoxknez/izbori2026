@@ -13,7 +13,7 @@ export interface SimulationModeProfile {
  */
 export const SIMULATION_MODE_PROFILES: Record<LiveSimulationMode, SimulationModeProfile> = {
   guided: {
-    maxConcurrentIncidents: 1,
+    maxConcurrentIncidents: 2,
     incidentTimeoutMultiplier: 1.35,
     showWorldHints: true,
     showDirectFocusCue: true,

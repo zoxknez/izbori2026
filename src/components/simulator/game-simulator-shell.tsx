@@ -379,8 +379,12 @@ export function GameSimulatorShell({
         ...incident,
         presentation: getWorldIncidentPresentation(incident),
       })),
+      missedIncidents: context.missedIncidents.map((incident) => ({
+        ...incident,
+        presentation: getWorldIncidentPresentation(incident),
+      })),
     });
-  }, [bridge, context.activeIncidents]);
+  }, [bridge, context.activeIncidents, context.missedIncidents]);
 
   useEffect(() => {
     bridge.emit("EVIDENCE_MARKERS_CHANGED", { records: context.evidenceNotebook });

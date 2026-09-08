@@ -73,6 +73,8 @@ export interface ElectionGameContext {
   legalInterruptions: LegalVotingInterruption[];
   activeIncidents: ActiveIncident[];
   missedIncidents: ActiveIncident[];
+  /** Authored triggers deferred only because the mode concurrency cap was full. */
+  pendingIncidentIds: string[];
   evidenceNotebook: EvidenceRecord[];
   actionLog: GameActionLogEntry[];
   boardProtocol: BoardProtocol;
@@ -281,6 +283,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
       legalInterruptions: initialInterruptions,
       activeIncidents: [],
       missedIncidents: [],
+      pendingIncidentIds: [],
       evidenceNotebook: save ? save.evidenceNotebook : [],
       actionLog: save ? save.actionLog : [],
       boardProtocol: initialBoardProtocol,
@@ -760,6 +763,7 @@ function processTickLogic(
   let updatedDomain = context.domainState;
   const newActionLog = [...context.actionLog];
   let nextCount = context.deterministicCounter;
+  const pendingIncidentIds = [...(context.pendingIncidentIds ?? [])];
 
   for (const exp of expired) {
     if (exp.binding.timeout) {
@@ -791,10 +795,11 @@ function processTickLogic(
     if (binding.trigger.type === "time" && binding.trigger.simulationTime) {
       const triggerMs = timeStringToMs(binding.trigger.simulationTime);
       const inInterval = oldMs < triggerMs && triggerMs <= newMs;
+      const isDeferred = pendingIncidentIds.includes(bindingId);
       const authoredEvent = simulationEvents.find((event) => event.id === binding.eventId);
 
       if (
-        inInterval &&
+        (inInterval || isDeferred) &&
         authoredEvent &&
         conditionMatches(authoredEvent.conditions, {
           flags: updatedDomain.flags,
@@ -806,7 +811,10 @@ function processTickLogic(
         !updatedDomain.history.some((h) => h.eventId === binding.eventId)
       ) {
         const profile = SIMULATION_MODE_PROFILES[context.mode];
-        if (remainingIncidents.length >= profile.maxConcurrentIncidents) continue;
+        if (remainingIncidents.length >= profile.maxConcurrentIncidents) {
+          if (!isDeferred) pendingIncidentIds.push(bindingId);
+          continue;
+        }
         const baseSeconds = binding.timeout?.simulationSeconds ?? 60;
         const durationMs = Math.round(baseSeconds * profile.incidentTimeoutMultiplier) * 1000;
         nextCount++;
@@ -819,6 +827,8 @@ function processTickLogic(
           locationId: binding.locationId,
           isInspected: false,
         });
+        const pendingIndex = pendingIncidentIds.indexOf(bindingId);
+        if (pendingIndex >= 0) pendingIncidentIds.splice(pendingIndex, 1);
       }
     }
   }
@@ -829,6 +839,7 @@ function processTickLogic(
     deterministicCounter: nextCount,
     activeIncidents: remainingIncidents,
     missedIncidents: [...context.missedIncidents, ...expired],
+    pendingIncidentIds,
     actionLog: newActionLog,
   };
 }

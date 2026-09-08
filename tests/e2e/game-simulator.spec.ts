@@ -119,6 +119,9 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     await expect(openingBtn).toBeVisible();
     await openingBtn.click();
     await expect(page.getByTestId("close-polls-button")).toBeVisible();
+    await expect(page.getByText(/Uočena situacija na biračkom mestu \(2\)/i)).toBeVisible();
+    await expect(page.locator('button[title^="Preostalo vreme za reakciju"]').first()).toBeVisible();
+    await expect(page.locator('button[title^="Preostalo vreme za reakciju"]')).toHaveCount(2);
 
     // Milestone 6: Prebacivanje na fazu prebrojavanja (20:00) po čl. 91, 99 i 100 ZINP
     // Premotavamo do 20:00 (kraj glasanja)
@@ -221,5 +224,16 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
 
     // Nema fatalnih grešaka na stranici
     expect(errors.filter((e) => !e.includes("download the React DevTools"))).toHaveLength(0);
+  });
+
+  test("Stres režim istovremeno prikazuje tri fizičke situacije pri otvaranju", async ({ page }) => {
+    await page.goto("/izborni-dan");
+    await page.getByRole("button", { name: "Stres" }).click();
+    await expect(page.locator("#phaser-game-container canvas")).toBeVisible({ timeout: 15_000 });
+
+    await page.getByTestId("fast-forward-to-opening-button").click();
+    await expect(page.getByTestId("close-polls-button")).toBeVisible();
+    await expect(page.getByText(/Uočena situacija na biračkom mestu \(3\)/i)).toBeVisible();
+    await expect(page.locator('button[title^="Preostalo vreme za reakciju"]')).toHaveCount(3);
   });
 });
