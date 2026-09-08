@@ -86,6 +86,9 @@ export function ReplayModal({
   return (
     <div
       data-testid="replay-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="replay-modal-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
     >
       <div className="flex max-h-[90vh] w-full max-w-3xl flex-col rounded-3xl border border-border bg-surface p-6 shadow-2xl overflow-y-auto">
@@ -97,7 +100,7 @@ export function ReplayModal({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-ink">Replay &amp; Revizija toka glasanja</h2>
+                <h2 id="replay-modal-title" className="text-base font-bold text-ink">Replay &amp; Revizija toka glasanja</h2>
                 {replayResult.isDeterministicParity ? (
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400">
                     <CheckCircle2 className="h-3 w-3" />
@@ -130,6 +133,7 @@ export function ReplayModal({
               type="button"
               onClick={onClose}
               className="rounded-xl p-2 text-ink-dim hover:bg-surface-2 hover:text-ink"
+              aria-label="Izađi iz replay-a"
             >
               <X className="h-5 w-5" />
             </button>

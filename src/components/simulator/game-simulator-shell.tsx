@@ -80,6 +80,7 @@ export function GameSimulatorShell({
   const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
   const [worldSnapshot, setWorldSnapshot] = useState<WorldSimulationSaveState | null>(null);
   const worldSnapshotRef = useRef<WorldSimulationSaveState | null>(null);
+  const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
 
   // 2. XState 5 Machine instanca (rehidrira se iz sačuvane sesije ukoliko postoji)
   const machine = useMemo(
@@ -150,49 +151,57 @@ export function GameSimulatorShell({
       nextSpawnAtMs: 0,
       legalInterruptions: saveContext.legalInterruptions,
     };
-    const hash = await computeCanonicalStateHash({
-      runId: saveContext.runId,
-      seed: saveContext.seed,
-      simulationTimeMs: saveContext.simulationTimeMs,
-      scores: saveContext.domainState.scores,
-      flags: saveContext.domainState.flags,
-      actionLogLength: saveContext.actionLog.length,
-      pollSchedule: saveContext.pollSchedule,
-      decisionHistory: saveContext.domainState.history,
-      activeIncidentIds: saveContext.activeIncidents.map((incident) => incident.instanceId),
-      missedIncidentIds: saveContext.missedIncidents.map((incident) => incident.instanceId),
-      boardProtocol: saveContext.boardProtocol,
-      rngState: worldForSave.rngState,
+
+    // Hashing and IndexedDB writes are asynchronous. Queue the complete write
+    // so autosave, manual save and lifecycle saves always commit in invocation
+    // order, even when a newer snapshot arrives during crypto.subtle.digest().
+    const saveOperation = saveQueueRef.current.then(async () => {
+      const hash = await computeCanonicalStateHash({
+        runId: saveContext.runId,
+        seed: saveContext.seed,
+        simulationTimeMs: saveContext.simulationTimeMs,
+        scores: saveContext.domainState.scores,
+        flags: saveContext.domainState.flags,
+        actionLogLength: saveContext.actionLog.length,
+        pollSchedule: saveContext.pollSchedule,
+        decisionHistory: saveContext.domainState.history,
+        activeIncidentIds: saveContext.activeIncidents.map((incident) => incident.instanceId),
+        missedIncidentIds: saveContext.missedIncidents.map((incident) => incident.instanceId),
+        boardProtocol: saveContext.boardProtocol,
+        rngState: worldForSave.rngState,
+      });
+
+      const saveObj: GameSaveV2 = {
+        version: 2,
+        runId: saveContext.runId,
+        savedAt: new Date().toISOString(),
+        seed: saveContext.seed,
+        mode: saveContext.mode,
+        role: saveContext.domainState.role,
+        simulationTimeMs: saveContext.simulationTimeMs,
+        currentPhase: saveContext.currentPhase,
+        machineSnapshot: snapshot,
+        domainState: saveContext.domainState,
+        worldSimulation: worldForSave,
+        pollSchedule: saveContext.pollSchedule,
+        actionLog: saveContext.actionLog,
+        evidenceNotebook: saveContext.evidenceNotebook,
+        boardProtocol: saveContext.boardProtocol,
+        observerRecord: saveContext.observerRecord,
+        countingSession: saveContext.countingSession,
+        activeIncidentIds: saveContext.activeIncidents.map((incident) => incident.instanceId),
+        missedIncidentIds: saveContext.missedIncidents.map((incident) => incident.instanceId),
+        stateHash: hash,
+      };
+
+      await saveGameSession(saveObj);
+      if (notify) {
+        setSaveFeedback("Sačuvano!");
+        setTimeout(() => setSaveFeedback(null), 2500);
+      }
     });
-
-    const saveObj: GameSaveV2 = {
-      version: 2,
-      runId: saveContext.runId,
-      savedAt: new Date().toISOString(),
-      seed: saveContext.seed,
-      mode: saveContext.mode,
-      role: saveContext.domainState.role,
-      simulationTimeMs: saveContext.simulationTimeMs,
-      currentPhase: saveContext.currentPhase,
-      machineSnapshot: snapshot,
-      domainState: saveContext.domainState,
-      worldSimulation: worldForSave,
-      pollSchedule: saveContext.pollSchedule,
-      actionLog: saveContext.actionLog,
-      evidenceNotebook: saveContext.evidenceNotebook,
-      boardProtocol: saveContext.boardProtocol,
-      observerRecord: saveContext.observerRecord,
-      countingSession: saveContext.countingSession,
-      activeIncidentIds: saveContext.activeIncidents.map((incident) => incident.instanceId),
-      missedIncidentIds: saveContext.missedIncidents.map((incident) => incident.instanceId),
-      stateHash: hash,
-    };
-
-    await saveGameSession(saveObj);
-    if (notify) {
-      setSaveFeedback("Sačuvano!");
-      setTimeout(() => setSaveFeedback(null), 2500);
-    }
+    saveQueueRef.current = saveOperation.catch(() => undefined);
+    await saveOperation;
   }, [actorRef, bridge]);
 
   // Automatsko perzistiranje toka simulacije u IndexedDB (periodično ili na promenu akcija/faza, ne na svaki tick sata)
@@ -1136,18 +1145,22 @@ export function GameSimulatorShell({
       {isRoleModalOpen && (
         <div
           data-testid="role-guidance-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="role-guidance-title"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
         >
           <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-3xl border border-border bg-surface p-6 shadow-2xl overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border/80 pb-4">
               <div>
-                <h2 className="text-lg font-bold text-ink">Pravni položaj i uloga u simulaciji</h2>
+                <h2 id="role-guidance-title" className="text-lg font-bold text-ink">Pravni položaj i uloga u simulaciji</h2>
                 <p className="text-xs text-ink-dim">Izaberi perspektivu iz koje doživljavaš rad biračkog mesta</p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsRoleModalOpen(false)}
                 className="rounded-xl p-2 text-ink-dim hover:bg-surface-2 hover:text-ink"
+                aria-label="Izađi iz vodiča kroz uloge"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1286,17 +1299,23 @@ export function GameSimulatorShell({
 
       {/* 8. ZAVRŠNI DEBRIEF MODAL (ODLOŽENE POSLEDICE & EVALUACIJA) */}
       {isDebriefOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="debrief-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+        >
           <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-3xl border border-border bg-surface p-6 shadow-2xl overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border/80 pb-4">
               <div>
-                <h2 className="text-lg font-bold text-ink">Debrief smene i odložene posledice</h2>
+                <h2 id="debrief-title" className="text-lg font-bold text-ink">Debrief smene i odložene posledice</h2>
                 <p className="text-xs text-ink-dim">Analiza zakonitosti i dokaznog traga na kraju dana</p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsDebriefOpen(false)}
                 className="rounded-xl p-2 text-ink-dim hover:bg-surface-2 hover:text-ink"
+                aria-label="Zatvori debrief smene"
               >
                 ✕
               </button>

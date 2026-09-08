@@ -95,6 +95,9 @@ export function CountingProtocolModal({
   return (
     <div
       data-testid="counting-protocol-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="counting-protocol-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 sm:p-4 backdrop-blur-md"
     >
       <div className="flex max-h-[92vh] w-full max-w-4xl flex-col rounded-3xl border border-border bg-surface p-5 sm:p-6 shadow-2xl overflow-y-auto">
@@ -103,7 +106,7 @@ export function CountingProtocolModal({
           <div>
             <div className="flex items-center gap-2">
               <FileCheck2 className="h-5 w-5 text-brand" />
-              <h2 className="text-lg font-bold text-ink sm:text-xl">
+              <h2 id="counting-protocol-title" className="text-lg font-bold text-ink sm:text-xl">
                 Zapisnik o radu biračkog odbora (Brojanje glasova)
               </h2>
             </div>
@@ -124,6 +127,7 @@ export function CountingProtocolModal({
               type="button"
               onClick={onClose}
               className="rounded-xl p-2 text-ink-dim hover:bg-surface-2 hover:text-ink"
+              aria-label="Izađi iz zapisnika"
             >
               <X className="h-5 w-5" />
             </button>
