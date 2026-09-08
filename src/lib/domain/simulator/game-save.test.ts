@@ -7,6 +7,7 @@ import {
   loadGameSession,
   clearGameSession,
   computeCanonicalStateHash,
+  computeSaveIntegrityHash,
   replaySimulation,
   type GameSaveV1,
   type GameSaveV2,
@@ -97,6 +98,52 @@ describe("GameSaveV2, GameSaveV1 & Deterministic Replay", () => {
     expect(isValidGameSaveV2(null)).toBe(false);
     expect(isValidGameSaveV2({})).toBe(false);
     expect(isValidGameSaveV2({ ...validV2, version: 1 })).toBe(false);
+  });
+
+  it("odbacuje V2 sesiju kada je promenjen bilo koji payload van domain hasha", async () => {
+    const pollSchedule = createInitialPollSchedule(25_200_000);
+    const domainState = createSimulationState(simulationEvents, {
+      role: "clan_odbora",
+      mode: "guided",
+      randomSeed: 42,
+    });
+    const stateHash = await computeCanonicalStateHash({
+      runId: "run-integrity-test",
+      seed: 42,
+      simulationTimeMs: 25_200_000,
+      scores: domainState.scores,
+      flags: domainState.flags,
+      actionLogLength: 0,
+      pollSchedule,
+      rngState: 42,
+    });
+    const savePayload: GameSaveV2 = {
+      version: 2,
+      runId: "run-integrity-test",
+      savedAt: new Date().toISOString(),
+      seed: 42,
+      mode: "guided",
+      role: "clan_odbora",
+      simulationTimeMs: 25_200_000,
+      currentPhase: "voting",
+      domainState,
+      worldSimulation: { rngState: 42, nextEntityId: 1, activeVoters: [], queueOrder: [], nextSpawnAtMs: 1, legalInterruptions: [] },
+      pollSchedule,
+      actionLog: [],
+      evidenceNotebook: [],
+      stateHash,
+    };
+    const save = { ...savePayload, saveIntegrityHash: await computeSaveIntegrityHash(savePayload) };
+
+    await saveGameSession(save);
+    expect(await loadGameSession()).not.toBeNull();
+
+    await saveGameSession({
+      ...save,
+      worldSimulation: { ...save.worldSimulation, nextSpawnAtMs: 999 },
+    });
+    expect(await loadGameSession()).toBeNull();
+    await clearGameSession();
   });
 
   it("uspešno upisuje u IndexedDB, učitava i briše GameSaveV2 sesiju", async () => {

@@ -231,9 +231,20 @@ nijedna stvarna posledica i nijedan misconception mehanizam.
 - Hover animacije više ne pomeraju geometriju dugmadi (pomeranje pod kursorom je otežavalo klik
   i blokiralo automatizovane provere); ostaju ulazne animacije i tap feedback.
 
+### Hardening posle produkcionog audita (8. septembar 2026)
+
+- World snapshot je uklonjen iz React render state-a; ostaje u ref-u za perzistenciju, pa snapshot
+  više ne može da pokrene autosave feedback loop.
+- `GameSaveV2` sada, uz postojeći `stateHash` domena, može da nosi i `saveIntegrityHash` nad celim
+  kanonskim payload-om: world simulacijom, redom birača, beležnicom dokaza, counting sesijom,
+  XState snapshotom i svim ostalim poljima save-a. Starije V2 sesije bez ovog polja ostaju čitljive,
+  dok se novi save-ovi i svaki save sa integrity hash-om odbijaju ako je payload promenjen.
+- Responsive audit na 320, 390 i 768 px pokriva ključne javne rute i proverava stvarni
+  `scrollWidth`, ne samo prisustvo CSS klasa.
+
 ### Provere
 
-- Unit: **113 testova u 26 test fajlova**, uključujući pakete za simulator (uloge, posledice,
+- Unit: **114 testova u 26 test fajlova**, uključujući pakete za simulator (uloge, posledice,
   debrief, teški režim, retry režim) i trening (tipovi odgovora, misconception životni ciklus).
 - E2E: **34 testa u 4 fajla** (admin publish se preskače bez izolovanih fixture kredencijala), sa
   tokovima za put birača, ceo dan člana odbora, nasumični režim, modal accessibility i zablude.

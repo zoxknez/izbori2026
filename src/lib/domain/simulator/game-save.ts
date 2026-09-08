@@ -64,6 +64,8 @@ export interface GameSaveV2 {
   activeIncidentIds?: string[];
   missedIncidentIds?: string[];
   stateHash: string;
+  /** Hash celog payload-a sesije, uključujući world/evidence/counting podatke. */
+  saveIntegrityHash?: string;
 }
 
 export interface GameSaveV1 {
@@ -138,6 +140,23 @@ export async function computeCanonicalStateHash(data: {
     },
   });
 
+  return hashCanonicalJson(canonicalPayload);
+}
+
+function canonicalizeSaveValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonicalizeSaveValue);
+  if (value && typeof value === "object") {
+    return Object.keys(value as Record<string, unknown>)
+      .sort()
+      .reduce<Record<string, unknown>>((result, key) => {
+        result[key] = canonicalizeSaveValue((value as Record<string, unknown>)[key]);
+        return result;
+      }, {});
+  }
+  return value;
+}
+
+async function hashCanonicalJson(canonicalPayload: string): Promise<string> {
   if (typeof crypto !== "undefined" && crypto.subtle) {
     const msgBuffer = new TextEncoder().encode(canonicalPayload);
     const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
@@ -145,13 +164,24 @@ export async function computeCanonicalStateHash(data: {
     return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   }
 
-  // Node fallback or non-crypto environment: FNV-1a 64-bit hex hash
+  // Node fallback or non-crypto environment: FNV-1a 32-bit hex hash.
   let h1 = 0x811c9dc5;
   for (let i = 0; i < canonicalPayload.length; i++) {
     h1 ^= canonicalPayload.charCodeAt(i);
     h1 = Math.imul(h1, 0x01000193);
   }
   return (h1 >>> 0).toString(16).padStart(8, "0");
+}
+
+/**
+ * Hashuje kompletan V2 save payload. Polje saveIntegrityHash se izostavlja
+ * iz ulaza da bi verifikacija mogla da rekonstruiše isti kanonski payload.
+ * stateHash ostaje uključen kao zaseban domain-integrity sloj.
+ */
+export async function computeSaveIntegrityHash(save: GameSaveV2): Promise<string> {
+  const payload = { ...save };
+  delete payload.saveIntegrityHash;
+  return hashCanonicalJson(JSON.stringify(canonicalizeSaveValue(payload)));
 }
 
 export function isValidGameSaveV2(data: unknown): data is GameSaveV2 {
@@ -175,7 +205,8 @@ export function isValidGameSaveV2(data: unknown): data is GameSaveV2 {
     typeof s.pollSchedule.effectiveCloseTimeMs === "number" &&
     Array.isArray(s.actionLog) &&
     Array.isArray(s.evidenceNotebook) &&
-    typeof s.stateHash === "string"
+    typeof s.stateHash === "string" &&
+    (s.saveIntegrityHash === undefined || typeof s.saveIntegrityHash === "string")
   );
 }
 
@@ -229,6 +260,10 @@ export async function loadGameSession(): Promise<GameSaveV2 | GameSaveV1 | null>
         rngState: rawV2.worldSimulation.rngState,
       });
       if (expectedHash !== rawV2.stateHash) return null;
+      if (rawV2.saveIntegrityHash !== undefined) {
+        const expectedSaveIntegrityHash = await computeSaveIntegrityHash(rawV2);
+        if (expectedSaveIntegrityHash !== rawV2.saveIntegrityHash) return null;
+      }
       return rawV2;
     }
     const rawV1 = await readOfflineValue<unknown>("simulationHistory", GAME_SAVE_STORAGE_KEY_V1);

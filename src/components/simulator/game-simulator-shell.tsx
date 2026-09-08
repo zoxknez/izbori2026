@@ -42,6 +42,7 @@ import {
   loadGameSession,
   clearGameSession,
   computeCanonicalStateHash,
+  computeSaveIntegrityHash,
   type GameSaveV1,
   type GameSaveV2,
   type WorldSimulationSaveState,
@@ -176,7 +177,7 @@ export function GameSimulatorShell({
         rngState: worldForSave.rngState,
       });
 
-      const saveObj: GameSaveV2 = {
+      const savePayload: GameSaveV2 = {
         version: 2,
         runId: saveContext.runId,
         savedAt: new Date().toISOString(),
@@ -197,6 +198,10 @@ export function GameSimulatorShell({
         activeIncidentIds: saveContext.activeIncidents.map((incident) => incident.instanceId),
         missedIncidentIds: saveContext.missedIncidents.map((incident) => incident.instanceId),
         stateHash: hash,
+      };
+      const saveObj: GameSaveV2 = {
+        ...savePayload,
+        saveIntegrityHash: await computeSaveIntegrityHash(savePayload),
       };
 
       if (saveRevision !== saveRevisionRef.current) return;
