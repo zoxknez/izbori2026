@@ -16,6 +16,10 @@ import {
   CheckCircle2,
   ShieldAlert,
   ShieldCheck,
+  AlertTriangle,
+  Lightbulb,
+  Mouse,
+  ZoomIn,
   X,
   Info,
   FileCheck2,
@@ -1057,7 +1061,7 @@ export function GameSimulatorShell({
         ) : (
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-ink-dim">
             <div className="flex items-center gap-2">
-              <span className="text-base">💡</span>
+              <Lightbulb className="h-4 w-4 shrink-0 text-amber-300" aria-hidden="true" />
               <span className="font-medium">
                 {context.currentPhase === "counting"
                   ? "Biračko mesto je zatvoreno u 20:00. Kliknite na sto za prebrojavanje ili Zapisnik za utvrđivanje rezultata."
@@ -1065,9 +1069,9 @@ export function GameSimulatorShell({
               </span>
             </div>
             <div className="hidden lg:flex items-center gap-2 text-[11px] text-ink-faint">
-              <span>🖱️ Pan: drag</span>
+              <span className="inline-flex items-center gap-1"><Mouse className="h-3.5 w-3.5" aria-hidden="true" /> Pan: prevuci</span>
               <span>•</span>
-              <span>🔍 Zoom: točkić</span>
+              <span className="inline-flex items-center gap-1"><ZoomIn className="h-3.5 w-3.5" aria-hidden="true" /> Zum: točkić</span>
             </div>
           </div>
         )}
@@ -1197,6 +1201,7 @@ export function GameSimulatorShell({
                     key={r}
                     type="button"
                     onClick={() => setPreviewRole(r)}
+                    aria-pressed={isSelected}
                     className={cn(
                       "flex flex-col items-center justify-center gap-1.5 rounded-2xl border p-3 text-center transition",
                       isSelected
@@ -1340,7 +1345,7 @@ export function GameSimulatorShell({
                 className="rounded-xl p-2 text-ink-dim hover:bg-surface-2 hover:text-ink"
                 aria-label="Zatvori debrief smene"
               >
-                ✕
+                <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
 
@@ -1375,7 +1380,8 @@ export function GameSimulatorShell({
                   {consequences.hasAnnulmentRisk ? (
                     <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">
                       <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
-                        <span>⚠ KRITIČAN RIZIK: Poništavanje glasanja po službenoj dužnosti</span>
+                        <ShieldAlert className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        <span>KRITIČAN RIZIK: Poništavanje glasanja po službenoj dužnosti</span>
                       </div>
                       <ul className="mt-2 list-disc pl-5 text-xs text-rose-300 space-y-1">
                         {consequences.annulmentReasons.map((r, i) => (
@@ -1398,8 +1404,9 @@ export function GameSimulatorShell({
                       Propuštene situacije tokom smene ({context.missedIncidents.length}):
                     </h3>
                     {context.missedIncidents.length === 0 ? (
-                      <p className="mt-1 text-xs text-emerald-400">
-                        ✓ Nijedna proceduralna situacija nije istekla bez reakcije.
+                      <p className="mt-1 flex items-center gap-1.5 text-xs text-emerald-400">
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                        <span>Nijedna proceduralna situacija nije istekla bez reakcije.</span>
                       </p>
                     ) : (
                       <ul className="mt-2 space-y-1 text-xs text-ink-dim">
@@ -1439,9 +1446,17 @@ export function GameSimulatorShell({
                       })}
                     </div>
                     <p className="mt-1 text-xs text-ink-dim">
-                      {consequences.documentationWeakness
-                        ? "⚠ Slab dokazni trag: Zabeležene primedbe nemaju potvrđene svedoke ili nedostaju činjenice za prigovor."
-                        : "✓ Solidan dokazni trag: Činjenice i svedoci su evidentirani sa vremenom nastanka."}
+                      {consequences.documentationWeakness ? (
+                        <span className="flex items-start gap-1.5 text-amber-300">
+                          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                          <span>Slab dokazni trag: Zabeležene primedbe nemaju potvrđene svedoke ili nedostaju činjenice za prigovor.</span>
+                        </span>
+                      ) : (
+                        <span className="flex items-start gap-1.5 text-emerald-300">
+                          <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                          <span>Solidan dokazni trag: Činjenice i svedoci su evidentirani sa vremenom nastanka.</span>
+                        </span>
+                      )}
                     </p>
                   </div>
 
@@ -1482,7 +1497,7 @@ export function GameSimulatorShell({
                     <section className="rounded-2xl border border-border bg-surface-2 p-4">
                       <h3 className="text-xs font-bold uppercase tracking-wide text-ink">Sledeći trening</h3>
                       {debrief.rulesToReview.length === 0 ? (
-                        <p className="mt-3 text-xs text-emerald-400">✓ Nema pravila koja zahtevaju dodatno ponavljanje iz donetih odluka.</p>
+                        <p className="mt-3 flex items-center gap-1.5 text-xs text-emerald-400"><CheckCircle2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> <span>Nema pravila koja zahtevaju dodatno ponavljanje iz donetih odluka.</span></p>
                       ) : (
                         <>
                           <p className="mt-2 text-xs text-ink-dim">Ponovi ove izvore pre sledeće smene:</p>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { CheckCircle2, FileText, Plus, X, Users, Clock } from "lucide-react";
+import { AlertTriangle, CheckCircle2, FileText, Lightbulb, Plus, X, Users, Clock } from "lucide-react";
 import type { EvidenceRecord } from "@/lib/domain/simulator/live-types";
 import type { SimulationRole } from "@/lib/domain/simulator/types";
 import { cn } from "@/lib/utils";
@@ -157,8 +157,9 @@ export function EvidenceTray({
         <div className="flex-1 overflow-y-auto p-6">
           {isCreating ? (
             <div className="flex flex-col gap-4">
-              <div className="rounded-2xl border border-brand/20 bg-brand/5 p-3 text-xs text-brand">
-                💡 <strong>Važna proceduralna razlika:</strong> Razdvoj ono što si lično video (činjenice) od sopstvenih pretpostavki ili motiva lica. Kvalitet dokaza u prigovoru zavisi od ove razlike.
+              <div className="flex items-start gap-2 rounded-2xl border border-brand/20 bg-brand/5 p-3 text-xs text-brand">
+                <Lightbulb className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                <p><strong>Važna proceduralna razlika:</strong> Razdvoj ono što si lično video (činjenice) od sopstvenih pretpostavki ili motiva lica. Kvalitet dokaza u prigovoru zavisi od ove razlike.</p>
               </div>
 
               <div
@@ -220,21 +221,24 @@ export function EvidenceTray({
 
               {/* 1. Činjenice (Observed Facts) */}
               <div>
-                <label className="text-xs font-bold text-emerald-400">
-                  ✓ Objektivno zapažene činjenice (šta se tačno dogodilo / šta je viđeno):
-                </label>
+                <p className="flex items-start gap-1.5 text-xs font-bold text-emerald-400">
+                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  <span>Objektivno zapažene činjenice (šta se tačno dogodilo / šta je viđeno):</span>
+                </p>
                 <div className="mt-1.5 flex gap-2">
                   <input
                     type="text"
                     value={factInput}
                     onChange={(e) => setFactInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddFact())}
+                    aria-label="Dodaj objektivno zapaženu činjenicu"
                     placeholder="Npr. Birač je propušten do paravana bez UV lampe..."
                     className="flex-1 rounded-xl border border-border bg-surface-2 px-3 py-2 text-xs text-ink focus:border-emerald-500 focus:outline-none"
                   />
                   <button
                     type="button"
                     onClick={handleAddFact}
+                    aria-label="Dodaj činjenicu"
                     className="rounded-xl bg-emerald-500/20 px-3 py-2 text-xs font-bold text-emerald-400 hover:bg-emerald-500/30"
                   >
                     Dodaj
@@ -249,8 +253,9 @@ export function EvidenceTray({
                           type="button"
                           onClick={() => setFacts(facts.filter((_, i) => i !== idx))}
                           className="text-ink-dim hover:text-rose-400"
+                          aria-label={`Ukloni činjenicu ${idx + 1}`}
                         >
-                          ×
+                          <X className="h-3.5 w-3.5" aria-hidden="true" />
                         </button>
                       </li>
                     ))}
@@ -260,21 +265,24 @@ export function EvidenceTray({
 
               {/* 2. Pretpostavke (Assumptions) */}
               <div>
-                <label className="text-xs font-bold text-amber-400">
-                  ⚠ Zaključci i pretpostavke (mogući razlozi / interpretacije):
-                </label>
+                <p className="flex items-start gap-1.5 text-xs font-bold text-amber-400">
+                  <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  <span>Zaključci i pretpostavke (mogući razlozi / interpretacije):</span>
+                </p>
                 <div className="mt-1.5 flex gap-2">
                   <input
                     type="text"
                     value={assumptionInput}
                     onChange={(e) => setAssumptionInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddAssumption())}
+                    aria-label="Dodaj zaključak ili pretpostavku"
                     placeholder="Npr. Član odbora poznaje birača iz zgrade..."
                     className="flex-1 rounded-xl border border-border bg-surface-2 px-3 py-2 text-xs text-ink focus:border-amber-500 focus:outline-none"
                   />
                   <button
                     type="button"
                     onClick={handleAddAssumption}
+                    aria-label="Dodaj pretpostavku"
                     className="rounded-xl bg-amber-500/20 px-3 py-2 text-xs font-bold text-amber-400 hover:bg-amber-500/30"
                   >
                     Dodaj
@@ -289,8 +297,9 @@ export function EvidenceTray({
                           type="button"
                           onClick={() => setAssumptions(assumptions.filter((_, i) => i !== idx))}
                           className="text-ink-dim hover:text-rose-400"
+                          aria-label={`Ukloni pretpostavku ${idx + 1}`}
                         >
-                          ×
+                          <X className="h-3.5 w-3.5" aria-hidden="true" />
                         </button>
                       </li>
                     ))}
@@ -300,13 +309,14 @@ export function EvidenceTray({
 
               {/* Svedoci */}
               <div>
-                <label className="text-xs font-semibold text-ink">Prisutna lica / Svedoci:</label>
+                <p className="text-xs font-semibold text-ink">Prisutna lica / Svedoci:</p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {WITNESS_OPTIONS.map((w) => (
                     <button
                       key={w}
                       type="button"
                       onClick={() => toggleWitness(w)}
+                      aria-pressed={selectedWitnesses.includes(w)}
                       className={cn(
                         "rounded-lg border px-2.5 py-1 text-xs transition",
                         selectedWitnesses.includes(w)
