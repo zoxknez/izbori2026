@@ -71,7 +71,7 @@ export class CountingScene extends Phaser.Scene {
     // 2. Centralni sto za prebrojavanje (Counting Table)
     const tableCenterX = width / 2;
     const tableCenterY = height / 2 + 10;
-    const table = this.add.sprite(tableCenterX, tableCenterY, "counting-table-surface");
+    this.add.sprite(tableCenterX, tableCenterY, "counting-table-surface");
 
     // Osvetljenje iznad stola za brojanje (topli reflektor za radnu noćnu atmosferu)
     const tableLight = this.add.graphics();

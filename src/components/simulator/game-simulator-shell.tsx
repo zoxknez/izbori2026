@@ -47,14 +47,12 @@ import {
   type WorldSimulationSaveState,
 } from "@/lib/domain/simulator/game-save";
 import { initializeCountingSession } from "@/lib/domain/simulator/counting-session";
-import { WORLD_INCIDENT_BINDINGS } from "@/lib/domain/simulator/incident-binding";
 import { computeDebrief } from "@/lib/domain/simulator/engine";
 import { msToTimeString } from "@/game/clock/simulation-clock";
 import { CLASSIFICATION_LABELS, SCORE_CATEGORY_LABELS, type SimulationRole } from "@/lib/domain/simulator/types";
 import {
   ROLE_CONFIGS,
   filterActionsForRole,
-  getRoleGuidance,
 } from "@/lib/domain/simulator/role-permissions";
 import { cn } from "@/lib/utils";
 import { getWorldIncidentPresentation } from "@/game/world/world-incident-presentation";
@@ -102,8 +100,13 @@ export function GameSimulatorShell({
       : undefined,
   );
   const context = state.context;
+  const contextRef = useRef(context);
   const activeSaveRef = useRef<GameSaveV2 | GameSaveV1 | null>(activeSave);
   const legalInterruptionsRef = useRef(context.legalInterruptions);
+
+  useEffect(() => {
+    contextRef.current = context;
+  }, [context]);
 
   useEffect(() => {
     activeSaveRef.current = activeSave;
@@ -133,10 +136,11 @@ export function GameSimulatorShell({
 
   // Automatsko perzistiranje toka simulacije u IndexedDB (periodično ili na promenu akcija/faza, ne na svaki tick sata)
   useEffect(() => {
+    const saveContext = contextRef.current;
     if (
-      context.actionLog.length === 0 &&
-      context.evidenceNotebook.length === 0 &&
-      !context.countingSession
+      saveContext.actionLog.length === 0 &&
+      saveContext.evidenceNotebook.length === 0 &&
+      !saveContext.countingSession
     ) {
       return;
     }
@@ -147,49 +151,49 @@ export function GameSimulatorShell({
         const snapshot = actorRef?.getPersistedSnapshot?.();
         // Freeze one coherent world version before the async WebCrypto hash.
         const worldForSave = worldSnapshotRef.current ?? worldSnapshot ?? {
-          rngState: context.seed,
-          deterministicCounter: context.deterministicCounter,
-          nextEntityId: context.activeVoterCount,
+          rngState: saveContext.seed,
+          deterministicCounter: saveContext.deterministicCounter,
+          nextEntityId: saveContext.activeVoterCount,
           activeVoters: [],
           queueOrder: [],
           nextSpawnAtMs: 0,
-          legalInterruptions: context.legalInterruptions,
+          legalInterruptions: saveContext.legalInterruptions,
         };
         const hash = await computeCanonicalStateHash({
-          runId: context.runId,
-          seed: context.seed,
-          simulationTimeMs: context.simulationTimeMs,
-          scores: context.domainState.scores,
-          flags: context.domainState.flags,
-          actionLogLength: context.actionLog.length,
-          pollSchedule: context.pollSchedule,
-          decisionHistory: context.domainState.history,
-          activeIncidentIds: context.activeIncidents.map((i) => i.instanceId),
-          missedIncidentIds: context.missedIncidents.map((i) => i.instanceId),
-          boardProtocol: context.boardProtocol,
+          runId: saveContext.runId,
+          seed: saveContext.seed,
+          simulationTimeMs: saveContext.simulationTimeMs,
+          scores: saveContext.domainState.scores,
+          flags: saveContext.domainState.flags,
+          actionLogLength: saveContext.actionLog.length,
+          pollSchedule: saveContext.pollSchedule,
+          decisionHistory: saveContext.domainState.history,
+          activeIncidentIds: saveContext.activeIncidents.map((i) => i.instanceId),
+          missedIncidentIds: saveContext.missedIncidents.map((i) => i.instanceId),
+          boardProtocol: saveContext.boardProtocol,
           rngState: worldForSave.rngState,
         });
 
         const saveObj: GameSaveV2 = {
           version: 2,
-          runId: context.runId,
+          runId: saveContext.runId,
           savedAt: new Date().toISOString(),
-          seed: context.seed,
-          mode: context.mode,
-          role: context.domainState.role,
-          simulationTimeMs: context.simulationTimeMs,
-          currentPhase: context.currentPhase,
+          seed: saveContext.seed,
+          mode: saveContext.mode,
+          role: saveContext.domainState.role,
+          simulationTimeMs: saveContext.simulationTimeMs,
+          currentPhase: saveContext.currentPhase,
           machineSnapshot: snapshot,
-          domainState: context.domainState,
+          domainState: saveContext.domainState,
           worldSimulation: worldForSave,
-          pollSchedule: context.pollSchedule,
-          actionLog: context.actionLog,
-          evidenceNotebook: context.evidenceNotebook,
-          boardProtocol: context.boardProtocol,
-          observerRecord: context.observerRecord,
-          countingSession: context.countingSession,
-          activeIncidentIds: context.activeIncidents.map((incident) => incident.instanceId),
-          missedIncidentIds: context.missedIncidents.map((incident) => incident.instanceId),
+          pollSchedule: saveContext.pollSchedule,
+          actionLog: saveContext.actionLog,
+          evidenceNotebook: saveContext.evidenceNotebook,
+          boardProtocol: saveContext.boardProtocol,
+          observerRecord: saveContext.observerRecord,
+          countingSession: saveContext.countingSession,
+          activeIncidentIds: saveContext.activeIncidents.map((incident) => incident.instanceId),
+          missedIncidentIds: saveContext.missedIncidents.map((incident) => incident.instanceId),
           stateHash: hash,
         };
 
@@ -205,16 +209,17 @@ export function GameSimulatorShell({
       isSubscribed = false;
     };
   }, [
-    context.runId,
-    context.seed,
-    context.mode,
-    context.domainState.role,
-    context.currentPhase,
     context.actionLog.length,
     context.evidenceNotebook.length,
     context.countingSession,
+    context.activeIncidents,
+    context.missedIncidents,
+    context.pollSchedule,
     context.boardProtocol,
     context.observerRecord,
+    context.deterministicCounter,
+    context.activeVoterCount,
+    context.legalInterruptions,
     worldSnapshot,
     actorRef,
   ]);
@@ -293,6 +298,9 @@ export function GameSimulatorShell({
   const [statusNotification, setStatusNotification] = useState<string | null>(null);
   const [audioMuted, setAudioMuted] = useState(false);
   const [audioVolume, setAudioVolume] = useState(0.12);
+  const normalizedIncidentCursor = context.activeIncidents.length === 0
+    ? 0
+    : Math.min(incidentCursor, context.activeIncidents.length - 1);
 
   const focusIncidentAt = useCallback((requestedIndex: number) => {
     const incidents = context.activeIncidents;
@@ -312,10 +320,6 @@ export function GameSimulatorShell({
   }, [bridge, context.activeIncidents, send]);
 
   useEffect(() => {
-    setIncidentCursor((current) => Math.min(current, Math.max(0, context.activeIncidents.length - 1)));
-  }, [context.activeIncidents.length]);
-
-  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       if (
@@ -330,17 +334,17 @@ export function GameSimulatorShell({
 
       if (event.key === "]") {
         event.preventDefault();
-        focusIncidentAt(incidentCursor + 1);
+        focusIncidentAt(normalizedIncidentCursor + 1);
       }
       if (event.key === "[") {
         event.preventDefault();
-        focusIncidentAt(incidentCursor - 1);
+        focusIncidentAt(normalizedIncidentCursor - 1);
       }
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [context.activeIncidents.length, focusIncidentAt, incidentCursor]);
+  }, [context.activeIncidents.length, focusIncidentAt, normalizedIncidentCursor]);
 
   const canClosePolls = useMemo(() => {
     const isScheduledClose = context.simulationTimeMs >= context.pollSchedule.effectiveCloseTimeMs;
@@ -905,10 +909,10 @@ export function GameSimulatorShell({
                     type="button"
                     title={remainingSeconds === null ? "Incident je aktivan dok se ne obradi" : `Preostalo vreme za reakciju: ${remainingSeconds} sekundi`}
                     onClick={() => focusIncidentAt(incidentIndex)}
-                    aria-current={incidentCursor === incidentIndex ? "true" : undefined}
+                    aria-current={normalizedIncidentCursor === incidentIndex ? "true" : undefined}
                     className={cn(
                       "inline-flex items-center gap-2 rounded-lg border px-2 py-1 text-[11px] font-semibold text-ink transition hover:border-amber-400 hover:text-amber-300",
-                      incidentCursor === incidentIndex
+                      normalizedIncidentCursor === incidentIndex
                         ? "border-amber-400 bg-amber-500/15 ring-1 ring-amber-400/50"
                         : "border-amber-500/30 bg-surface/70",
                     )}
@@ -934,7 +938,7 @@ export function GameSimulatorShell({
               <>
                 <button
                   type="button"
-                  onClick={() => focusIncidentAt(incidentCursor - 1)}
+                  onClick={() => focusIncidentAt(normalizedIncidentCursor - 1)}
                   className="rounded-xl border border-amber-500/30 px-2.5 py-1.5 text-xs font-bold text-amber-300 transition hover:border-amber-400 hover:bg-amber-500/10"
                   aria-label="Prethodna aktivna situacija"
                   title="Prethodna situacija ([)"
@@ -942,11 +946,11 @@ export function GameSimulatorShell({
                   ←
                 </button>
                 <span className="rounded-lg border border-amber-500/20 bg-surface/60 px-2 py-1.5 font-mono text-[10px] font-bold text-amber-200" aria-live="polite">
-                  {incidentCursor + 1}/{context.activeIncidents.length}
+                  {normalizedIncidentCursor + 1}/{context.activeIncidents.length}
                 </span>
                 <button
                   type="button"
-                  onClick={() => focusIncidentAt(incidentCursor + 1)}
+                  onClick={() => focusIncidentAt(normalizedIncidentCursor + 1)}
                   className="rounded-xl border border-amber-500/30 px-2.5 py-1.5 text-xs font-bold text-amber-300 transition hover:border-amber-400 hover:bg-amber-500/10"
                   aria-label="Sledeća aktivna situacija"
                   title="Sledeća situacija (])"
@@ -957,7 +961,7 @@ export function GameSimulatorShell({
             )}
             <button
               type="button"
-              onClick={() => focusIncidentAt(incidentCursor)}
+              onClick={() => focusIncidentAt(normalizedIncidentCursor)}
               className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-400 transition hover:bg-amber-500/30"
               title="Fokusiraj izabranu situaciju u svetu (Fokus menjaš tasterima [ i ])"
             >

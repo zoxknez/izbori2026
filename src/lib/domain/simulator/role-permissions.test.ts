@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import {
-  ROLE_CONFIGS,
   hasRolePermission,
   filterActionsForRole,
   validateRoleAction,

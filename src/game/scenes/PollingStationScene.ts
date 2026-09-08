@@ -335,7 +335,7 @@ export class PollingStationScene extends Phaser.Scene {
     this.bridge?.emit("WORLD_READY", { width, height });
   }
 
-  update(_time: number, _delta: number) {
+  update() {
     // Phaser update frame se ne koristi za nezavisno koračanje simulacije.
     // Autoritet za tok vremena ima isključivo XState preko CLOCK_TICK poruka.
   }
@@ -825,12 +825,13 @@ export class PollingStationScene extends Phaser.Scene {
         backgroundColor: "rgba(15, 23, 42, 0.8)",
         padding: { x: 8, y: 3 },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setAlpha(alpha);
 
     return txt;
   }
 
-  private createStationBadge(x: number, y: number, label: string, color: string, _depth = 0) {
+  private createStationBadge(x: number, y: number, label: string, color: string, depth = 0) {
     const badge = this.add
       .text(x, y, label, {
         fontSize: "10px",
@@ -840,7 +841,8 @@ export class PollingStationScene extends Phaser.Scene {
         backgroundColor: "rgba(15, 23, 42, 0.88)",
         padding: { x: 6, y: 2 },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(depth);
 
     // Blago pulsiranje za bolju interaktivnu uočljivost
     if (!this.reducedMotion) this.tweens.add({

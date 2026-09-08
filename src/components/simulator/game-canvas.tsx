@@ -65,7 +65,7 @@ export function GameCanvas({ bridge, seed }: GameCanvasProps) {
         gameRef.current = null;
       }
     };
-  }, [bridge]);
+  }, [bridge, seed]);
 
   return (
     <div

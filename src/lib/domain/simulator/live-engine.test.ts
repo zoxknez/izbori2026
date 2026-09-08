@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   advanceToNextEvent,
-  applyChoice,
   createSimulationState,
   resolveChoice,
 } from "./engine";

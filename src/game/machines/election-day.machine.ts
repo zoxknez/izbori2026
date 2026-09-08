@@ -31,7 +31,6 @@ import {
   timeStringToMs,
   type SimulationSpeed,
 } from "@/game/clock/simulation-clock";
-import { SeededRNG } from "@/game/random/seeded-rng";
 import { WORLD_INCIDENT_BINDINGS } from "@/lib/domain/simulator/incident-binding";
 import { SIMULATION_MODE_PROFILES } from "@/game/config/simulation-mode-profile";
 import {
@@ -473,7 +472,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
           },
           FINALIZE_PROTOCOL: {
             target: "protocol",
-            actions: assign(({ context }) => ({
+            actions: assign(() => ({
               currentPhase: "protocol" as const,
             })),
           },
@@ -559,7 +558,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
           },
           COMPLETE_HANDOVER: {
             target: "handover",
-            actions: assign(({ context }) => ({
+            actions: assign(() => ({
               currentPhase: "handover" as const,
             })),
           },
@@ -572,7 +571,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
         on: {
           FINISH_SESSION: {
             target: "debrief",
-            actions: assign(({ context }) => ({
+            actions: assign(() => ({
               currentPhase: "debrief" as const,
             })),
           },
@@ -585,7 +584,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
         on: {
           FINISH_SESSION: {
             target: "closed",
-            actions: assign(({ context }) => ({
+            actions: assign(() => ({
               currentPhase: "closed" as const,
             })),
           },

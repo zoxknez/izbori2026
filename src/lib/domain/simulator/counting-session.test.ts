@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   initializeCountingSession,
   evaluateCountingSession,
-  type CountingSession,
 } from "./counting-session";
 import { createSimulationState } from "./engine";
 import { simulationEvents } from "./seed-events";
