@@ -251,6 +251,8 @@ export function GameSimulatorShell({
   ]);
 
   const handleSaveGame = () => {
+    if (saveFeedback === "Čuvanje...") return;
+    setSaveFeedback("Čuvanje...");
     void persistGame(true).catch(() => {
       setSaveFeedback("Čuvanje nije uspelo");
       setTimeout(() => setSaveFeedback(null), 3000);
@@ -842,7 +844,8 @@ export function GameSimulatorShell({
             type="button"
             data-testid="save-game-button"
             onClick={handleSaveGame}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-surface-2 px-3 py-1.5 text-xs font-semibold text-ink transition hover:border-brand/40 hover:text-brand"
+            disabled={saveFeedback === "Čuvanje..."}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-surface-2 px-3 py-1.5 text-xs font-semibold text-ink transition hover:border-brand/40 hover:text-brand disabled:cursor-wait disabled:opacity-70"
             title="Sačuvaj trenutno stanje partije u memoriji uređaja"
           >
             <Save className="h-3.5 w-3.5 text-brand" />

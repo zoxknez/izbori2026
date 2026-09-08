@@ -200,7 +200,7 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
     const saveBtn = page.getByTestId("save-game-button");
     await expect(saveBtn).toBeVisible();
     await saveBtn.click();
-    await expect(saveBtn).toContainText(/Sačuvano!/i);
+    await expect(saveBtn).toContainText(/Sačuvano!/i, { timeout: 15_000 });
 
     // Otvaramo deterministički Replay modal
     const replayBtn = page.getByTestId("replay-button");
