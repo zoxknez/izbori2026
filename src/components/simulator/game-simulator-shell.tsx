@@ -134,80 +134,82 @@ export function GameSimulatorShell({
     };
   }, [context.runId]);
 
+  const persistGame = useCallback(async (notify = false) => {
+    const saveContext = contextRef.current;
+    const snapshot = actorRef?.getPersistedSnapshot?.();
+
+    // The bridge snapshot handler is synchronous, so this refreshes the ref
+    // before the world reference is frozen for hashing and persistence.
+    bridge.emit("REQUEST_WORLD_SNAPSHOT", {});
+    const worldForSave = worldSnapshotRef.current ?? {
+      rngState: saveContext.seed,
+      deterministicCounter: saveContext.deterministicCounter,
+      nextEntityId: saveContext.activeVoterCount,
+      activeVoters: [],
+      queueOrder: [],
+      nextSpawnAtMs: 0,
+      legalInterruptions: saveContext.legalInterruptions,
+    };
+    const hash = await computeCanonicalStateHash({
+      runId: saveContext.runId,
+      seed: saveContext.seed,
+      simulationTimeMs: saveContext.simulationTimeMs,
+      scores: saveContext.domainState.scores,
+      flags: saveContext.domainState.flags,
+      actionLogLength: saveContext.actionLog.length,
+      pollSchedule: saveContext.pollSchedule,
+      decisionHistory: saveContext.domainState.history,
+      activeIncidentIds: saveContext.activeIncidents.map((incident) => incident.instanceId),
+      missedIncidentIds: saveContext.missedIncidents.map((incident) => incident.instanceId),
+      boardProtocol: saveContext.boardProtocol,
+      rngState: worldForSave.rngState,
+    });
+
+    const saveObj: GameSaveV2 = {
+      version: 2,
+      runId: saveContext.runId,
+      savedAt: new Date().toISOString(),
+      seed: saveContext.seed,
+      mode: saveContext.mode,
+      role: saveContext.domainState.role,
+      simulationTimeMs: saveContext.simulationTimeMs,
+      currentPhase: saveContext.currentPhase,
+      machineSnapshot: snapshot,
+      domainState: saveContext.domainState,
+      worldSimulation: worldForSave,
+      pollSchedule: saveContext.pollSchedule,
+      actionLog: saveContext.actionLog,
+      evidenceNotebook: saveContext.evidenceNotebook,
+      boardProtocol: saveContext.boardProtocol,
+      observerRecord: saveContext.observerRecord,
+      countingSession: saveContext.countingSession,
+      activeIncidentIds: saveContext.activeIncidents.map((incident) => incident.instanceId),
+      missedIncidentIds: saveContext.missedIncidents.map((incident) => incident.instanceId),
+      stateHash: hash,
+    };
+
+    await saveGameSession(saveObj);
+    if (notify) {
+      setSaveFeedback("Sačuvano!");
+      setTimeout(() => setSaveFeedback(null), 2500);
+    }
+  }, [actorRef, bridge]);
+
   // Automatsko perzistiranje toka simulacije u IndexedDB (periodično ili na promenu akcija/faza, ne na svaki tick sata)
   useEffect(() => {
-    const saveContext = contextRef.current;
     if (
-      saveContext.actionLog.length === 0 &&
-      saveContext.evidenceNotebook.length === 0 &&
-      !saveContext.countingSession
+      contextRef.current.actionLog.length === 0 &&
+      contextRef.current.evidenceNotebook.length === 0 &&
+      !contextRef.current.countingSession
     ) {
       return;
     }
 
-    let isSubscribed = true;
-    void (async () => {
-      try {
-        const snapshot = actorRef?.getPersistedSnapshot?.();
-        // Freeze one coherent world version before the async WebCrypto hash.
-        const worldForSave = worldSnapshotRef.current ?? worldSnapshot ?? {
-          rngState: saveContext.seed,
-          deterministicCounter: saveContext.deterministicCounter,
-          nextEntityId: saveContext.activeVoterCount,
-          activeVoters: [],
-          queueOrder: [],
-          nextSpawnAtMs: 0,
-          legalInterruptions: saveContext.legalInterruptions,
-        };
-        const hash = await computeCanonicalStateHash({
-          runId: saveContext.runId,
-          seed: saveContext.seed,
-          simulationTimeMs: saveContext.simulationTimeMs,
-          scores: saveContext.domainState.scores,
-          flags: saveContext.domainState.flags,
-          actionLogLength: saveContext.actionLog.length,
-          pollSchedule: saveContext.pollSchedule,
-          decisionHistory: saveContext.domainState.history,
-          activeIncidentIds: saveContext.activeIncidents.map((i) => i.instanceId),
-          missedIncidentIds: saveContext.missedIncidents.map((i) => i.instanceId),
-          boardProtocol: saveContext.boardProtocol,
-          rngState: worldForSave.rngState,
-        });
+    void persistGame().catch(() => {
+      // tiho ignorišemo greške u autosave-u
+    });
 
-        const saveObj: GameSaveV2 = {
-          version: 2,
-          runId: saveContext.runId,
-          savedAt: new Date().toISOString(),
-          seed: saveContext.seed,
-          mode: saveContext.mode,
-          role: saveContext.domainState.role,
-          simulationTimeMs: saveContext.simulationTimeMs,
-          currentPhase: saveContext.currentPhase,
-          machineSnapshot: snapshot,
-          domainState: saveContext.domainState,
-          worldSimulation: worldForSave,
-          pollSchedule: saveContext.pollSchedule,
-          actionLog: saveContext.actionLog,
-          evidenceNotebook: saveContext.evidenceNotebook,
-          boardProtocol: saveContext.boardProtocol,
-          observerRecord: saveContext.observerRecord,
-          countingSession: saveContext.countingSession,
-          activeIncidentIds: saveContext.activeIncidents.map((incident) => incident.instanceId),
-          missedIncidentIds: saveContext.missedIncidents.map((incident) => incident.instanceId),
-          stateHash: hash,
-        };
-
-        if (isSubscribed) {
-          await saveGameSession(saveObj);
-        }
-      } catch {
-        // tiho ignorišemo greške u autosave-u
-      }
-    })();
-
-    return () => {
-      isSubscribed = false;
-    };
+    return undefined;
   }, [
     context.actionLog.length,
     context.evidenceNotebook.length,
@@ -221,62 +223,14 @@ export function GameSimulatorShell({
     context.activeVoterCount,
     context.legalInterruptions,
     worldSnapshot,
-    actorRef,
+    persistGame,
   ]);
 
-  const handleSaveGame = async () => {
-    bridge.emit("REQUEST_WORLD_SNAPSHOT", {});
-    const snapshot = actorRef?.getPersistedSnapshot?.();
-    // The same frozen object must feed both the hash and the persisted payload.
-    const worldForSave = worldSnapshotRef.current ?? worldSnapshot ?? {
-      rngState: context.seed,
-      deterministicCounter: context.deterministicCounter,
-      nextEntityId: context.activeVoterCount,
-      activeVoters: [],
-      queueOrder: [],
-      nextSpawnAtMs: 0,
-      legalInterruptions: context.legalInterruptions,
-    };
-    const hash = await computeCanonicalStateHash({
-      runId: context.runId,
-      seed: context.seed,
-      simulationTimeMs: context.simulationTimeMs,
-      scores: context.domainState.scores,
-      flags: context.domainState.flags,
-      actionLogLength: context.actionLog.length,
-      pollSchedule: context.pollSchedule,
-      decisionHistory: context.domainState.history,
-      activeIncidentIds: context.activeIncidents.map((i) => i.instanceId),
-      missedIncidentIds: context.missedIncidents.map((i) => i.instanceId),
-      boardProtocol: context.boardProtocol,
-      rngState: worldForSave.rngState,
+  const handleSaveGame = () => {
+    void persistGame(true).catch(() => {
+      setSaveFeedback("Čuvanje nije uspelo");
+      setTimeout(() => setSaveFeedback(null), 3000);
     });
-
-    const saveObj: GameSaveV2 = {
-      version: 2,
-      runId: context.runId,
-      savedAt: new Date().toISOString(),
-      seed: context.seed,
-      mode: context.mode,
-      role: context.domainState.role,
-      simulationTimeMs: context.simulationTimeMs,
-      currentPhase: context.currentPhase,
-      machineSnapshot: snapshot,
-      domainState: context.domainState,
-      worldSimulation: worldForSave,
-      pollSchedule: context.pollSchedule,
-      actionLog: context.actionLog,
-      evidenceNotebook: context.evidenceNotebook,
-      boardProtocol: context.boardProtocol,
-      observerRecord: context.observerRecord,
-      countingSession: context.countingSession,
-      activeIncidentIds: context.activeIncidents.map((incident) => incident.instanceId),
-      missedIncidentIds: context.missedIncidents.map((incident) => incident.instanceId),
-      stateHash: hash,
-    };
-    await saveGameSession(saveObj);
-    setSaveFeedback("Sačuvano!");
-    setTimeout(() => setSaveFeedback(null), 2500);
   };
 
   // Lokalno stanje interfejsa za selektovani hotspot
@@ -444,7 +398,11 @@ export function GameSimulatorShell({
     const snapshotIntervalId = window.setInterval(() => {
       bridge.emit("REQUEST_WORLD_SNAPSHOT", {});
     }, 5000);
-    const handlePageHide = () => bridge.emit("REQUEST_WORLD_SNAPSHOT", {});
+    const handlePageHide = () => {
+      void persistGame().catch(() => {
+        // pagehide može prekinuti asinhroni IndexedDB upis; periodični save ostaje fallback.
+      });
+    };
     window.addEventListener("pagehide", handlePageHide);
 
     return () => {
@@ -457,7 +415,7 @@ export function GameSimulatorShell({
       window.removeEventListener("pagehide", handlePageHide);
       bridge.destroy();
     };
-  }, [bridge, send]);
+  }, [bridge, persistGame, send]);
 
   // P1-5: Automatsko pauziranje pri skrivenom tabu (visibilitychange)
   useEffect(() => {
@@ -467,10 +425,10 @@ export function GameSimulatorShell({
     const handleVisibilityChange = () => {
       if (document.hidden) {
         send({ type: "SYSTEM_PAUSE" });
-        // Capture the latest deterministic world before the tab is suspended.
-        // The snapshot also invalidates the autosave effect's world reference,
-        // so the next persisted save uses the same world version it renders.
-        bridge.emit("REQUEST_WORLD_SNAPSHOT", {});
+        // Pause and persist while visibilitychange still gives IndexedDB a chance to finish.
+        void persistGame().catch(() => {
+          // Periodični autosave ostaje fallback ako browser suspenduje tab odmah.
+        });
       } else {
         send({ type: "SYSTEM_RESUME" });
       }
@@ -479,7 +437,7 @@ export function GameSimulatorShell({
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [bridge, send]);
+  }, [persistGame, send]);
 
   // P0-8: Aktivni incident na selektovanom mestu
   const activeIncident = useMemo(() => {
