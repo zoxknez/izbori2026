@@ -6,6 +6,7 @@ import { LayoutList, Gamepad2 } from "lucide-react";
 import { SimulationGame } from "@/components/simulation-game";
 import type { SimulationRole } from "@/lib/domain/simulator/types";
 import { ROLE_CONFIGS } from "@/lib/domain/simulator/role-permissions";
+import { SIMULATOR_CHOICE_COUNT, SIMULATOR_EVENT_COUNT } from "@/lib/domain/simulator/seed-events";
 import { cn } from "@/lib/utils";
 
 // SSR-safe dinamičko učitavanje Phaser 4 simulatora unutar Client Component granice
@@ -159,7 +160,7 @@ export function SimulatorModeSelector() {
               </div>
 
               <p className="text-xs leading-relaxed text-ink-dim">
-                Prostorna simulacija biračkog mesta uživo. Kretanje birača, 30 interaktivnih incidenata na stanicama, kontrola brzine toka i noćno brojanje glasova uz Zapisnik.
+                Prostorna simulacija biračkog mesta uživo. Kretanje birača, {SIMULATOR_EVENT_COUNT} interaktivnih incidenata i {SIMULATOR_CHOICE_COUNT} proceduralnih odluka na stanicama, kontrola brzine toka i noćno brojanje glasova uz Zapisnik.
               </p>
             </button>
 

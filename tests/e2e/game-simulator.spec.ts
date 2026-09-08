@@ -16,6 +16,8 @@ test.describe("2D Game Simulator Spike (Milestone 1)", () => {
 
     await page.goto("/izborni-dan");
     await expect(page.locator("h1")).toContainText("Izborni dan");
+    await expect(page.getByText("55 realnih situacija")).toBeVisible();
+    await expect(page.getByText(/136 odluka od pripreme do noćnog brojanja/i)).toBeVisible();
 
     // Proveravamo da prekidač režima postoji
     const classicBtn = page.getByRole("button", { name: /Klasične kartice/i });

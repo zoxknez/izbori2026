@@ -12,7 +12,7 @@ nepravilnosti u Srbiji. Next.js (App Router) + Tailwind CSS v4 + Drizzle ORM + N
 - **Glasanje van biračkog mesta**, **Krivična dela**, **Mit ili činjenica**, **Rokovi**,
   **Prijavi incident** (generator hronologije, čuva se samo lokalno u pregledaču), **Izvori**
 - **Trening / Kviz** (`/trening/kviz`) - 193 coverage pitanja sa offline mastery stanjem
-- **Simulator biračkog dana** (`/simulator/biracki-dan`) - 30 događaja i 80 odluka
+- **Simulator biračkog dana** (`/izborni-dan`) - 55 događaja i 136 odluka u 2D svetu
 
 Sadržaj pravila (`src/content/rules.ts`) živi u Neon Postgres bazi (tabele `rules`,
 `criminal_articles`, `sources` - vidi `src/lib/db/schema.ts`). Aplikacija je server-rendered uz

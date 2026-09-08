@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { SimulatorModeSelector } from "@/components/simulator/simulator-mode-selector";
 import { Container } from "@/components/ui/container";
+import { SIMULATOR_CHOICE_COUNT, SIMULATOR_EVENT_COUNT } from "@/lib/domain/simulator/seed-events";
 
 export const metadata = {
   title: "Izborni dan - 2D Simulator smene na biračkom mestu",
@@ -19,8 +20,8 @@ export const metadata = {
 const STATS = [
   {
     icon: Gamepad2,
-    label: "30 realnih situacija",
-    desc: "Od pripreme u 06:00 do noćnog brojanja",
+    label: `${SIMULATOR_EVENT_COUNT} realnih situacija`,
+    desc: `${SIMULATOR_CHOICE_COUNT} odluka od pripreme do noćnog brojanja`,
   },
   {
     icon: Users,
