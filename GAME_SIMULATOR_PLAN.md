@@ -9,7 +9,7 @@
   - `src/lib/domain/simulator/seed-events.ts`: 55+ autorski modelovanih situacija (E01-E55) sa rigoroznim referencama na pravila (`ruleIds`), bez improvizovanih pravnih zaključaka.
 - **Korisnički interfejs i prezentacija**:
   - `src/components/simulation-game.tsx`: Trenutno implementiran kao sekvencijalni kartični kviz sa A/B/C/D odgovorima, trenutnim progress barovima za 6 kategorija i instant feedback-om u guided režimu.
-  - **Napomena o rutama**: Lokalni working tree uvodi `/izborni-dan` kao kanonsku rutu sa trajnim preusmerenjem sa `/simulator/biracki-dan`. GitHub master još uvek drži `/simulator/biracki-dan` kao primarnu. Zadržavamo `/izborni-dan` kao ciljnu kanonsku rutu uz trajni redirect sa stare rute.
+  - **Napomena o rutama**: `/izborni-dan` je kanonska ruta sa trajnim preusmerenjem sa `/simulator/biracki-dan`. `main` je kanonska razvojna i produkciona grana; stara ruta ostaje samo kao kompatibilni redirect.
 - **Offline i perzistencija**:
   - `src/lib/offline/indexed-db.ts`: Baza `izbori-offline` (verzija 1) sa prodavnicama `simulationHistory`, `userPreferences`, `trainingProgress`, `incidentNotes`, `knowledgeState`, `datasetFiles`, `datasetMeta`.
   - `public/sw.js`: Ručni Service Worker koji kešira shell (uključujući `/izborni-dan`) i immutable dataset snapshot-ove, sa zaštitom od neželjenog reload-a tokom rada.
