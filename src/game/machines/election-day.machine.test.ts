@@ -3,6 +3,21 @@ import { createActor } from "xstate";
 import { createElectionDayMachine } from "./election-day.machine";
 
 describe("Milestone 1: ElectionDayMachine (XState 5)", () => {
+  it("kreira jedinstven run ID za svaku novu sesiju sa istim seed-om", () => {
+    const firstActor = createActor(createElectionDayMachine({ seed: 42 }));
+    const secondActor = createActor(createElectionDayMachine({ seed: 42 }));
+    firstActor.start();
+    secondActor.start();
+    const first = firstActor.getSnapshot().context.runId;
+    const second = secondActor.getSnapshot().context.runId;
+
+    expect(first).not.toBe(second);
+    expect(first).toMatch(/^run-42-/);
+    expect(second).toMatch(/^run-42-/);
+    firstActor.stop();
+    secondActor.stop();
+  });
+
   it("inicijalizuje se u stanju pre_opening sa 06:00 satom i početnim domain state-om", () => {
     const machine = createElectionDayMachine({ role: "clan_odbora", startTime: "06:00" });
     const actor = createActor(machine);

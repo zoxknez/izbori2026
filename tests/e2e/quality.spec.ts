@@ -69,6 +69,24 @@ test("incident draft survives an online/offline transition without reload", asyn
   await expect(page.locator("textarea").first()).toHaveValue("Nacrt incidenta pre prekida mreže");
 });
 
+test("simulator save survives a reload and offers a valid resume", async ({ page }) => {
+  await page.goto("/izborni-dan");
+  await page.getByRole("button", { name: /2D Biračko mesto/i }).click();
+
+  const saveButton = page.getByTestId("save-game-button");
+  await expect(saveButton).toBeVisible({ timeout: 15_000 });
+  await saveButton.click();
+  await expect(saveButton).toContainText(/Sačuvano!/i);
+
+  await page.reload();
+  const resumableBanner = page.getByTestId("resumable-save-banner");
+  await expect(resumableBanner).toBeVisible({ timeout: 15_000 });
+  await expect(resumableBanner).toContainText(/sačuvana partija/i);
+  await resumableBanner.getByTestId("resume-game-button").click();
+  await expect(resumableBanner).not.toBeVisible();
+  await expect(page.getByTestId("save-game-button")).toBeVisible();
+});
+
 async function playSimulation(page: import("@playwright/test").Page, maxSteps: number) {
   for (let index = 0; index < maxSteps; index += 1) {
     if (await page.getByText(/Birački dan završen/i).isVisible().catch(() => false)) return true;

@@ -86,6 +86,14 @@ export interface ElectionGameContext {
   legalDatasetVersion: string;
 }
 
+let fallbackRunSequence = 0;
+
+function createRunId(seed: number): string {
+  const randomUuid = globalThis.crypto?.randomUUID?.();
+  const uniquePart = randomUuid ?? `${Date.now().toString(36)}-${(++fallbackRunSequence).toString(36)}`;
+  return `run-${seed}-${uniquePart}`;
+}
+
 export type ElectionGameEvent =
   | { type: "WORLD_READY" }
   | { type: "TICK"; deltaRealMs: number }
@@ -259,7 +267,7 @@ export function createElectionDayMachine(options: CreateElectionMachineOptions =
     id: "electionDay",
     initial: initialPhase,
     context: {
-      runId: save ? save.runId : `run-${seed}`,
+      runId: save ? save.runId : createRunId(seed),
       seed,
       deterministicCounter: 0,
       mode,

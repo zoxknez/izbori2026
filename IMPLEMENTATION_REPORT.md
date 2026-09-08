@@ -235,6 +235,8 @@ nijedna stvarna posledica i nijedan misconception mehanizam.
 
 - World snapshot je uklonjen iz React render state-a; ostaje u ref-u za perzistenciju, pa snapshot
   više ne može da pokrene autosave feedback loop.
+- Nove simulacije dobijaju jedinstven `runId`; reload zato pravilno razlikuje novu instancu od
+  sačuvane partije i nudi nastavak, dok rehidrirana sesija zadržava svoj originalni ID.
 - `GameSaveV2` sada, uz postojeći `stateHash` domena, može da nosi i `saveIntegrityHash` nad celim
   kanonskim payload-om: world simulacijom, redom birača, beležnicom dokaza, counting sesijom,
   XState snapshotom i svim ostalim poljima save-a. Starije V2 sesije bez ovog polja ostaju čitljive,
@@ -244,10 +246,11 @@ nijedna stvarna posledica i nijedan misconception mehanizam.
 
 ### Provere
 
-- Unit: **114 testova u 26 test fajlova**, uključujući pakete za simulator (uloge, posledice,
+- Unit: **115 testova u 26 test fajlova**, uključujući pakete za simulator (uloge, posledice,
   debrief, teški režim, retry režim) i trening (tipovi odgovora, misconception životni ciklus).
-- E2E: **34 testa u 4 fajla** (admin publish se preskače bez izolovanih fixture kredencijala), sa
-  tokovima za put birača, ceo dan člana odbora, nasumični režim, modal accessibility i zablude.
+- E2E: **35 testova u 4 fajla** (admin publish se preskače bez izolovanih fixture kredencijala), sa
+  tokovima za put birača, ceo dan člana odbora, nasumični režim, modal accessibility, reload/resume
+  sesije i zablude.
 - `npm run build` prolazi sa svim gate-ovima; aktivni dataset je obnovljen kao
   `2026.09.07-simulator-training-upgrade` (66 pravila, 193 trening reference, 136 simulation
   referenci, 3 stabla odluka).
