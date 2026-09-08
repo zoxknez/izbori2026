@@ -78,7 +78,6 @@ export function GameSimulatorShell({
   const [resumableSave, setResumableSave] = useState<GameSaveV2 | GameSaveV1 | null>(null);
   const [isReplayOpen, setIsReplayOpen] = useState(false);
   const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
-  const [worldSnapshot, setWorldSnapshot] = useState<WorldSimulationSaveState | null>(null);
   const worldSnapshotRef = useRef<WorldSimulationSaveState | null>(null);
   const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
   const saveRevisionRef = useRef(0);
@@ -238,7 +237,6 @@ export function GameSimulatorShell({
     context.deterministicCounter,
     context.activeVoterCount,
     context.legalInterruptions,
-    worldSnapshot,
     persistGame,
   ]);
 
@@ -404,7 +402,6 @@ export function GameSimulatorShell({
     const unsubWorldSnapshot = bridge.on("WORLD_STATE_SNAPSHOT", (data) => {
       const next = { ...data, legalInterruptions: legalInterruptionsRef.current };
       worldSnapshotRef.current = next;
-      setWorldSnapshot(next);
     });
 
     const unsubClick = bridge.on("HOTSPOT_CLICKED", (data) => {
