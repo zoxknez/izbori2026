@@ -143,6 +143,7 @@ export function GameSimulatorShell({
 
   const persistGame = useCallback(async (notify = false) => {
     const saveRevision = ++saveRevisionRef.current;
+    const isManualSave = notify;
     const saveContext = contextRef.current;
     const snapshot = actorRef?.getPersistedSnapshot?.();
 
@@ -165,7 +166,11 @@ export function GameSimulatorShell({
     // Obsolete queued requests are skipped so repeated autosaves never delay
     // an explicit manual save behind stale work.
     const saveOperation = saveQueueRef.current.then(async () => {
-      if (saveRevision !== saveRevisionRef.current) return;
+      // A manual save must always resolve its visible feedback. Autosave
+      // effects can fire while the async queue is draining; they may replace
+      // stale autosaves, but must never silently cancel the save the user
+      // explicitly requested.
+      if (!isManualSave && saveRevision !== saveRevisionRef.current) return;
 
       const hash = await computeCanonicalStateHash({
         runId: saveContext.runId,
@@ -209,7 +214,7 @@ export function GameSimulatorShell({
         saveIntegrityHash: await computeSaveIntegrityHash(savePayload),
       };
 
-      if (saveRevision !== saveRevisionRef.current) return;
+      if (!isManualSave && saveRevision !== saveRevisionRef.current) return;
       await saveGameSession(saveObj);
       if (notify) {
         setSaveFeedback("Sačuvano!");
